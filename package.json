@@ -1,20 +1,25 @@
 {
-  "name": "formbuilder",
+  "name": "@uniquedj95/formique",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simplified vue 3 form builder",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["Vue", "typescript", "Form builder"],
+  "author": "Daniel Justin <danieljmuleke@gamil.com>",
+  "license": "MIT",
   "devDependencies": {
     "rollup": "^2.79.1",
     "rollup-plugin-clear": "^2.0.7",
     "rollup-plugin-typescript2": "^0.34.1",
     "rollup-plugin-vue": "^6.0.0",
     "typescript": "^4.8.4",
+    "vue": "^3.2.40"
+  },
+  "peerDependencies": {
     "vue": "^3.2.40"
   }
 }
