@@ -1,6 +1,6 @@
 {
   "name": "@uniquedj95/formique",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simplified vue 3 form builder",
   "main": "dist/index.js",
   "scripts": {
@@ -8,7 +8,11 @@
     "build": "rollup -c",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["Vue", "typescript", "Form builder"],
+  "keywords": [
+    "Vue",
+    "typescript",
+    "Form builder"
+  ],
   "author": "Daniel Justin <danieljmuleke@gamil.com>",
   "license": "MIT",
   "devDependencies": {
