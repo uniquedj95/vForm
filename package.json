@@ -1,10 +1,25 @@
 {
   "name": "@uniquedj95/formique",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "A simplified ionic vue desktop form builder",
-  "main": "dist/index.js",
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./dist/index.css": {
+      "import": "./dist/index.css",
+      "require": "./dist/index.css"
+    }
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
     "prepublishOnly": "npm run build"
   },
@@ -22,7 +37,10 @@
     "ionicons": "^7.4.0",
     "typescript": "^5.5.3",
     "vite": "^5.3.3",
-    "vite-tsconfig-paths": "^4.3.2",
+    "vite-plugin-dts": "^3.9.1",
+    "vue": "^3.4.31"
+  },
+  "peerDependencies": {
     "vue": "^3.4.31"
   }
 }
