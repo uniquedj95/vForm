@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { IonGrid, IonRow, IonCol, IonButton, IonButtons } from "@ionic/vue";
+import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/vue";
 import type { FormData, ComputedData, FormSchema, FormField } from "../types";
 import { isEmpty } from "utils";
 
@@ -57,9 +57,16 @@ interface FormEmits {
   (e: "cancel"): void;
 }
 
-const props = defineProps<FormProps>();
+const props = withDefaults(defineProps<FormProps>(), {
+  showLabels: true,
+  showClearButton: true,
+  showCancelButton: true,
+  buttonPlacement: "start",
+  submitButtonText: "Submit",
+  clearButtonText: "Reset",
+  cancelButtonText: "Cancel",
+})
 const emit = defineEmits<FormEmits>();
-const btnSlot = computed(() => props.buttonPlacement ?? "start");
 const origialSchema = { ...props.schema };
 
 const data = computed(() => Object.entries(props.schema).reduce((acc, [key, form]) => {
@@ -101,13 +108,20 @@ async function submitForm() {
   emit("submit", data.value, computedData.value);
 }
 
-function handleButtons(action: "clear" |"cancel") {
+function handleClearAction() {
   Object.keys(props.schema).forEach(key => {
     props.schema[key].value = origialSchema[key].value;
     props.schema[key].error = "";
   });
-  if(action === "clear") emit("clear");
-  else emit("cancel");
+  emit("clear");
+}
+
+function handleCancelAction() {
+  Object.keys(props.schema).forEach(key => {
+    props.schema[key].value = origialSchema[key].value;
+    props.schema[key].error = "";
+  });
+  emit("cancel");
 }
 
 </script>
