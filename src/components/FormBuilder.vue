@@ -19,14 +19,14 @@
       </IonCol>
     </IonRow>
     <IonRow>
-      <IonCol>
-        <IonButton @click="submitForm" :style="{float: btnSlot }">
+      <IonCol size="12" style="display: flex;" :style="{ justifyContent: buttonPlacement }">
+        <IonButton @click="submitForm" >
           {{ submitButtonText ?? "Submit" }}
         </IonButton>
-        <IonButton @click="handleButtons('clear')" v-if="showClearButton !== false" :style="{float: btnSlot }">
+        <IonButton @click="handleClearAction" v-if="showClearButton" >
           {{ clearButtonText ?? "Reset" }}
         </IonButton>
-        <IonButton @click="handleButtons('cancel')" v-if="showCancelButton !== false" :style="{float: btnSlot }">
+        <IonButton @click="handleCancelAction" v-if="showCancelButton" >
           {{ cancelButtonText ?? "Cancel" }}
         </IonButton>
       </IonCol>
