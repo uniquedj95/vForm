@@ -38,7 +38,7 @@
 import { computed } from "vue";
 import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/vue";
 import type { FormData, ComputedData, FormSchema, FormField } from "../types";
-import { isEmpty } from "utils";
+import { isEmpty } from "../utils";
 
 interface FormProps {
   schema: FormSchema;
