@@ -1,5 +1,5 @@
 export type FormValue = string | number | boolean | Option | Array<Option>;
-export type FormValidator = (value: FormValue, schema: FormSchema) => Promise<Array<string> | null> | Array<string> | null;
+export type FormValidator = (value: FormValue, schema?: FormSchema) => Promise<Array<string> | null> | Array<string> | null;
 export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Promise<any> | any;
 export type FormOptions = Array<Option> | (() => Promise<Array<Option>>);
 export type FormData = Record<string, FormValue | undefined>;

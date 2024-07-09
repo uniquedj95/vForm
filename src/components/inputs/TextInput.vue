@@ -40,29 +40,16 @@
 <script lang="ts" setup>
 import { IonCheckbox, IonInput, IonLabel, IonNote } from "@ionic/vue";
 import { FormField, FormSchema } from "types";
-import { computed, onMounted, PropType, ref, watch } from "vue";
+import { onMounted, PropType, ref, watch } from "vue";
 
-const props = defineProps({
-  modelValue: {
-    type: Object as PropType<FormField>,
-    default: () => ({}),
-  },
-  schema: {
-    type: Object as PropType<FormSchema>,
-    default: () => ({}),
-  },
-});
+const props = defineProps<{ schema?: FormSchema }>();
+const model = defineModel({ type: Object as PropType<FormField>, default: {}});
 
 const emit = defineEmits<{
   (e: "update:modelValue", value: FormField): void;
 }>();
 
 const isUnknown = ref(false);
-
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
-});
 
 const validate = async () => {
   if (model.value.required && !model.value.value) {
@@ -77,7 +64,7 @@ const validate = async () => {
   if (model.value.validation) {
     const errors = await model.value.validation(
       model.value.value!,
-      props.schema
+      props?.schema
     );
     if (errors && errors.length) {
       return (model.value.error += errors.toString());
@@ -97,7 +84,7 @@ watch(isUnknown, (newValue) => {
   }
 });
 
-watch(props.modelValue, (newModel) => {
+watch(() => model.value, (newModel) => {
   if (newModel.value === "Unknown") {
     if (!isUnknown.value) {
       isUnknown.value = true;
