@@ -1,5 +1,3 @@
-import { Component } from "vue";
-
 export type FormValue = string | number | boolean | Option | Array<Option>;
 export type FormValidator = (value: FormValue, schema: FormSchema) => Promise<Array<string> | null> | Array<string> | null;
 export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Promise<any> | any;
@@ -18,7 +16,7 @@ export interface GridSize {
 
 export interface FormField {
   value?: FormValue;
-  type: Component;
+  type: InputType;
   label?: string;
   required?: boolean;
   options?: FormOptions;
@@ -57,3 +55,5 @@ export interface Option {
   disabled?: boolean;
   description?: OptionDescription;
 }
+
+export type InputType = "TextInput" 

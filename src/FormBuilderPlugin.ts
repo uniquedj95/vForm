@@ -1,10 +1,10 @@
 import { App, Plugin } from 'vue';
-import FormBuilder from './components/FormBuilder.vue';
+import Form from './components/FormBuilder.vue';
 import TextInput from './components/inputs/TextInput.vue';
 
-export const FormBuilderPlugin: Plugin = {
+export const FormBuilder: Plugin = {
   install(app: App) {
-    app.component('FormBuilder', FormBuilder);
+    app.component('FormBuilder', Form);
     app.component('TextInput', TextInput);
   }
 }
