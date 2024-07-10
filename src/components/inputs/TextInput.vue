@@ -45,10 +45,6 @@ import { onMounted, PropType, ref, watch } from "vue";
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {}});
 
-const emit = defineEmits<{
-  (e: "update:modelValue", value: FormField): void;
-}>();
-
 const isUnknown = ref(false);
 
 const validate = async () => {
