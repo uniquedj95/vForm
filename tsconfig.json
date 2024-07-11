@@ -13,7 +13,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": ["dom", "esnext"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
@@ -22,6 +26,7 @@
     "src/**/*.vue"
   ],
   "exclude": [
-    "**/node_modules",
-  ]
+    "node_modules", 
+    "dist"
+  ]  
 }
