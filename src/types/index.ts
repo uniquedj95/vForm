@@ -23,6 +23,7 @@ export interface FormField {
   multiple?: boolean;
   min?: number;
   max?: number;
+  counter?: boolean;
   minLength?: number;
   maxLength?: number;
   disabled?: boolean;
@@ -36,6 +37,8 @@ export interface FormField {
   allowUnknown?: boolean;
   allowCustom?: boolean;
   autoFocus?: boolean;
+  fill?: "solid" | "outline";
+  labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating"
   validation?: FormValidator;
   onChange?: (value: FormValue) => FormValue;
   computedValue?: ComputedValueHandler;
