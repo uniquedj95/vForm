@@ -1,6 +1,12 @@
 export type FormValue = string | number | boolean | Option | Array<Option>;
-export type FormValidator = (value: FormValue, schema?: FormSchema) => Promise<Array<string> | null> | Array<string> | null;
-export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Promise<any> | any;
+export type FormValidator = (
+  value: FormValue,
+  schema?: FormSchema
+) => Promise<Array<string> | null> | Array<string> | null;
+export type ComputedValueHandler = (
+  value: FormValue,
+  schema: FormSchema
+) => Promise<any> | any;
 export type FormOptions = Array<Option> | (() => Promise<Array<Option>>);
 export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
@@ -38,7 +44,7 @@ export interface FormField {
   allowCustom?: boolean;
   autoFocus?: boolean;
   fill?: "solid" | "outline";
-  labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating"
+  labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
   validation?: FormValidator;
   onChange?: (value: FormValue) => FormValue;
   computedValue?: ComputedValueHandler;
@@ -59,4 +65,16 @@ export interface Option {
   description?: OptionDescription;
 }
 
-export type InputType = "TextInput" 
+export type InputType = "TextInput";
+export type TextFieldTypes =
+  | "text"
+  | "password"
+  | "email"
+  | "number"
+  | "tel"
+  | "url"
+  | "search"
+  | "date"
+  | "time"
+  | "month"
+  | "week"
