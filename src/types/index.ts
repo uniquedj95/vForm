@@ -65,7 +65,13 @@ export interface Option {
   description?: OptionDescription;
 }
 
-export type InputType = "TextInput";
+export type InputType = 
+  | "TextInput"
+  | "DateInput"
+  | "NumberInput"
+  | "EmailInput"
+  | "PasswordInput"
+
 export type TextFieldTypes =
   | "text"
   | "password"
