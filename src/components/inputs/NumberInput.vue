@@ -1,7 +1,7 @@
 <template>
   <base-input
     v-model="model"
-    type="text"
+    type="number"
     :schema="props.schema"
   />
 </template>
