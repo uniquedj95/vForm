@@ -32,7 +32,7 @@
   import { FormField, FormSchema, TextFieldTypes } from "types";
   import { PropType, ref } from "vue";
 
-  const props = defineProps<{ schema?: FormSchema; type?: TextFieldTypes }>();
+  const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
   const model = defineModel({ type: Object as PropType<FormField>, default: {}});
   const inputRef = ref<typeof IonInput | null>(null);
   const input = ref(model.value.value as string);

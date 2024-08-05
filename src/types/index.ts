@@ -40,6 +40,7 @@ export interface FormField {
   prefix?: string;
   suffix?: string;
   error?: string;
+  pattern?: string;
   allowUnknown?: boolean;
   allowCustom?: boolean;
   autoFocus?: boolean;
@@ -72,7 +73,7 @@ export type InputType =
   | "EmailInput"
   | "PasswordInput"
 
-export type TextFieldTypes =
+export type BaseFieldTypes =
   | "text"
   | "password"
   | "email"
