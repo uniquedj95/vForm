@@ -17,6 +17,7 @@
       :max="model.max"
       :max-length="model.maxLength"
       :min-length="model.minLength"
+      :pattern="model.pattern"
       @ionFocus="onFocus"
       @ionChange="onValueUpdate"
     >
