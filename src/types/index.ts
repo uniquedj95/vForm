@@ -27,8 +27,8 @@ export interface FormField {
   required?: boolean;
   options?: FormOptions;
   multiple?: boolean;
-  min?: number;
-  max?: number;
+  min?: number | string;
+  max?: number | string;
   counter?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -81,7 +81,6 @@ export type BaseFieldTypes =
   | "tel"
   | "url"
   | "search"
-  | "date"
   | "time"
   | "month"
   | "week"
