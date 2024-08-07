@@ -1,4 +1,31 @@
 /**
+ * Form Builder Utility functions.
+ * 
+ * @packageDocumentation 
+ * @module utils
+ * @preferred
+ * @author Daniel Justin.
+ **/
+
+/**
+ * Full month names.
+ **/
+export const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
  * Checks if a value is "empty".
  *
  * @param value - The value to check for emptiness.
@@ -6,9 +33,85 @@
  * Returns `false` otherwise.
  */
 export function isEmpty(value: any): boolean {
-  return value === null 
-    || value === undefined 
-    || (Array.isArray(value) && !value.length) 
-    || (typeof value === 'object' && !Object.keys(value).length) 
-    || !value;
+  return (
+    value === null ||
+    value === undefined ||
+    (Array.isArray(value) && !value.length) ||
+    (typeof value === "object" && !Object.keys(value).length) ||
+    !value
+  );
+}
+
+/**
+ * Format a date string according to a given pattern.
+ *
+ * @param date - The date string to format.
+ * @param pattern - The pattern to format the date string with. default is 'DD/MMM/2024'.
+ * @returns The formatted date string.
+ */
+export function formatDate(date: string, pattern: string = "DD/MMM/YYYY"): string {
+  const _date = new Date(date);
+
+  if (isNaN(_date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  const day = zeroPad(_date.getDate());
+  const month = _date.getMonth() + 1; // months are zero-based
+  const year = _date.getFullYear();
+  const hour = zeroPad(_date.getHours());
+  const minute = zeroPad(_date.getMinutes());
+  const second = zeroPad(_date.getSeconds());
+  const milliseconds = _date.getMilliseconds();
+
+  const replacements: { [key: string]: string } = {
+    DD: day,
+    D: _date.getDate().toString(),
+    MMM: monthNames[_date.getMonth()].slice(0, 3),
+    MMMM: monthNames[_date.getMonth()],
+    MM: zeroPad(month),
+    M: month.toString(),
+    YYYY: year.toString(),
+    YY: year.toString().slice(-2),
+    HH: hour,
+    H: _date.getHours().toString(),
+    mm: minute,
+    m: _date.getMinutes().toString(),
+    ss: second,
+    s: _date.getSeconds().toString(),
+    SSS: zeroPad(milliseconds),
+    S: milliseconds.toString().slice(0, 1),
+    // Add more replacements as needed
+  };
+
+  return pattern.replace(
+    /DD|D|MMMM|MMM|MM|M|YYYY|YY|HH|H|mm|m|ss|s|SSS|S/g,
+    (match) => replacements[match] || match
+  );
+}
+
+/**
+ * Append a zero to a number if it is less than 10.
+ *
+ * @param num - The number to append a zero to.
+ * @returns The number as a string with a zero appended if it is less than 10.
+ */
+export function zeroPad(num: number): string {
+  return num < 10 ? `0${num}` : `${num}`;
+}
+
+/**
+ * Get the month name or number.
+ *
+ * @param month - The month number or name.
+ * @param part - The part of the month to get. Either 'MMMM', 'MMM', or 'MM'.
+ * @returns The month name or number.
+ */
+export function getMonth(month: number | string, part: string) {
+  if (Number.isInteger(parseInt(month as string)) && Number(month) > 0) {
+    if (part === "MMMM") return monthNames[Number(month) - 1];
+    if (part === "MMM") return monthNames[Number(month) - 1].slice(0, 3);
+    if (part === "MM") return zeroPad(Number(month));
+  }
+  return month as string;
 }
