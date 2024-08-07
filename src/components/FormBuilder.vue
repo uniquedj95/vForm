@@ -1,22 +1,24 @@
 <template>
   <IonGrid>
     <IonRow>
-      <IonCol 
-        v-for="formId of Object.keys(schema)" 
-        :key="formId" 
-        :size="schema[formId].grid?.xs ?? '12'" 
-        :size-sm="schema[formId].grid?.sm"
-        :size-md="schema[formId].grid?.md"
-        :size-lg="schema[formId].grid?.lg"
-        :size-xl="schema[formId].grid?.xl"
-        class="ion-margin-vertical"
-      >
-        <component 
-          :is="schema[formId].type" 
-          v-model="schema[formId]" 
-          :schema="schema"
-        />
-      </IonCol>
+      <template v-for="formId of Object.keys(schema)">
+        <IonCol 
+          :key="formId" 
+          :size="schema[formId].grid?.xs ?? '12'" 
+          :size-sm="schema[formId].grid?.sm"
+          :size-md="schema[formId].grid?.md"
+          :size-lg="schema[formId].grid?.lg"
+          :size-xl="schema[formId].grid?.xl"
+          class="ion-margin-vertical"
+          v-if="canRenderField(schema[formId])"
+        >
+          <component 
+            :is="schema[formId].type" 
+            v-model="schema[formId]" 
+            :schema="schema"
+          />
+        </IonCol>
+      </template>
     </IonRow>
     <IonRow>
       <IonCol size="12" style="display: flex;" :style="{ justifyContent: buttonPlacement }">
@@ -35,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/vue";
 import type { FormData, ComputedData, FormSchema, FormField } from "../types";
 import { isEmpty } from "../utils";
@@ -124,4 +126,19 @@ function handleCancelAction() {
   emit("cancel");
 }
 
+function canRenderField(field: FormField) {
+  if (typeof field.condition === "function") {
+    return field.condition(data.value, computedData.value);
+  }
+  return true;
+}
+
+watch(data, async () => {
+  for (const [k, f] of Object.entries(props.schema)) {
+    if (!canRenderField(f)) {
+      // Reset the value of the field if it's not rendered
+      f.value = origialSchema[k].value;
+    }
+  }
+}, { deep: true });
 </script>

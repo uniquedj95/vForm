@@ -49,6 +49,7 @@ export interface FormField {
   validation?: FormValidator;
   onChange?: (value: FormValue) => FormValue;
   computedValue?: ComputedValueHandler;
+  condition?: (data: FormData, computedData: ComputedData) => boolean;
 }
 
 export interface OptionDescription {
