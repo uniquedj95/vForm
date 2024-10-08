@@ -24,6 +24,7 @@ export default defineConfig({
       output: {
         globals: {
           vue: "Vue",
+          '@ionic/vue': 'IonicVue',
         },
         exports: "named",
       }
