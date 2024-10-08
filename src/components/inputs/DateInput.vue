@@ -17,6 +17,7 @@
       <ion-select
         slot="start"
         interface="popover"
+        style="min-width: 30%"
         :placeholder="part"
         :value="partValues[part]"
         @ion-focus="onFocus"
@@ -39,7 +40,7 @@
         @ion-blur="buildInputDate(part, undefined, $event)"
       />
       <ion-label slot="start" v-if="index < (patternParts.length - 1)">
-        {{ separators[index] }}
+        &nbsp;{{ separators[index] }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </ion-label>
     </template>
     <ion-label slot="end">
