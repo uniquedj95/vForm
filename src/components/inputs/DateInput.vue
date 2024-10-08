@@ -154,6 +154,11 @@ async function buildPickerDate(date: string) {
   await onValueUpdate();
 }
 
+defineExpose({
+  onValueUpdate,
+  getErrors: () => model.value.error
+})
+
 onMounted(() => {
   patternParts.value.forEach((part, index) => {
     partValues.value[part] = pickerDate.value.split(separatorRegex)[index] ?? '';

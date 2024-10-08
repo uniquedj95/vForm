@@ -1,34 +1,39 @@
 <template>
-  <ion-select
-    v-model="selectedOption"
-    ref="inputRef"
-    interface="popover"
-    :label="model.label"
-    :placeholder="model.placeholder"
-    :multiple="model.multiple"
-    :disabled="model.disabled"
-    :required="model.required"
-    :error-text="model.error"
-    :auto-focus="model.autoFocus"
-    :clear-input="true"
-    :fill="model.fill ?? 'outline'"
-    :label-placement="model.labelPlacement ?? 'stacked'"
-    @ion-focus="onFocus"
-    @ion-change="onValueUpdate"
-    @ion-blur="onValueUpdate"
-  >
-    <ion-select-option
-      v-for="option in options"
-      :key="option.value"
-      :value="option.value"
+  <div>
+    <ion-select
+      v-model="input"
+      ref="inputRef"
+      interface="popover"
+      :label="model.label"
+      :placeholder="model.placeholder"
+      :multiple="model.multiple"
+      :disabled="model.disabled"
+      :required="model.required"
+      :error-text="model.error"
+      :auto-focus="model.autoFocus"
+      :clear-input="true"
+      :fill="model.fill ?? 'outline'"
+      :label-placement="model.labelPlacement ?? 'stacked'"
+      @ion-focus="onFocus"
+      @ion-change="onValueUpdate"
+      @ion-blur="onValueUpdate"
     >
-      {{ option.label }}
-    </ion-select-option>
-  </ion-select>
+      <ion-select-option
+        v-for="option in options"
+        :key="option.value"
+        :value="option.value"
+      >
+        {{ option.label }}
+      </ion-select-option>
+    </ion-select>
+    <ion-note v-if="model.error" color="danger" class="ion-padding-start">
+      {{ model.error }}
+    </ion-note>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption } from "@ionic/vue";
+import { IonSelect, IonSelectOption, IonNote } from "@ionic/vue";
 import { FormField, FormSchema, Option } from "types";
 import { getModelValue, isEmpty, mapValueToOption } from "../../utils";
 import { PropType, ref, watch } from "vue";
@@ -36,7 +41,7 @@ import { PropType, ref, watch } from "vue";
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<typeof IonSelect | null>(null);
-const selectedOption = ref(getModelValue(model.value));
+const input = ref(getModelValue(model.value));
 const options = ref<Array<Option>>([]);
   
 watch(() => model.value.options, async () => {
@@ -52,12 +57,12 @@ watch(() => model.value.options, async () => {
 });
 
 async function isValid() {
-  if (model.value.required && isEmpty(selectedOption.value)) {
+  if (model.value.required && isEmpty(input.value)) {
     model.value.error = "This field is required";
     return false;
   }
   if (typeof model.value.validation === "function") {
-    const errors = await model.value.validation(selectedOption.value as string, props?.schema);
+    const errors = await model.value.validation(input.value as string, props?.schema);
     if (errors && errors.length) {
       model.value.error = errors.toString();
       return false;
@@ -67,12 +72,11 @@ async function isValid() {
 }
 
 async function onValueUpdate() {
-  inputRef.value?.$el.classList.remove("ion-invalid");
-  inputRef.value?.$el.classList.remove("ion-valid");
+  inputRef.value?.$el.classList.remove("ion-valid", "ion-invalid");
 
   if (await isValid()) {
     model.value.error = "";
-    model.value.value = mapValueToOption(selectedOption.value, options.value, model.value.multiple);
+    model.value.value = mapValueToOption(input.value, options.value, model.value.multiple);
     inputRef.value?.$el.classList.add("ion-valid");
   } else {
     inputRef.value?.$el.classList.add("ion-invalid");
@@ -85,4 +89,9 @@ function onFocus() {
     inputRef.value?.$el.classList.remove("ion-invalid");
     model.value.error = "";
 }
+
+defineExpose({
+  onValueUpdate, 
+  getErrors: () => model.value.error 
+});
 </script>

@@ -16,6 +16,8 @@
             :is="activeSchema[formId].type" 
             v-model="activeSchema[formId]" 
             :schema="activeSchema"
+            ref="dynamicRefs"
+            :ref-key="formId"
           />
         </IonCol>
       </template>
@@ -69,6 +71,7 @@ const props = withDefaults(defineProps<FormProps>(), {
   cancelButtonText: "Cancel",
 })
 const emit = defineEmits<FormEmits>();
+const dynamicRefs = ref<Array<any>>([]);
 const activeSchema = ref({...props.schema});
 
 const data = computed(() => Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
@@ -86,23 +89,11 @@ const computedData = computed(() => {
 
 async function isFormValid() {
   const errors: Array<string> = [];
-  for (const key in activeSchema.value) { 
-    const { required, value, validation } = activeSchema.value[key];
-    if (required && isEmpty(value)) {
-      activeSchema.value[key].error = "This field is required";
-      errors.push("This field is required");
-    } else if(typeof validation === 'function') {
-      const errs = await validation(value!, activeSchema.value);
-      if(isEmpty(errs)) activeSchema.value[key].error = "";
-      else {
-        activeSchema.value[key].error = (errs as Array<string>).join();
-        errors.push(...errs as Array<string>);
-      }
-    } else {
-      activeSchema.value[key].error = '';
-    }
+  for (const inputRef of dynamicRefs.value) {
+    if (typeof inputRef?.onValueUpdate === 'function') await inputRef.onValueUpdate();
+    if (typeof inputRef?.getErrors === 'function') errors.push(inputRef.getErrors());
   }
-  return errors.every(Boolean);
+  return errors.every(isEmpty);
 }
 
 async function submitForm() {
