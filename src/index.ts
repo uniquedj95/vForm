@@ -20,3 +20,5 @@ export const VForm: Plugin = {
 }
 
 export * from "./types";
+
+export default VForm;
