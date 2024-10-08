@@ -47,14 +47,16 @@
       <vue-date-picker
         auto-apply
         :model-value="pickerDate"
-        :teleport="true"
         :enable-time-picker="false"
+        teleport
         :maxDate="maxDate"
         :minDate="minDate"
         @date-update="buildPickerDate"
       >
         <template #trigger>
-          <ion-icon :icon="calendar" color="primary" @click="onFocus"></ion-icon>
+          <ion-button fill="clear">
+            <ion-icon slot="icon-only" :icon="calendar" aria-hidden="true" ></ion-icon>
+          </ion-button>
         </template>
       </vue-date-picker>
     </ion-label>
@@ -63,7 +65,8 @@
 
 <script lang="ts" setup>
 import VueDatePicker from "@vuepic/vue-datepicker";
-import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption } from "@ionic/vue";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton } from "@ionic/vue";
 import { calendar } from "ionicons/icons";
 import type { FormField, FormSchema } from "../../types";
 import { computed, onMounted, PropType, ref } from "vue";
@@ -121,7 +124,6 @@ async function onValueUpdate() {
     model.value.error = "";
     model.value.value = pickerDate.value;
     inputRef.value?.$el.classList.add("ion-valid");
-    console.log('onValueUpdate', "Success", model.value.value);
   } else {
     inputRef.value?.$el.classList.add("ion-invalid");
   }
