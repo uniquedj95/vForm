@@ -5,13 +5,13 @@ import dts from "vite-plugin-dts";
 export default defineConfig({
   plugins: [
     vue(),
-    dts(),
+    dts({ insertTypesEntry: true }),
   ],
   build: {
-    cssCodeSplit: true,
+    cssCodeSplit: false,
     lib: {
       entry: "src/index.ts",
-      name: "FormBuilder",
+      name: "VForm",
       formats: ["es", "umd", "cjs"],
       fileName: (format) => `index.${format}.js`,
     },
