@@ -24,14 +24,19 @@
     </IonRow>
     <IonRow>
       <IonCol size="12" style="display: flex;" :style="{ justifyContent: buttonPlacement }">
-        <IonButton @click="submitForm" >
-          {{ submitButtonText ?? "Submit" }}
+        <IonButton @click="handleCancelAction" v-if="showCancelButton" >
+          {{ cancelButtonText ?? "Cancel" }}
         </IonButton>
         <IonButton @click="handleClearAction" v-if="showClearButton" >
           {{ clearButtonText ?? "Reset" }}
         </IonButton>
-        <IonButton @click="handleCancelAction" v-if="showCancelButton" >
-          {{ cancelButtonText ?? "Cancel" }}
+        <template v-for="button of customButtons">
+          <IonButton @click="button.action">
+            {{ button.label }}
+          </IonButton>
+        </template>
+        <IonButton @click="submitForm" >
+          {{ submitButtonText ?? "Submit" }}
         </IonButton>
       </IonCol>
     </IonRow>
@@ -41,7 +46,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/vue";
-import type { FormData, ComputedData, FormSchema, FormField } from "../types";
+import type { FormData, ComputedData, FormSchema, FormField, CustomButton } from "../types";
 import { isEmpty } from "../utils";
 
 interface FormProps {
@@ -53,6 +58,7 @@ interface FormProps {
   submitButtonText?: string;
   clearButtonText?: string;
   cancelButtonText?: string;
+  customButtons?: Array<CustomButton>;
 }
 
 interface FormEmits {
