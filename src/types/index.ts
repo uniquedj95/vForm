@@ -73,6 +73,7 @@ export type InputType =
   | "NumberInput"
   | "EmailInput"
   | "PasswordInput"
+  | "SelectInput"
 
 export type BaseFieldTypes =
   | "text"
