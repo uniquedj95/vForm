@@ -14,6 +14,7 @@
     :fill="model.fill ?? 'outline'"
     :label-placement="model.labelPlacement ?? 'stacked'"
     @ion-focus="onFocus"
+    @ion-change="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
     <ion-select-option
