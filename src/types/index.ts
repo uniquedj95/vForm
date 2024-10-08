@@ -41,8 +41,6 @@ export interface FormField {
   suffix?: string;
   error?: string;
   pattern?: string;
-  allowUnknown?: boolean;
-  allowCustom?: boolean;
   autoFocus?: boolean;
   fill?: "solid" | "outline";
   labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
