@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { IonSelect, IonSelectOption } from "@ionic/vue";
 import { FormField, FormSchema, Option } from "types";
-import { getModelValue, mapValueToOption } from "../../utils";
+import { getModelValue, isEmpty, mapValueToOption } from "../../utils";
 import { PropType, ref, watch } from "vue";
 
 const props = defineProps<{ schema?: FormSchema }>();
@@ -52,12 +52,8 @@ watch(() => model.value.options, async () => {
 });
 
 async function isValid() {
-  if (model.value.required && !selectedOption.value) {
+  if (model.value.required && isEmpty(selectedOption.value)) {
     model.value.error = "This field is required";
-    return false;
-  }
-  if (!model.value.allowUnknown && /Unknown|N\/A/i.test(selectedOption.value as string)) {
-    model.value.error = "Unknown or N/A values are not allowed";
     return false;
   }
   if (typeof model.value.validation === "function") {

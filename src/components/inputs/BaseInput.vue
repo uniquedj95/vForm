@@ -43,10 +43,6 @@
       model.value.error = "This field is required";
       return false;
     }
-    if (!model.value.allowUnknown && /Unknown|N\/A/i.test(input.value)) {
-      model.value.error = "Unknown or N/A values are not allowed";
-      return false; 
-    }
     if (model.value.validation) {
       const errors = await model.value.validation(input.value, props?.schema);
       if (errors && errors.length) {
