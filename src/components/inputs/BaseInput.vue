@@ -73,4 +73,9 @@ function onFocus() {
     inputRef.value?.$el.classList.remove("ion-invalid");
     model.value.error = "";
 }
+
+defineExpose({
+  onValueUpdate, 
+  getErrors: () => model.value.error 
+});
 </script>
