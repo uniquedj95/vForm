@@ -5,6 +5,7 @@ import DateInput from './components/inputs/DateInput.vue';
 import NumberInput from './components/inputs/NumberInput.vue';
 import EmailInput from './components/inputs/EmailInput.vue';
 import PasswordInput from './components/inputs/PasswordInput.vue';
+import SelectInput from './components/inputs/SelectInput.vue';
 
 export const VForm: Plugin = {
     install(app: App) {
@@ -14,6 +15,7 @@ export const VForm: Plugin = {
         app.component('NumberInput', NumberInput);
         app.component('EmailInput', EmailInput);
         app.component('PasswordInput', PasswordInput);
+        app.component('SelectInput', SelectInput);
     }
 }
 

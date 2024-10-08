@@ -6,6 +6,7 @@
  * @preferred
  * @author Daniel Justin.
  **/
+import { FormField, Option } from "types";
 
 /**
  * Full month names.
@@ -114,4 +115,37 @@ export function getMonth(month: number | string, part: string) {
     if (part === "MM") return zeroPad(Number(month));
   }
   return month as string;
+}
+
+
+/**
+ * Maps a given value or array of values to corresponding options from a list.
+ *
+ * @param value - A string value or array of string values to map to options.
+ * @param options - The list of options to map the value(s) to.
+ * @param isMultiple - A boolean indicating if multiple values should be mapped. Defaults to `false`.
+ * @returns The matched option(s) from the list. If `isMultiple` is `true`, returns an array of matched options. Otherwise, returns a single matched option.
+ */
+export function mapValueToOption(value: string | Array<string>, options: Array<Option>, isMultiple: boolean = false) {
+  if(isMultiple && Array.isArray(value)) {
+    return options.filter(option => value.includes(option.value as string))
+  }
+  return options.find(option => option.value === value) as Option;
+}
+
+
+/**
+ * Retrieves the value(s) from a given form field model.
+ *
+ * @param model - The form field model containing the value(s).
+ * @returns The extracted value(s) from the form field model.
+ */
+export function getModelValue(model: FormField): Array<string> | string {
+  if(isEmpty(model.value)) return model.multiple ? [] : "";
+  if(model.multiple && Array.isArray(model.value)) {
+    return model.value.map(opt => opt.value) as Array<string>;
+  }
+  return typeof model.value === "object"
+    ? (model.value as Option).value as string
+    : model.value as string;
 }
