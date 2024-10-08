@@ -20,15 +20,16 @@
       :pattern="model.pattern"
       @ionFocus="onFocus"
       @ionChange="onValueUpdate"
+      @ion-blur="onValueUpdate"
     >
       <ion-label v-if="model.prefix" slot="start">{{ model.prefix }}</ion-label>
       <ion-label v-if="model.suffix" slot="end">{{ model.suffix }} </ion-label>
-      <!-- <ion-input-password-toggle slot="end" v-if="type === 'password'" /> -->
+      <ion-input-password-toggle slot="end" v-if="type === 'password'" />
     </ion-input>
   </template>
   
   <script lang="ts" setup>
-  import { IonInput, IonLabel } from "@ionic/vue";
+  import { IonInput, IonLabel,IonInputPasswordToggle } from "@ionic/vue";
   import { FormField, FormSchema, BaseFieldTypes } from "types";
   import { PropType, ref } from "vue";
 
