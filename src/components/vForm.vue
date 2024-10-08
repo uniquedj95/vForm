@@ -140,5 +140,9 @@ watch(data, async () => {
       f.value = props.schema[k].value;
     }
   }
-}, { deep: true });
+}, 
+{ 
+  deep: true, 
+  immediate: true 
+});
 </script>
