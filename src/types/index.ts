@@ -84,3 +84,12 @@ export type BaseFieldTypes =
   | "time"
   | "month"
   | "week"
+
+
+export interface CustomButton {
+  label: string;
+  icon: string;
+  fill?: "solid" | "outline";
+  color?: "primary" | "warning" | "danger" | "secondary" | "light";
+  action: () => void;
+}
