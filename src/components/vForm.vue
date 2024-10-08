@@ -101,19 +101,20 @@ async function submitForm() {
   emit("submit", data.value, computedData.value);
 }
 
-function handleClearAction() {
+function resetForm() {
   Object.keys(activeSchema.value).forEach(key => {
-    activeSchema.value[key].value = props.schema[key].value;
+    activeSchema.value[key].value = undefined;
     activeSchema.value[key].error = "";
   });
+}
+
+function handleClearAction() {
+  resetForm();
   emit("clear");
 }
 
 function handleCancelAction() {
-  Object.keys(activeSchema.value).forEach(key => {
-    activeSchema.value[key].value = props.schema[key].value;
-    activeSchema.value[key].error = "";
-  });
+  resetForm();
   emit("cancel");
 }
 
