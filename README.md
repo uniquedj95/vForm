@@ -33,6 +33,7 @@ vForm is a Vue.js component that dynamically generates forms based on a provided
     import { VForm } from '@uniquedj95/vform';
 
     /* Import CSS styles and other components here */
+    import '@uniquedj95/vform/styles.css'
 
     const app = createApp(App)
         .use(IonicVue)
