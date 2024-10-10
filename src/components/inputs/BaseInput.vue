@@ -52,7 +52,7 @@ async function isValid() {
   if (model.value.validation) {
     const errors = await model.value.validation(input.value, props?.schema);
     if (errors && errors.length) {
-      model.value.error = errors.toString();
+      model.value.error = errors.join();
       return false;
     }
   }
