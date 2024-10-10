@@ -49,6 +49,7 @@
         :model-value="pickerDate"
         :enable-time-picker="false"
         teleport
+        teleport-center
         :maxDate="maxDate"
         :minDate="minDate"
         @date-update="buildPickerDate"
@@ -85,7 +86,7 @@ const separators = computed(() => pattern.match(/[-/.,:\s]+/g) || []);
 const partValues = ref({} as Record<string, any>); 
 
 async function isValid() {
-  if(/undefined/i.test(pickerDate.value)) {
+  if(pickerDate.value === undefined) {
     if(model.value.required) {
       model.value.error = "This field is required";
       return false;
@@ -122,7 +123,7 @@ async function isValid() {
 async function onValueUpdate() {
   inputRef.value?.$el.classList.remove("ion-invalid");
   inputRef.value?.$el.classList.remove("ion-valid");
-  monthNames
+  
   if (await isValid()) {
     model.value.error = "";
     model.value.value = pickerDate.value;
