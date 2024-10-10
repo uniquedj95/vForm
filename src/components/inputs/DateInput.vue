@@ -85,9 +85,12 @@ const separators = computed(() => pattern.match(/[-/.,:\s]+/g) || []);
 const partValues = ref({} as Record<string, any>); 
 
 async function isValid() {
-  if (model.value.required && !pickerDate.value) {
-    model.value.error = "This field is required";
-    return false;
+  if(/undefined/i.test(pickerDate.value)) {
+    if(model.value.required) {
+      model.value.error = "This field is required";
+      return false;
+    }
+    return true;
   }
 
   const _date = new Date(pickerDate.value);
