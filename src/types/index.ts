@@ -20,14 +20,66 @@ export interface GridSize {
   xl?: string;
 }
 
+/**
+ * Represents a form field with various properties to define its behavior and appearance.
+ * 
+ * @interface FormField
+ */
 export interface FormField {
+  /**
+   * The current value of the form input field.
+   * 
+   * @type FormValue
+   */
   value?: FormValue;
+
+  /**
+   * The type of input for the form input field.
+   * 
+   * @type InputType
+   */
   type: InputType;
+
+  /**
+   * The label for the form input field.
+   * 
+   * @type string
+   */
   label?: string;
+
+  /**
+   * Indicates if the form input field is required.
+   * 
+   * @type boolean
+   */
   required?: boolean;
+
+  /**
+   * Options for select-type form input fields.
+   * 
+   * @type FormOptions
+   */
   options?: FormOptions;
+
+  /**
+   * Indicates if multiple selections are allowed.
+   * 
+   * @type boolean
+   */
   multiple?: boolean;
+
+  /**
+   * The minimum value or length for the form input field.
+   * 
+   * @type number | string
+   */
   min?: number | string;
+
+  /**
+   * The maximum value or length for the form input field.
+   * 
+   * @type number | string
+   */
   max?: number | string;
 
   /**
@@ -50,23 +102,132 @@ export interface FormField {
    * @type boolean
    */
   counter?: boolean;
+
+  /**
+   * The minimum length for the form input field.
+   * 
+   * @type number
+   */
   minLength?: number;
+
+  /**
+   * The maximum length for the form input field.
+   * 
+   * @type number
+   */
   maxLength?: number;
+
+  /**
+   * Indicates if the form input field is disabled.
+   * 
+   * @type boolean
+   */
   disabled?: boolean;
+
+  /**
+   * Indicates if the form input field is read-only.
+   * 
+   * @type boolean
+   */
   hidden?: boolean;
+
+  /**
+   * The size of the form input field.
+   * 
+   * @type GridSize
+   */
   grid?: GridSize;
+
+  /**
+   * The placeholder text for the form input field.
+   * 
+   * @type string
+   */
   placeholder?: string;
+
+  /**
+   * The icon for the form input field.
+   * 
+   * @type string
+   */
   icon?: string;
+
+  /**
+   * The prefix for the form input field.
+   * 
+   * @type string
+   */
   prefix?: string;
+
+  /**
+   * The suffix for the form input field.
+   * 
+   * @type string
+   */
   suffix?: string;
+
+  /**
+   * The error message for the form input field.
+   * 
+   * @type string
+   */
   error?: string;
+
+  /**
+   * The pattern for the form input field. 
+   * If the pattern is not matched, an error message will be displayed.
+   * 
+   * @type string
+   */
   pattern?: string;
+
+  /**
+   * Auto-focuses the form input field when the page loads.
+   * 
+   * @type boolean
+   */
   autoFocus?: boolean;
+
+  /**
+   * Indicates if the form input field should be filled with a solid or outlined color.
+   * 
+   * @type "solid" | "outline"
+   */
   fill?: "solid" | "outline";
+
+  /**
+   * The position of the label for the form input field.
+   * 
+   * @type "stacked" | "start" | "end" | "fixed" | "floating"
+   */
   labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
+
+  /**
+   * The custom validation function for the form input field.
+   * 
+   * @type FormValidator
+   */
   validation?: FormValidator;
+
+  /**
+   * The custom function for listening to changes in the form input field.
+   * 
+   * @type ComputedValueHandler
+   */
   onChange?: (value: FormValue) => FormValue;
+
+   /**
+   * The custom function used for computing alternative values based on the current value of the form input field.
+   * 
+   * @type ComputedValueHandler
+   */
   computedValue?: ComputedValueHandler;
+
+  /**
+   * The custom function for checking if the form input field should be displayed.
+   * 
+   * @type (data: FormData, computedData: ComputedData) => boolean
+   */
   condition?: (data: FormData, computedData: ComputedData) => boolean;
 }
 
