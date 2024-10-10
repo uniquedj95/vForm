@@ -16,6 +16,7 @@ export const VForm: Plugin = {
         app.component('EmailInput', EmailInput);
         app.component('PasswordInput', PasswordInput);
         app.component('SelectInput', SelectInput);
+        app.component("TextArea", import("./components/inputs/TextAreaInput.vue"));
     }
 }
 
