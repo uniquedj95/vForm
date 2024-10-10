@@ -5,7 +5,6 @@
     :clear-input="true"
     :fill="model.fill ?? 'outline'"
     :label-placement="model.labelPlacement ?? 'stacked'"
-    :label="model.label"
     :type="type ?? 'text'"
     :required="model.required"
     :error-text="model.error"
@@ -22,6 +21,10 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
+    <ion-label slot="label" v-if="model.label">
+      {{ model.label }} 
+      <ion-text color="danger" v-if="model.required">*</ion-text>
+    </ion-label>
     <ion-label v-if="model.prefix" slot="start">{{ model.prefix }}</ion-label>
     <ion-label v-if="model.suffix" slot="end">{{ model.suffix }} </ion-label>
     <ion-input-password-toggle slot="end" v-if="type === 'password'" />
@@ -29,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IonInput, IonLabel, IonInputPasswordToggle } from "@ionic/vue";
+import { IonInput, IonLabel, IonInputPasswordToggle, IonText } from "@ionic/vue";
 import { FormField, FormSchema, BaseFieldTypes } from "types";
 import { PropType, ref } from "vue";
 

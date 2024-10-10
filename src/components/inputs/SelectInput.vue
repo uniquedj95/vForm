@@ -4,7 +4,6 @@
       v-model="input"
       ref="inputRef"
       interface="popover"
-      :label="model.label"
       :placeholder="model.placeholder"
       :multiple="model.multiple"
       :disabled="model.disabled"
@@ -18,6 +17,10 @@
       @ion-change="onValueUpdate"
       @ion-blur="onValueUpdate"
     >
+      <ion-label slot="label" v-if="model.label">
+        {{ model.label }} 
+        <ion-text color="danger" v-if="model.required">*</ion-text>
+      </ion-label>
       <ion-select-option
         v-for="option in options"
         :key="option.value"
