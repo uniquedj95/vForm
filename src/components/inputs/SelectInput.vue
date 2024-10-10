@@ -90,8 +90,15 @@ function onFocus() {
     model.value.error = "";
 }
 
+function onReset() {
+  input.value = model.value.multiple ? [] : "";
+  model.value.error = "";
+  model.value.value = "";
+}
+
 defineExpose({
   onValueUpdate, 
+  onReset,
   getErrors: () => model.value.error 
 });
 </script>

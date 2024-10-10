@@ -38,6 +38,12 @@ const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<typeof IonInput | null>(null);
 const input = ref(model.value.value as string);
 
+function onReset() {
+  input.value = "";
+  model.value.error = "";
+  model.value.value = "";
+}
+
 async function isValid() {
   if (model.value.required && !input.value) {
     model.value.error = "This field is required";
@@ -76,6 +82,7 @@ function onFocus() {
 
 defineExpose({
   onValueUpdate,
+  onReset,
   getErrors: () => model.value.error,
 });
 </script>

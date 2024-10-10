@@ -108,15 +108,16 @@ async function submitForm() {
 }
 
 function resetForm() {
-  Object.keys(activeSchema.value).forEach(key => {
-    activeSchema.value[key].value = undefined;
-    activeSchema.value[key].error = "";
+  dynamicRefs.value.forEach((inputRef: any) => {
+    if (typeof inputRef?.onReset === 'function') inputRef.onReset();
   });
 }
 
 function handleClearAction() {
+  console.log("Clearing form", activeSchema.value);
   resetForm();
   emit("clear");
+  console.log("Cleared form", activeSchema.value);
 }
 
 function handleCancelAction() {

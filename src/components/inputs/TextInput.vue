@@ -17,6 +17,7 @@ const model = defineModel({ type: Object as PropType<FormField>, default: {}});
 const inputRef = ref<typeof BaseInput | null>(null);
 
 defineExpose({
+  onReset: () => inputRef.value?.onReset(),
   onValueUpdate: () => inputRef.value?.onValueUpdate(),
   getErrors: () => inputRef.value?.getErrors()
 });
