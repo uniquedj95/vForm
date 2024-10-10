@@ -159,8 +159,15 @@ async function buildPickerDate(date: string) {
   await onValueUpdate();
 }
 
+function onReset() {
+  pickerDate.value = '';
+  model.value.error = '';
+  model.value.value = '';
+}
+
 defineExpose({
   onValueUpdate,
+  onReset,
   getErrors: () => model.value.error
 })
 
