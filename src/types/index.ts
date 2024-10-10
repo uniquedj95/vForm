@@ -253,7 +253,7 @@ export type InputType =
   | "EmailInput"
   | "PasswordInput"
   | "SelectInput"
-  | "TextArea"
+  | "TextAreaInput"
 
 export type BaseFieldTypes =
   | "text"
