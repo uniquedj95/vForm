@@ -29,6 +29,26 @@ export interface FormField {
   multiple?: boolean;
   min?: number | string;
   max?: number | string;
+
+  /**
+   * The number of columns for textarea-type form input fields.
+   * 
+   * @type number
+   */
+  cols?: number;
+
+  /**
+   * The number of rows for textarea-type form input fields.
+   * 
+   * @type number
+   */
+  rows?: number;
+
+  /**
+   * Indicates if a character counter should be displayed.
+   * 
+   * @type boolean
+   */
   counter?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -72,6 +92,7 @@ export type InputType =
   | "EmailInput"
   | "PasswordInput"
   | "SelectInput"
+  | "TextArea"
 
 export type BaseFieldTypes =
   | "text"
