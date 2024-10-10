@@ -5,7 +5,6 @@
     :clear-input="true"
     :fill="model.fill ?? 'outline'"
     :label-placement="model.labelPlacement ?? 'stacked'"
-    :label="model.label"
     :required="model.required"
     :error-text="model.error"
     :auto-focus="model.autoFocus"
@@ -21,6 +20,10 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
+    <ion-label slot="label" v-if="model.label">
+      {{ model.label }} 
+      <ion-text color="danger" v-if="model.required">*</ion-text>
+    </ion-label>
   </ion-textarea>
 </template>
 
