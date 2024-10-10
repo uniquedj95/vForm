@@ -23,4 +23,6 @@ export const VForm: Plugin = {
 
 export * from "./types";
 
+export type VFormRef = typeof Form;
+
 export default VForm;

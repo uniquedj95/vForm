@@ -22,7 +22,7 @@
         </IonCol>
       </template>
     </IonRow>
-    <IonRow>
+    <IonRow v-if="!hideButtons">
       <IonCol size="12" style="display: flex;" :style="{ justifyContent: buttonPlacement }">
         <IonButton @click="handleCancelAction" v-if="showCancelButton" >
           {{ cancelButtonText ?? "Cancel" }}
@@ -58,6 +58,7 @@ interface FormProps {
   submitButtonText?: string;
   clearButtonText?: string;
   cancelButtonText?: string;
+  hideButtons?: boolean;
   customButtons?: Array<CustomButton>;
 }
 
@@ -71,18 +72,23 @@ const props = withDefaults(defineProps<FormProps>(), {
   showLabels: true,
   showClearButton: true,
   showCancelButton: true,
+  hideButtons: false,
   buttonPlacement: "start",
   submitButtonText: "Submit",
   clearButtonText: "Reset",
   cancelButtonText: "Cancel",
 })
+
 const emit = defineEmits<FormEmits>();
+const formDataModel = defineModel<FormData>('formData', { default: {} });
+const computedDataModel = defineModel<ComputedData>('computedData', { default: {} });
 const dynamicRefs = ref<Array<any>>([]);
 const activeSchema = ref({...props.schema});
 
 const data = computed(() => Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
-  return { ...acc, [key]: (form as FormField).value };
-}, {}) as FormData);
+  if(form.value !== undefined) acc[key] = form.value;
+  return acc
+}, {}as FormData));
 
 const computedData = computed(() => {
   return Object.entries(data.value).reduce((acc, [key, value]) => {
@@ -114,10 +120,8 @@ function resetForm() {
 }
 
 function handleClearAction() {
-  console.log("Clearing form", activeSchema.value);
   resetForm();
   emit("clear");
-  console.log("Cleared form", activeSchema.value);
 }
 
 function handleCancelAction() {
@@ -139,9 +143,24 @@ watch(data, async () => {
       f.value = props.schema[k].value;
     }
   }
+  formDataModel.value = data.value;
 }, 
 { 
   deep: true, 
   immediate: true 
+});
+
+watch(computedData, () => computedDataModel.value = computedData.value, { 
+  deep: true, 
+  immediate: true 
+});
+
+defineExpose({
+  resetForm,
+  isFormValid,
+  resolveData: () => ({ 
+    formData: data.value, 
+    computedData: computedData.value 
+  }),
 });
 </script>
