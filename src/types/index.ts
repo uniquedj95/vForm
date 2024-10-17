@@ -97,6 +97,13 @@ export interface FormField {
   rows?: number;
 
   /**
+   * Indicates if the textarea should automatically grow in height.
+   * 
+   * @type boolean
+   */
+  autoGrow?: boolean;
+
+  /**
    * Indicates if a character counter should be displayed.
    * 
    * @type boolean
