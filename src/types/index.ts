@@ -118,6 +118,13 @@ export interface FormField {
   maxLength?: number;
 
   /**
+   * Indicates if the date input field should include a time picker.
+   * 
+   * @type boolean
+   */
+  enableTime?: boolean;
+
+  /**
    * Indicates if the form input field is disabled.
    * 
    * @type boolean

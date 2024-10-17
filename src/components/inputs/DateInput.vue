@@ -50,7 +50,7 @@
       <vue-date-picker
         auto-apply
         :model-value="pickerDate"
-        :enable-time-picker="false"
+        :enable-time-picker="model.enableTime ?? false"
         teleport
         :maxDate="maxDate"
         :minDate="minDate"
