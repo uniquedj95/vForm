@@ -52,7 +52,6 @@
         :model-value="pickerDate"
         :enable-time-picker="false"
         teleport
-        teleport-center
         :maxDate="maxDate"
         :minDate="minDate"
         @date-update="buildPickerDate"
