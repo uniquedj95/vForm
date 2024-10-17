@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonSelect, IonSelectOption, IonNote } from "@ionic/vue";
+import { IonSelect, IonSelectOption, IonNote, IonLabel, IonText } from "@ionic/vue";
 import { FormField, FormSchema, Option } from "types";
 import { getModelValue, isEmpty, mapValueToOption } from "../../utils";
 import { PropType, ref, watch } from "vue";

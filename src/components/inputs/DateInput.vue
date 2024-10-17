@@ -70,7 +70,7 @@
 <script lang="ts" setup>
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton } from "@ionic/vue";
+import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton, IonText } from "@ionic/vue";
 import { calendar } from "ionicons/icons";
 import type { FormField, FormSchema } from "../../types";
 import { computed, onMounted, PropType, ref } from "vue";

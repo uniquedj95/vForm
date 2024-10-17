@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { IonTextarea } from "@ionic/vue";
+import { IonTextarea, IonLabel, IonText } from "@ionic/vue";
 import { FormField, FormSchema } from "types";
 import { PropType, ref } from "vue";
 
