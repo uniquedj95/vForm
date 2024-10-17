@@ -177,7 +177,7 @@ defineExpose({
 
 onMounted(() => {
   patternParts.value.forEach((part, index) => {
-    partValues.value[part] = pickerDate.value.split(separatorRegex)[index] ?? '';
+    partValues.value[part] = pickerDate.value?.split(separatorRegex)[index] ?? '';
   });
 });
 </script>
