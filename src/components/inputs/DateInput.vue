@@ -20,7 +20,7 @@
       <ion-select
         slot="start"
         interface="popover"
-        style="min-width: 30%"
+        :style="{minWidth: model.enableTime ? '10%' : '30%'}"
         :placeholder="part"
         :value="partValues[part]"
         @ion-focus="onFocus"
@@ -48,17 +48,19 @@
     </template>
     <ion-label slot="end">
       <vue-date-picker
-        auto-apply
-        :model-value="pickerDate"
-        :enable-time-picker="model.enableTime ?? false"
+        enable-seconds
+        time-picker-inline
         teleport
+        :model-value="pickerDate"
+        :auto-apply="!model.enableTime"
+        :enable-time-picker="model.enableTime ?? false"
         :maxDate="maxDate"
         :minDate="minDate"
         @date-update="buildPickerDate"
       >
         <template #trigger>
           <ion-button fill="clear">
-            <ion-icon slot="icon-only" :icon="calendar" aria-hidden="true" ></ion-icon>
+            <ion-icon slot="icon-only" :icon="calendar" aria-hidden="true" @click="onFocus"></ion-icon>
           </ion-button>
         </template>
       </vue-date-picker>
@@ -81,10 +83,16 @@ const inputRef = ref<typeof IonInput | null>(null);
 const maxDate = ref(model.value.max as string | undefined); 
 const minDate = ref(model.value.max as string | undefined); 
 const pickerDate = ref<string>(model.value.value as string);
-const pattern = (model.value.pattern ?? "DD/MMM/YYYY").toUpperCase();
+const pattern = computed(() => {
+  let datePattern = model.value.pattern ?? "DD/MMM/YYYY";
+  if (model.value.enableTime) {
+    datePattern += " HH:mm:ss";
+  }
+  return datePattern;
+});
 const separatorRegex = /[-/.,:\s]+/;
-const patternParts = computed(() => pattern.split(separatorRegex));
-const separators = computed(() => pattern.match(/[-/.,:\s]+/g) || []);
+const patternParts = computed(() => pattern.value.split(separatorRegex));
+const separators = computed(() => pattern.value.match(/[-/.,:\s]+/g) || []);
 const partValues = ref({} as Record<string, any>); 
 
 async function isValid() {
@@ -156,8 +164,7 @@ async function buildInputDate(part: string, defaultValue?: string, e?: Event) {
 }
 
 async function buildPickerDate(date: string) {
-  onFocus();
-  const parts = formatDate(date, pattern).split(separatorRegex);
+  const parts = formatDate(date, pattern.value).split(separatorRegex);
   patternParts.value.forEach((part, index) => buildInputDate(part, parts[index]));
   await onValueUpdate();
 }
