@@ -84,6 +84,7 @@ const maxDate = ref(model.value.max as string | undefined);
 const minDate = ref(model.value.max as string | undefined); 
 const pickerDate = ref<string>(model.value.value as string);
 const pattern = computed(() => {
+  if(model.value.pattern) return model.value.pattern;
   let datePattern = model.value.pattern ?? "DD/MMM/YYYY";
   if (model.value.enableTime) {
     datePattern += " HH:mm:ss";
