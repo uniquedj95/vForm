@@ -34,12 +34,14 @@
 <script lang="ts" setup>
 import { IonInput, IonLabel, IonInputPasswordToggle, IonText } from "@ionic/vue";
 import { FormField, FormSchema, BaseFieldTypes } from "types";
-import { PropType, ref } from "vue";
+import { PropType, ref, watch } from "vue";
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<typeof IonInput | null>(null);
 const input = ref(model.value.value as string);
+
+watch(() => model.value.value, v => input.value = v as string);
 
 function onReset() {
   input.value = "";

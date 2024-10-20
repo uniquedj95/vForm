@@ -74,7 +74,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton, IonText } from "@ionic/vue";
 import { calendar } from "ionicons/icons";
 import type { FormField, FormSchema } from "../../types";
-import { computed, onMounted, PropType, ref } from "vue";
+import { computed, onMounted, PropType, ref, watch } from "vue";
 import { formatDate, getMonth, zeroPad, monthNames } from "../../utils";
 
 const props = defineProps<{ schema?: FormSchema }>();
@@ -95,6 +95,12 @@ const separatorRegex = /[-/.,:\s]+/;
 const patternParts = computed(() => pattern.value.split(separatorRegex));
 const separators = computed(() => pattern.value.match(/[-/.,:\s]+/g) || []);
 const partValues = ref({} as Record<string, any>); 
+
+watch(() => model.value.value, v => {
+  console.log("EXTERNAL DATE", v);
+  pickerDate.value = v as string;
+  buildPickerDate(v as string);
+});
 
 async function isValid() {
   if(pickerDate.value === undefined) {

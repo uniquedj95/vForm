@@ -80,13 +80,17 @@ const props = withDefaults(defineProps<FormProps>(), {
 })
 
 const emit = defineEmits<FormEmits>();
-const formDataModel = defineModel<FormData>('formData', { default: {} });
-const computedDataModel = defineModel<ComputedData>('computedData', { default: {} });
 const dynamicRefs = ref<Array<any>>([]);
-const activeSchema = ref({...props.schema});
+const activeSchema = ref(props.schema);
 
 const data = computed(() => Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
-  if(form.value !== undefined) acc[key] = form.value;
+  if(form.value !== undefined) {
+    if(typeof form.onChange === "function") {
+      acc[key] = form.onChange(form.value);
+    } else {
+      acc[key] = form.value;
+    }
+  }
   return acc
 }, {}as FormData));
 
@@ -143,16 +147,21 @@ watch(data, async () => {
       f.value = props.schema[k].value;
     }
   }
-  formDataModel.value = data.value;
 }, 
 { 
   deep: true, 
   immediate: true 
 });
 
-watch(computedData, () => computedDataModel.value = computedData.value, { 
-  deep: true, 
-  immediate: true 
+watch(() => props.schema, (newSchema) => {
+  for (const [key, field] of Object.entries(newSchema)) {
+    if (field.value !== undefined) {
+      activeSchema.value[key].value = field.value;
+    }
+  }
+}, { 
+  deep: true,
+  immediate: true
 });
 
 defineExpose({

@@ -33,12 +33,14 @@
 <script lang="ts" setup>
 import { IonTextarea, IonLabel, IonText } from "@ionic/vue";
 import { FormField, FormSchema } from "types";
-import { PropType, ref } from "vue";
+import { PropType, ref, watch } from "vue";
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<typeof IonTextarea | null>(null);
 const input = ref(model.value.value as string);
+
+watch(() => model.value.value, v => input.value = v as string);
 
 function onFocus() {
   inputRef.value?.$el.classList.remove("ion-touched");
