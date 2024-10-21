@@ -97,7 +97,6 @@ const separators = computed(() => pattern.value.match(/[-/.,:\s]+/g) || []);
 const partValues = ref({} as Record<string, any>); 
 
 watch(() => model.value.value, v => {
-  console.log("EXTERNAL DATE", v);
   pickerDate.value = v as string;
   buildPickerDate(v as string);
 });
