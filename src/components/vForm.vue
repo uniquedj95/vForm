@@ -96,8 +96,23 @@ const data = computed(() => Object.entries(activeSchema.value).reduce((acc, [key
 
 const computedData = computed(() => {
   return Object.entries(data.value).reduce((acc, [key, value]) => {
-    if(typeof activeSchema.value[key].computedValue === "function" && value !== undefined) {
-      acc[key] = activeSchema.value[key].computedValue(value, activeSchema.value);
+    if(value !== undefined){
+      if(activeSchema.value[key].children !== undefined) {
+        acc[key] = (value as Array<Option>).map(({ other }) => {
+          return Object.entries(other).reduce((results, [id, v]: [string, any]) => {
+            if(typeof activeSchema.value[key].children![id].computedValue === "function") {
+              results[id] = activeSchema.value[key].children![id].computedValue(v, activeSchema.value);
+            } else {
+              results[id] = v;
+            }
+            return results;
+          }, {} as ComputedData);
+        });
+      }
+      
+      if(typeof activeSchema.value[key].computedValue === "function" && value !== undefined) {
+        acc[key] = activeSchema.value[key].computedValue(value, activeSchema.value);
+      }
     }
     return acc;
   }, {} as ComputedData);
@@ -107,7 +122,7 @@ async function isFormValid() {
   const errors: Array<string> = [];
   for (const inputRef of dynamicRefs.value) {
     if (typeof inputRef?.onValueUpdate === 'function') await inputRef.onValueUpdate();
-    if (typeof inputRef?.getErrors === 'function') errors.push(inputRef.getErrors());
+    if (typeof inputRef?.getErrors === 'function') errors.push(...inputRef.getErrors());
   }
   return errors.every(isEmpty);
 }

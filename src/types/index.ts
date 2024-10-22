@@ -217,6 +217,13 @@ export interface FormField {
   labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
 
   /**
+   * The children form fields for the repeat-type form input field.
+   * 
+   * @type FormSchema
+   */
+  children?: FormSchema;
+
+  /**
    * The custom validation function for the form input field.
    * 
    * @type FormValidator
@@ -268,6 +275,7 @@ export type InputType =
   | "PasswordInput"
   | "SelectInput"
   | "TextAreaInput"
+  | "RepeatInput"
 
 export type BaseFieldTypes =
   | "text"
