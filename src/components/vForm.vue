@@ -10,7 +10,7 @@
           :size-lg="activeSchema[formId].grid?.lg"
           :size-xl="activeSchema[formId].grid?.xl"
           class="ion-margin-vertical"
-          v-if="canRenderField(activeSchema[formId])"
+          v-if="canRenderField(activeSchema[formId], data, computedData)"
         >
           <component 
             :is="activeSchema[formId].type" 
@@ -46,8 +46,8 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import { IonGrid, IonRow, IonCol, IonButton } from "@ionic/vue";
-import type { FormData, ComputedData, FormSchema, FormField, CustomButton } from "../types";
-import { isEmpty } from "../utils";
+import type { FormData, ComputedData, FormSchema, CustomButton, Option } from "../types";
+import { canRenderField, isEmpty } from "../utils";
 
 interface FormProps {
   schema: FormSchema;
@@ -133,16 +133,9 @@ function handleCancelAction() {
   emit("cancel");
 }
 
-function canRenderField(field: FormField) {
-  if (typeof field.condition === "function") {
-    return field.condition(data.value, computedData.value);
-  }
-  return true;
-}
-
 watch(data, async () => {
   for (const [k, f] of Object.entries(activeSchema.value)) {
-    if (!canRenderField(f)) {
+    if (!canRenderField(f, data.value, computedData.value)) {
       // Reset the value of the field if it's not rendered
       f.value = props.schema[k].value;
     }
