@@ -1,0 +1,111 @@
+<template>
+  <div>
+    <ion-row v-for="(child, index) of childrens" >
+      <ion-col size="11">
+        <ion-row>
+          <template v-for="formId of Object.keys(child)">
+            <IonCol 
+              :key="`${index}-${formId}`" 
+              :size="child[formId].grid?.xs ?? '12'" 
+              :size-sm="child[formId].grid?.sm"
+              :size-md="child[formId].grid?.md"
+              :size-lg="child[formId].grid?.lg"
+              :size-xl="child[formId].grid?.xl"
+              class="ion-margin-bottom"
+              v-if="canRenderField(child[formId], data, computedData)"
+            >
+              <component 
+                :is="child[formId].type" 
+                v-model="child[formId]" 
+                :schema="child"
+                :ref-key="`${index}-${formId}`"
+                ref="dynamicRefs"
+              />
+            </IonCol>
+          </template>
+        </ion-row>
+      </ion-col>
+      <ion-col size="1" style="display: flex; align-items: center;">
+        <ion-button @click="addSet" color="primary" v-if="index === childrens.length - 1">
+          <ion-icon slot="icon-only" :icon="add"></ion-icon>
+        </ion-button>
+        <ion-button @click="removeSet(index)" color="warning" v-if="childrens.length > 1">
+          <ion-icon slot="icon-only" :icon="remove"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</template>
+
+  <script setup lang="ts">
+    import { ComputedData, FormData, FormField, FormSchema, Option } from 'types';
+    import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
+    import { canRenderField } from '../../utils';
+    import { computed, onMounted, PropType, ref, watch } from 'vue';
+    import { add, remove } from 'ionicons/icons';
+
+    interface PropsI {
+      schema?: FormSchema;
+      data: FormData;
+      computedData: ComputedData;
+    }
+
+    defineProps<PropsI>();
+    const model = defineModel({ type: Object as PropType<FormField>, default: {} });
+    const childrens = ref<FormSchema[]>([]);
+    const dynamicRefs = ref<Array<any>>([]);
+    const template: FormSchema = JSON.parse(JSON.stringify(model.value.children));
+
+    const inputValue = computed<Array<Option>>(() => {
+      return childrens.value.map((child, index) => ({
+        label: `Set ${index + 1}`,
+        value: index,
+        other: Object.entries(child).reduce((acc, [id, field]) => {
+          acc[id] = field.value;
+          return acc;
+        }, {} as Record<string, any>)
+      }));
+    });
+    
+    watch(inputValue, (value) => {
+      model.value.value = value;
+    }, { deep: true, immediate: true });
+
+    onMounted(addSet);
+
+    function addSet() {
+      childrens.value.push(JSON.parse(JSON.stringify(template)));
+    }
+
+    function removeSet(index: number) {
+      childrens.value.splice(index, 1);
+    }
+
+    function onReset() {
+      dynamicRefs.value.forEach((inputRef: any) => {
+        if (typeof inputRef?.onReset === 'function') inputRef.onReset();
+      });
+    }
+
+    function getErrors() {
+      const errors: Array<string> = [];
+      for (const inputRef of dynamicRefs.value) {
+        if (typeof inputRef?.getErrors === 'function') errors.push(inputRef.getErrors());
+      }
+      return errors;
+    }
+
+    async function onValueUpdate() {
+      for (const inputRef of dynamicRefs.value) {
+        if(typeof inputRef?.onValueUpdate === 'function') {
+          await inputRef.onValueUpdate();
+        }
+      };  
+    }
+
+    defineExpose({
+      onValueUpdate,
+      onReset,
+      getErrors,
+    })
+  </script>
