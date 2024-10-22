@@ -47,7 +47,7 @@ const inputRef = ref<typeof IonSelect | null>(null);
 const input = ref(getModelValue(model.value));
 const options = ref<Array<Option>>([]);
 
-watch(() => model.value.value, v => input.value = getModelValue(model.value));
+watch(() => model.value.value, () => input.value = getModelValue(model.value));
   
 watch(() => model.value.options, async () => {
   if(typeof model.value.options === "function") {
