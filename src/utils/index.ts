@@ -6,7 +6,7 @@
  * @preferred
  * @author Daniel Justin.
  **/
-import { FormField, Option } from "types";
+import { ComputedData, FormData, FormField, Option } from "types";
 
 /**
  * Full month names.
@@ -148,4 +148,19 @@ export function getModelValue(model: FormField): Array<string> | string {
   return typeof model.value === "object"
     ? (model.value as Option).value as string
     : model.value as string;
+}
+
+/**
+ * Determines if a form field can be rendered based on a condition.
+ *
+ * @param field - The form field to check.
+ * @param data - The current form data.
+ * @param computedData - Additional computed data that may influence the condition.
+ * @returns A boolean indicating whether the field can be rendered.
+ */
+export function canRenderField(field: FormField, data: FormData, computedData: ComputedData) {
+  if (typeof field.condition === "function") {
+    return field.condition(data, computedData);
+  }
+  return true;
 }
