@@ -164,3 +164,34 @@ export function canRenderField(field: FormField, data: FormData, computedData: C
   }
   return true;
 }
+
+/**
+ * Deep clone an object.
+ *
+ * @param obj - The object to clone.
+ * @returns The cloned object.
+ */
+export function deepClone<T = any>(obj: T): T {
+  // Handle primitive types
+  if (typeof obj !== "object" || obj === null) {
+    return obj;
+  }
+
+  // Handle Array
+  if (Array.isArray(obj)) {
+    return obj.map((item) => deepClone(item)) as any;
+  }
+
+  // Handle Object
+  const cloned: any = {};
+  Object.entries(obj).forEach(([key, value]) => {
+    // Bind functions to the cloned object
+    if(typeof value === "function") {
+      cloned[key] = value.bind(cloned);
+    } else {
+      cloned[key] = deepClone(value);
+    }
+  });
+
+  return cloned;
+}

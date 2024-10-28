@@ -40,7 +40,7 @@
   <script setup lang="ts">
     import { ComputedData, FormData, FormField, FormSchema, Option } from 'types';
     import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
-    import { canRenderField } from '../../utils';
+    import { canRenderField, deepClone } from '../../utils';
     import { computed, onMounted, PropType, ref, watch } from 'vue';
     import { add, remove } from 'ionicons/icons';
 
@@ -54,7 +54,6 @@
     const model = defineModel({ type: Object as PropType<FormField>, default: {} });
     const childrens = ref<FormSchema[]>([]);
     const dynamicRefs = ref<Array<any>>([]);
-    const template: FormSchema = JSON.parse(JSON.stringify(model.value.children));
 
     const inputValue = computed<Array<Option>>(() => {
       return childrens.value.map((child, index) => ({
@@ -74,7 +73,9 @@
     onMounted(addSet);
 
     function addSet() {
-      childrens.value.push(JSON.parse(JSON.stringify(template)));
+      if (model.value.children) {
+        childrens.value.push(deepClone<FormSchema>(model.value.children));
+      }
     }
 
     function removeSet(index: number) {
