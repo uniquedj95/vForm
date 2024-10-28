@@ -7,7 +7,12 @@ export type ComputedValueHandler = (
   value: FormValue,
   schema: FormSchema
 ) => Promise<any> | any;
-export type FormOptions = (() => Array<Option> | Promise<Array<Option>>) | Array<Option>;
+export type OptionsHandler = (
+  filter?: string,
+  page?: number,
+  limit?: number
+) => Array<Option> | Promise<Array<Option>>
+export type FormOptions = OptionsHandler | Array<Option>;
 export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
 export type FormSchema = Record<string, FormField>;
