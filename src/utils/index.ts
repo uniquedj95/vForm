@@ -117,39 +117,6 @@ export function getMonth(month: number | string, part: string) {
   return month as string;
 }
 
-
-/**
- * Maps a given value or array of values to corresponding options from a list.
- *
- * @param value - A string value or array of string values to map to options.
- * @param options - The list of options to map the value(s) to.
- * @param isMultiple - A boolean indicating if multiple values should be mapped. Defaults to `false`.
- * @returns The matched option(s) from the list. If `isMultiple` is `true`, returns an array of matched options. Otherwise, returns a single matched option.
- */
-export function mapValueToOption(value: string | Array<string>, options: Array<Option>, isMultiple: boolean = false) {
-  if(isMultiple && Array.isArray(value)) {
-    return options.filter(option => value.includes(option.value as string))
-  }
-  return options.find(option => option.value === value) as Option;
-}
-
-
-/**
- * Retrieves the value(s) from a given form field model.
- *
- * @param model - The form field model containing the value(s).
- * @returns The extracted value(s) from the form field model.
- */
-export function getModelValue(model: FormField): Array<string> | string {
-  if(isEmpty(model.value)) return model.multiple ? [] : "";
-  if(model.multiple && Array.isArray(model.value)) {
-    return model.value.map(opt => opt.value) as Array<string>;
-  }
-  return typeof model.value === "object"
-    ? (model.value as Option).value as string
-    : model.value as string;
-}
-
 /**
  * Determines if a form field can be rendered based on a condition.
  *
@@ -194,4 +161,67 @@ export function deepClone<T = any>(obj: T): T {
   });
 
   return cloned;
+}
+
+/**
+ * Finds an option in a list of options that matches the given option.
+ * 
+ * The function checks for a match based on the `value` and `label` properties
+ * of the `Option` object. It returns the first option that satisfies any of
+ * the following conditions:
+ * - The `value` of the option matches the `value` of the given option.
+ * - The `label` of the option matches the `label` of the given option.
+ * - The `value` of the option matches the `label` of the given option.
+ * - The `label` of the option matches the `value` of the given option.
+ * 
+ * @param {Option} option - The option to find in the list.
+ * @param {Array<Option>} options - The list of options to search through.
+ * @returns {number} - The index first matching option, or -1 if no match is found.
+ */
+export function findOption(option: Option, options: Array<Option>): number {
+  return options.findIndex(opt => {
+    return opt.value === option.value ||
+      opt.label === option.label ||
+      opt.value === option.label ||
+      opt.label === option.value;
+  });
+}
+
+/**
+ * Checks if an option exists in the provided options array. If the option is found,
+ * it sets the `isChecked` property to `true`. If the option is not found, it adds
+ * the option to the array with the `isChecked` property set to `true`.
+ *
+ * @param {Option} option - The option to check or add.
+ * @param {Array<Option>} options - The array of options to search within.
+ */
+export function checkOption(option: Option, options: Array<Option>) {
+  const found = findOption(option, options);
+  if(found) options[found].isChecked = true;
+  else options.push({ ...option, isChecked: true });
+}
+
+/**
+ * Unchecks the specified option in the given array of options.
+ *
+ * @param option - The option to uncheck.
+ * @param options - The array of options to search within.
+ */
+export function uncheckOption(option: Option, options: Array<Option>) {
+  const found = findOption(option, options);
+  if(found) options[found].isChecked = false;
+}
+
+/**
+ * Filters an array of options based on a provided filter string.
+ *
+ * @param {Array<Option>} options - The array of options to filter.
+ * @param {string} filter - The string to filter the options by.
+ * @returns An array of options that match the filter string.
+ */
+export function getFilteredOptions(options: Array<Option>, filter: string): Array<Option> {
+  if(!filter) return options;
+  return options.filter(option => 
+    JSON.stringify(option).toLowerCase().includes(filter.toLowerCase())
+  );
 }
