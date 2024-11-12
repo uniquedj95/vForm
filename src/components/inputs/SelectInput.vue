@@ -20,14 +20,13 @@
         {{ model.label }}
         <ion-text color="danger" v-if="model.required">*</ion-text>
       </ion-label>
-      <ion-chip v-for="(tag, index) of tags" :key="index" slot="start">
-        <ion-label class="ion-no-wrap">{{ tag.label }}</ion-label>
-        <ion-icon
-          :icon="close"
-          color="danger"
-          @click="uncheckOption(tag, options)"
-        ></ion-icon>
-      </ion-chip>
+      <div v-if="model.multiple" style="width: 100%" slot="start">
+        <ion-chip v-for="(tag, index) of tags" :key="index">
+          <ion-label>{{ tag.label }}</ion-label>
+          <ion-icon :icon="close" color="danger" @click="uncheckOption(tag, options)" />
+        </ion-chip>
+      </div>
+      <ion-label slot="start" v-else class="ion-no-wrap"> {{ tags[0]?.label ?? "" }} </ion-label>
       <ion-icon slot="end" :icon="chevronDown" />
     </ion-input>
 
@@ -53,7 +52,12 @@
 import { ref, computed, PropType, watch } from "vue";
 import { chevronDown, close } from "ionicons/icons";
 import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
-import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from "../../utils";
+import {
+  isEmpty,
+  checkOption,
+  getFilteredOptions,
+  uncheckOption,
+} from "../../utils";
 import {
   IonInput,
   IonList,
@@ -72,7 +76,9 @@ const showOptions = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref("");
 
-const tags = computed<Option[]>(() => options.value.filter(o => !!o.isChecked));
+const tags = computed<Option[]>(() =>
+  options.value.filter((o) => !!o.isChecked)
+);
 
 const placeholder = computed(() => {
   return !filter.value && isEmpty(tags.value) && !showOptions.value
@@ -80,11 +86,14 @@ const placeholder = computed(() => {
     : "";
 });
 
-watch([filter, () => model.value.options], filterOptions, { immediate: true, deep: true });
+watch([filter, () => model.value.options], filterOptions, {
+  immediate: true,
+  deep: true,
+});
 watch(() => model.value.value, initialize, { immediate: true, deep: true });
 
 function onReset() {
-  options.value.forEach(o => uncheckOption(o, options.value));
+  options.value.forEach((o) => uncheckOption(o, options.value));
   model.value.error = "";
   filter.value = "";
   model.value.value = model.value.multiple ? [] : "";
@@ -103,7 +112,7 @@ function onSelect(item: Option) {
 }
 
 function onFocus(evt: any) {
-  if(evt.target !== inputRef.value?.$el) return;
+  if (evt.target !== inputRef.value?.$el) return;
   inputRef.value?.$el.classList.remove("ion-touched");
   inputRef.value?.$el.classList.remove("ion-invalid");
   model.value.error = "";
@@ -126,7 +135,7 @@ async function isValid() {
 }
 
 async function onValueUpdate(evt?: any) {
-  if((evt?.relatedTarget as HTMLElement)?.closest(".suggestions-list")) return;
+  if ((evt?.relatedTarget as HTMLElement)?.closest(".suggestions-list")) return;
   showOptions.value = false;
   inputRef.value?.$el.classList.remove("ion-invalid");
   inputRef.value?.$el.classList.remove("ion-valid");
@@ -153,7 +162,6 @@ async function filterOptions() {
 }
 
 function initialize() {
-  // onReset();
   const defaultValue = model.value.value;
   if (defaultValue) {
     if (Array.isArray(defaultValue)) {
