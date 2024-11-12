@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
 import { chevronDown, close } from "ionicons/icons";
-import { FormSchema, BaseFieldTypes, FormField, Option, OptionsHandlerResponse } from "types";
+import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
 import {
   isEmpty,
   checkOption,
