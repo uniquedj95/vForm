@@ -86,6 +86,7 @@ watch(() => model.value.value, initialize, { immediate: true, deep: true });
 function onReset() {
   options.value.forEach(o => uncheckOption(o, options.value));
   model.value.error = "";
+  filter.value = "";
   model.value.value = model.value.multiple ? [] : "";
 }
 
@@ -98,6 +99,7 @@ function onSelect(item: Option) {
     checkOption(item, options.value);
     onValueUpdate();
   }
+  filter.value = ""
 }
 
 function onFocus(evt: any) {
