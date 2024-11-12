@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete-container">
+  <div class="autocomplete-container" @focusout="onValueUpdate">
     <ion-input
       ref="inputRef"
       v-model="filter"
@@ -13,7 +13,6 @@
       :placeholder="placeholder"
       :disabled="model.disabled"
       :counter="model.counter"
-      @ion-blur="onValueUpdate"
       @ion-focus="onFocus"
       :debounce="300"
     >
@@ -22,12 +21,11 @@
         <ion-text color="danger" v-if="model.required">*</ion-text>
       </ion-label>
       <ion-chip v-for="(tag, index) of tags" :key="index" slot="start">
-        <ion-label>{{ tag.label }}</ion-label>
+        <ion-label class="ion-no-wrap">{{ tag.label }}</ion-label>
         <ion-icon
-          :icon="closeCircle"
+          :icon="close"
           color="danger"
-          @click="diselect(tag)"
-          style="z-index: 20"
+          @click="uncheckOption(tag, options)"
         ></ion-icon>
       </ion-chip>
       <ion-icon slot="end" :icon="chevronDown" />
@@ -53,9 +51,9 @@
 
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
-import { chevronDown, closeCircle } from "ionicons/icons";
+import { chevronDown, close } from "ionicons/icons";
 import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
-import { isEmpty, checkOption, getFilteredOptions, findOption, uncheckOption } from "../../utils";
+import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from "../../utils";
 import {
   IonInput,
   IonList,
@@ -74,9 +72,7 @@ const showOptions = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref("");
 
-const tags = computed<Option[]>(() =>
-  options.value.filter(({ isChecked }) => isChecked)
-);
+const tags = computed<Option[]>(() => options.value.filter(o => !!o.isChecked));
 
 const placeholder = computed(() => {
   return !filter.value && isEmpty(tags.value) && !showOptions.value
@@ -84,29 +80,28 @@ const placeholder = computed(() => {
     : "";
 });
 
-watch(() => model.value.options, filterOptions, { immediate: true, deep: true });
+watch([filter, () => model.value.options], filterOptions, { immediate: true, deep: true });
 watch(() => model.value.value, initialize, { immediate: true, deep: true });
 
 function onReset() {
-  options.value.forEach(diselect);
+  options.value.forEach(o => uncheckOption(o, options.value));
   model.value.error = "";
   model.value.value = model.value.multiple ? [] : "";
 }
 
-function diselect(tag: Option) {
-  const option = options.value.findIndex((o) => o.value === tag.value);
-  if (option) options.value[option].isChecked = false;
-}
-
 function onSelect(item: Option) {
   if (item.isChecked) uncheckOption(item, options.value);
-  else {
+  else if (model.value.multiple) {
     checkOption(item, options.value);
-    if (!model.value.multiple) onValueUpdate();
+  } else {
+    onReset();
+    checkOption(item, options.value);
+    onValueUpdate();
   }
 }
 
-function onFocus() {
+function onFocus(evt: any) {
+  if(evt.target !== inputRef.value?.$el) return;
   inputRef.value?.$el.classList.remove("ion-touched");
   inputRef.value?.$el.classList.remove("ion-invalid");
   model.value.error = "";
@@ -128,7 +123,8 @@ async function isValid() {
   return true;
 }
 
-async function onValueUpdate() {
+async function onValueUpdate(evt?: any) {
+  if((evt?.relatedTarget as HTMLElement)?.closest(".suggestions-list")) return;
   showOptions.value = false;
   inputRef.value?.$el.classList.remove("ion-invalid");
   inputRef.value?.$el.classList.remove("ion-valid");
@@ -155,7 +151,7 @@ async function filterOptions() {
 }
 
 function initialize() {
-  onReset();
+  // onReset();
   const defaultValue = model.value.value;
   if (defaultValue) {
     if (Array.isArray(defaultValue)) {
