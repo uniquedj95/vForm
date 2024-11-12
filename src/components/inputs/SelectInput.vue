@@ -24,12 +24,20 @@
           <ion-label>{{ tag.label }}</ion-label>
         </ion-chip>
       </ion-label>
-      <ion-label slot="start" v-else class="ion-no-wrap"> {{ tags[0]?.label ?? "" }} </ion-label>
+      <ion-label slot="start" v-else class="ion-no-wrap">
+        {{ tags[0]?.label ?? "" }}
+      </ion-label>
       <ion-icon slot="end" :icon="chevronDown" />
-      <ion-icon slot="end" :icon="close" v-if="tags.length > 0 || filter" @click="onReset" style="z-index: 999999;"/>
+      <ion-icon
+        slot="end"
+        :icon="close"
+        v-if="tags.length > 0 || filter"
+        @click="onReset"
+        style="z-index: 999999"
+      />
     </ion-input>
 
-    <ion-list v-if="showOptions && options.length > 0" class="suggestions-list">
+    <ion-list v-if="showOptions && options.length > 0" class="suggestions-list ion-content-scroll-host">
       <ion-item
         button
         v-for="option in options"
@@ -43,6 +51,19 @@
         />
         <ion-label>{{ option.label }}</ion-label>
       </ion-item>
+
+      <ion-infinite-scroll
+        @ionInfinite="loadData"
+        threshold="100px"
+        position="bottom"
+        v-if="enableInfiniteScroll"
+        :disabled="disableInfiniteScroll"
+      >
+        <ion-infinite-scroll-content
+          loading-spinner="bubbles"
+          loading-text="Loading more data..."
+        ></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     </ion-list>
   </div>
 </template>
@@ -50,7 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch } from "vue";
 import { chevronDown, close } from "ionicons/icons";
-import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
+import { FormSchema, BaseFieldTypes, FormField, Option, OptionsHandlerResponse } from "types";
 import {
   isEmpty,
   checkOption,
@@ -66,14 +87,22 @@ import {
   IonText,
   IonIcon,
   IonCheckbox,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  InfiniteScrollCustomEvent,
 } from "@ionic/vue";
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<typeof IonInput | null>(null);
 const showOptions = ref(false);
+const enableInfiniteScroll = computed(
+  () => typeof model.value.options === "function"
+);
+const disableInfiniteScroll = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref("");
+const page = ref(1);
 
 const tags = computed<Option[]>(() =>
   options.value.filter((o) => !!o.isChecked)
@@ -95,6 +124,7 @@ function onReset() {
   options.value.forEach((o) => uncheckOption(o, options.value));
   model.value.error = "";
   filter.value = "";
+  page.value = 1;
   model.value.value = model.value.multiple ? [] : "";
 }
 
@@ -107,7 +137,7 @@ function onSelect(item: Option) {
     checkOption(item, options.value);
     onValueUpdate();
   }
-  filter.value = ""
+  filter.value = "";
 }
 
 function onFocus(evt: any) {
@@ -151,13 +181,28 @@ async function onValueUpdate(evt?: any) {
 }
 
 async function filterOptions() {
-  const filtered =
-    typeof model.value.options === "function"
-      ? await model.value.options(filter.value)
-      : getFilteredOptions(model.value.options ?? [], filter.value);
+  const filtered: Array<Option> = [];
+
+  if(typeof model.value.options === "function") {
+    const res = await model.value.options(filter.value, 1)
+    filtered.push(...res.options.filter((o) => !!o.label));
+  } else {
+    filtered.push(...getFilteredOptions(options.value, filter.value));
+  }
 
   tags.value.forEach((tag) => checkOption(tag, filtered));
-  options.value = filtered.filter((o) => !!o.label);
+  options.value = filtered
+  disableInfiniteScroll.value = !enableInfiniteScroll.value
+}
+
+async function loadData(evt: InfiniteScrollCustomEvent) {
+  if (typeof model.value.options === "function") {
+    page.value++;
+    const res = await model.value.options(filter.value, page.value);
+    options.value.push(...res.options.filter((o) => !!o.label));
+    disableInfiniteScroll.value = res.options.length === 0 || res.total === options.value.length;
+  }
+  evt.target.complete();
 }
 
 function initialize() {
@@ -203,5 +248,14 @@ defineExpose({
   overflow-y: auto;
   border-radius: 0 0 5px 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-list {
+  margin: 0;
+  padding: 0;
+}
+
+ion-infinite-scroll {
+  margin: 0;
 }
 </style>
