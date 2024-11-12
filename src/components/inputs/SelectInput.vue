@@ -90,8 +90,8 @@ function onReset() {
 }
 
 function onSelect(item: Option) {
-  if (item.isChecked) uncheckOption(item, options.value);
-  else if (model.value.multiple) {
+  if (item.isChecked) return uncheckOption(item, options.value);
+  if (model.value.multiple) {
     checkOption(item, options.value);
   } else {
     onReset();
