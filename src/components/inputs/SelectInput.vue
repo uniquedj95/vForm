@@ -187,7 +187,7 @@ async function filterOptions() {
     const res = await model.value.options(filter.value, 1)
     filtered.push(...res.options.filter((o) => !!o.label));
   } else {
-    filtered.push(...getFilteredOptions(options.value, filter.value));
+    filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
   }
 
   tags.value.forEach((tag) => checkOption(tag, filtered));
