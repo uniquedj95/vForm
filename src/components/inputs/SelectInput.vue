@@ -3,7 +3,6 @@
     <ion-input
       ref="inputRef"
       v-model="filter"
-      :clear-input="true"
       :fill="model.fill ?? 'outline'"
       :label-placement="model.labelPlacement ?? 'stacked'"
       :type="type ?? 'text'"
@@ -20,20 +19,20 @@
         {{ model.label }}
         <ion-text color="danger" v-if="model.required">*</ion-text>
       </ion-label>
-      <div v-if="model.multiple" style="width: 100%" slot="start">
+      <ion-label v-if="model.multiple" style="width: fit-content" slot="start">
         <ion-chip v-for="(tag, index) of tags" :key="index">
           <ion-label>{{ tag.label }}</ion-label>
-          <ion-icon :icon="close" color="danger" @click="uncheckOption(tag, options)" />
         </ion-chip>
-      </div>
+      </ion-label>
       <ion-label slot="start" v-else class="ion-no-wrap"> {{ tags[0]?.label ?? "" }} </ion-label>
       <ion-icon slot="end" :icon="chevronDown" />
+      <ion-icon slot="end" :icon="close" v-if="tags.length > 0 || filter" @click="onReset" style="z-index: 999999;"/>
     </ion-input>
 
     <ion-list v-if="showOptions && options.length > 0" class="suggestions-list">
       <ion-item
-        v-for="option in options"
         button
+        v-for="option in options"
         :key="option.label"
         @click="onSelect(option)"
       >
