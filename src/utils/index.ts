@@ -196,8 +196,8 @@ export function findOption(option: Option, options: Array<Option>): number {
  * @param {Array<Option>} options - The array of options to search within.
  */
 export function checkOption(option: Option, options: Array<Option>) {
-  const found = findOption(option, options);
-  if(found) options[found].isChecked = true;
+  const index = findOption(option, options);
+  if(index >= 0) options[index].isChecked = true;
   else options.push({ ...option, isChecked: true });
 }
 
@@ -208,8 +208,8 @@ export function checkOption(option: Option, options: Array<Option>) {
  * @param options - The array of options to search within.
  */
 export function uncheckOption(option: Option, options: Array<Option>) {
-  const found = findOption(option, options);
-  if(found) options[found].isChecked = false;
+  const index = findOption(option, options);
+  if(index >= 0) options[index].isChecked = false;
 }
 
 /**
