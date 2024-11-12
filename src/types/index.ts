@@ -15,11 +15,15 @@ export type ComputedValueHandler = (
   schema: FormSchema
 ) => Promise<any> | any;
 
+export interface OptionsHandlerResponse {
+  options: Array<Option>;
+  total?: number;
+}
+
 export type OptionsHandler = (
   filter?: string,
   page?: number,
-  limit?: number
-) => Array<Option> | Promise<Array<Option>>
+) => OptionsHandlerResponse | Promise<OptionsHandlerResponse>;
 
 export type FormOptions = OptionsHandler | Array<Option>;
 export type FormData = Record<string, FormValue | undefined>;
