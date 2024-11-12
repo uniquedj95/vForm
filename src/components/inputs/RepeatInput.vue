@@ -25,7 +25,7 @@
           </template>
         </ion-row>
       </ion-col>
-      <ion-col size="1" style="display: flex; align-items: center;">
+      <ion-col size="1" style="display: flex; align-items: center; justify-content: flex-end;">
         <ion-button @click="addSet" color="primary" v-if="index === childrens.length - 1">
           <ion-icon slot="icon-only" :icon="add"></ion-icon>
         </ion-button>
