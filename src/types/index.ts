@@ -15,17 +15,25 @@ export type ComputedValueHandler = (
   schema: FormSchema
 ) => Promise<any> | any;
 
-export interface OptionsHandlerResponse {
+/**
+ * Represents a paginated set of options.
+ */
+export interface PaginatedOptions {
   options: Array<Option>;
   total?: number;
 }
 
-export type OptionsHandler = (
+/**
+ * Represents the options for a form, which can be either an array of `Option` objects
+ * or a function that returns paginated options or an array of options.
+ *
+ * The function can optionally take a `filter` string and a `page` number as parameters.
+ */
+export type FormOptions = Array<Option> | ((
   filter?: string,
   page?: number,
-) => OptionsHandlerResponse | Promise<OptionsHandlerResponse>;
+) => PaginatedOptions | Promise<PaginatedOptions> | Array<Option> | Promise<Array<Option>>);
 
-export type FormOptions = OptionsHandler | Array<Option>;
 export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
 export type FormSchema = Record<string, FormField>;

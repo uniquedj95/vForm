@@ -185,7 +185,8 @@ async function filterOptions() {
 
   if(typeof model.value.options === "function") {
     const res = await model.value.options(filter.value, 1)
-    filtered.push(...res.options.filter((o) => !!o.label));
+    if(Array.isArray(res)) filtered.push(...res.filter((o) => !!o.label));
+    else filtered.push(...res.options.filter((o) => !!o.label));
   } else {
     filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
   }
@@ -199,8 +200,13 @@ async function loadData(evt: InfiniteScrollCustomEvent) {
   if (typeof model.value.options === "function") {
     page.value++;
     const res = await model.value.options(filter.value, page.value);
-    options.value.push(...res.options.filter((o) => !!o.label));
-    disableInfiniteScroll.value = res.options.length === 0 || res.total === options.value.length;
+    if (Array.isArray(res)) {
+      options.value.push(...res.filter((o) => !!o.label));
+      disableInfiniteScroll.value = res.length === 0;
+    } else {
+      options.value.push(...res.options.filter((o) => !!o.label));
+      disableInfiniteScroll.value = res.total === options.value.length;
+    }
   }
   evt.target.complete();
 }
