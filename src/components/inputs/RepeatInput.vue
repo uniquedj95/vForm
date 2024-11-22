@@ -1,39 +1,40 @@
 <template>
-  <div>
-    <ion-row v-for="(child, index) of childrens" >
-      <ion-col size="11">
-        <ion-row>
-          <template v-for="formId of Object.keys(child)">
-            <IonCol 
-              :key="`${index}-${formId}`" 
-              :size="child[formId].grid?.xs ?? '12'" 
-              :size-sm="child[formId].grid?.sm"
-              :size-md="child[formId].grid?.md"
-              :size-lg="child[formId].grid?.lg"
-              :size-xl="child[formId].grid?.xl"
-              class="ion-margin-bottom"
-              v-if="canRenderField(child[formId], data, computedData)"
-            >
-              <component 
-                :is="child[formId].type" 
-                v-model="child[formId]" 
-                :schema="child"
-                :ref-key="`${index}-${formId}`"
-                ref="dynamicRefs"
-              />
-            </IonCol>
-          </template>
-        </ion-row>
-      </ion-col>
-      <ion-col size="1" style="display: flex; align-items: center; justify-content: flex-end;">
-        <ion-button @click="addSet" color="primary" v-if="index === childrens.length - 1">
-          <ion-icon slot="icon-only" :icon="add"></ion-icon>
-        </ion-button>
-        <ion-button @click="removeSet(index)" color="warning" v-if="childrens.length > 1">
-          <ion-icon slot="icon-only" :icon="remove"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
+  <div 
+    v-for="(child, index) of childrens"
+    style="display: flex; justify-content: space-between; align-items: baseline;"
+  >
+    <div class="ion-margin-end">
+      <ion-row>
+        <template v-for="formId of Object.keys(child)">
+          <IonCol 
+            :key="`${index}-${formId}`" 
+            :size="child[formId].grid?.xs ?? '12'" 
+            :size-sm="child[formId].grid?.sm"
+            :size-md="child[formId].grid?.md"
+            :size-lg="child[formId].grid?.lg"
+            :size-xl="child[formId].grid?.xl"
+            class="ion-margin-bottom"
+            v-if="canRenderField(child[formId], data, computedData)"
+          >
+            <component 
+              :is="child[formId].type" 
+              v-model="child[formId]" 
+              :schema="child"
+              :ref-key="`${index}-${formId}`"
+              ref="dynamicRefs"
+            />
+          </IonCol>
+        </template>
+      </ion-row>
+    </div>
+    <div style="display: flex; justify-content: flex-end;">
+      <ion-button @click="addSet" color="primary" v-if="index === childrens.length - 1">
+        <ion-icon slot="icon-only" :icon="add"></ion-icon>
+      </ion-button>
+      <ion-button @click="removeSet(index)" color="warning" v-if="childrens.length > 1">
+        <ion-icon slot="icon-only" :icon="remove"></ion-icon>
+      </ion-button>
+    </div>
   </div>
 </template>
 
