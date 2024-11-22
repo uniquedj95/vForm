@@ -3,7 +3,7 @@
     v-for="(child, index) of childrens"
     style="display: flex; justify-content: space-between; align-items: baseline;"
   >
-    <div class="ion-margin-end">
+    <div class="ion-margin-end" style="width: 85%">
       <ion-row>
         <template v-for="formId of Object.keys(child)">
           <IonCol 
