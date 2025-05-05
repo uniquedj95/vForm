@@ -301,7 +301,8 @@ export type InputType =
   | "PasswordInput"
   | "SelectInput"
   | "TextAreaInput"
-  | "RepeatInput";
+  | "RepeatInput"
+  | "CheckboxInput"
 
 export type BaseFieldTypes =
   | "text"
