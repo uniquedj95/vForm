@@ -16,23 +16,14 @@ export type ComputedValueHandler = (
 ) => Promise<any> | any;
 
 /**
- * Represents a paginated set of options.
- */
-export interface PaginatedOptions {
-  options: Array<Option>;
-  total?: number;
-}
-
-/**
  * Represents the options for a form, which can be either an array of `Option` objects
- * or a function that returns paginated options or an array of options.
+ * or a function that returns an array of `Option` objects.
  *
- * The function can optionally take a `filter` string and a `page` number as parameters.
+ * The function can optionally take a `filter` string as a parameter.
  */
-export type FormOptions = Array<Option> | ((
-  filter?: string,
-  page?: number,
-) => PaginatedOptions | Promise<PaginatedOptions> | Array<Option> | Promise<Array<Option>>);
+export type FormOptions = 
+  | Array<Option> 
+  | ((filter?: string) => Array<Option> | Promise<Array<Option>>);
 
 export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
