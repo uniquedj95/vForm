@@ -291,10 +291,19 @@ export interface FormField {
 
   /**
    * The position of the options for select-type form input fields.
+   * 
+   * For multiple selections, action-sheet will fallback to popover.
    *
    * @type "popover" | "action-sheet" | "alert"
    */
   interface?: "popover" | "action-sheet" | "alert";
+
+  /**
+   * The position of the popover options list for select-type form input fields when interface is "popover".
+   *
+   * @type "top" | "bottom"
+   */
+  optionsPlacement?: "top" | "bottom";
 
   /**
    * The children form fields for the repeat-type form input field.

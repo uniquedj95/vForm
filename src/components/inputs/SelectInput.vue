@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete-container" @focusout="onValueUpdate">
+  <div class="autocomplete-container" @focusout="onValueUpdate" ref="containerRef">
     <ion-input
       ref="inputRef"
       v-model="filter"
@@ -14,6 +14,7 @@
       :counter="model.counter"
       @ion-focus="onFocus"
       :debounce="300"
+      @click="openInterface"
     >
       <ion-label slot="label" v-if="model.label">
         {{ model.label }}
@@ -37,7 +38,9 @@
       />
     </ion-input>
 
-    <ion-list v-if="showOptions && options.length > 0" class="suggestions-list">
+    <ion-list v-if="showOptions && options.length > 0 && interfaceType === 'popover'" 
+              class="suggestions-list" 
+              :class="popoverPosition">
       <ion-item
         button
         v-for="option in options"
@@ -74,15 +77,27 @@ import {
   IonText,
   IonIcon,
   IonCheckbox,
+  actionSheetController,
+  alertController,
+  AlertInput
 } from "@ionic/vue";
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
+const containerRef = ref<HTMLElement | null>(null);
 const showOptions = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref("");
 const page = ref(1);
+
+const interfaceType = computed(() => {
+  return model.value.interface ?? 'popover';
+});
+
+const popoverPosition = computed(() => {
+  return model.value.optionsPlacement === 'top' ? 'top' : 'bottom';
+});
 
 const tags = computed<Option[]>(() =>
   options.value.filter((o) => !!o.isChecked)
@@ -120,12 +135,106 @@ function onSelect(item: Option) {
   filter.value = "";
 }
 
+function openInterface() {
+  switch (interfaceType.value) {
+    case 'action-sheet':
+      openActionSheet();
+      break;
+    case 'alert':
+      openAlert();
+      break;
+    case 'popover':
+    default:
+      showOptions.value = true;
+      break;
+  }
+}
+
+async function openActionSheet() {
+  await filterOptions();
+  
+  if (model.value.multiple) {
+    // For multiple selection, open an a popover instead of action sheet
+    showOptions.value = true;
+    return;
+  }
+
+  // Standard action sheet for single selection
+  const actionSheet = await actionSheetController.create({
+    header: model.value.label || 'Select an option',
+    buttons: [
+      ...options.value.map(option => ({
+        text: option.label,
+        cssClass: option.isChecked ? 'selected-option' : '',
+        handler: () => {
+          onSelect(option);
+          return false;
+        }
+      })),
+      {
+        text: 'Cancel',
+        role: 'cancel'
+      }
+    ]
+  });
+  
+  await actionSheet.present();
+}
+
+async function openAlert() {
+  await filterOptions();
+  
+  const inputs: AlertInput[] = options.value.map(option => ({
+    label: option.label,
+    type: model.value.multiple ? 'checkbox' : 'radio',
+    value: option,
+    checked: option.isChecked
+  }));
+  
+  const alert = await alertController.create({
+    header: model.value.label || 'Select an option',
+    inputs,
+    buttons: [
+      {
+        text: 'Cancel',
+        role: 'cancel'
+      },
+      {
+        text: 'OK',
+        handler: (selectedOptions) => {
+          if (model.value.multiple) {
+            // Reset all options first
+            options.value.forEach(o => uncheckOption(o, options.value));
+            
+            // Then check selected options
+            selectedOptions.forEach((selected: Option) => {
+              const option = options.value.find(o => o.value === selected.value);
+              if (option) checkOption(option, options.value);
+            });
+          } else {
+            onReset();
+            const option = options.value.find(o => o.value === selectedOptions.value);
+            if (option) checkOption(option, options.value);
+          }
+          onValueUpdate();
+        }
+      }
+    ]
+  });
+  
+  await alert.present();
+}
+
 function onFocus(evt: any) {
   if (evt.target !== inputRef.value?.$el) return;
   inputRef.value?.$el.classList.remove("ion-touched");
   inputRef.value?.$el.classList.remove("ion-invalid");
   model.value.error = "";
-  showOptions.value = true;
+  
+  // Only show options immediately for popover interface
+  if (interfaceType.value === 'popover') {
+    showOptions.value = true;
+  }
 }
 
 async function isValid() {
@@ -207,20 +316,49 @@ defineExpose({
 
 .suggestions-list {
   position: absolute;
-  top: 100%;
   left: 0;
   right: 0;
   background-color: white;
-  border: 1px solid #ddd;
+  border: none;
   z-index: 99000;
   max-height: 65vh;
   overflow-y: auto;
-  border-radius: 0 0 5px 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.suggestions-list.bottom {
+  top: 100%;
+  margin-top: 4px;
+  border-radius: 4px;
+}
+
+.suggestions-list.top {
+  bottom: 100%;
+  margin-bottom: 4px;
+  border-radius: 4px;
 }
 
 ion-list {
   margin: 0;
   padding: 0;
+}
+
+/* Add hover effect for items */
+ion-item {
+  --ripple-color: var(--ion-color-primary-tint, #4c8dff);
+  transition: background-color 0.2s ease;
+}
+
+ion-item:hover {
+  --background: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.08);
+}
+
+:deep(.selected-option) {
+  font-weight: bold;
+  color: var(--ion-color-primary);
 }
 </style>
