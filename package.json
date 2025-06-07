@@ -31,9 +31,9 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-pattern 'dist/**' --ignore-pattern 'node_modules/**' --fix",
     "format": "prettier --write src/",
-    "version:patch": "node ./scripts/version-bump.js patch",
-    "version:minor": "node ./scripts/version-bump.js minor",
-    "version:major": "node ./scripts/version-bump.js major",
+    "version:patch": "./scripts/version-bump.sh patch",
+    "version:minor": "./scripts/version-bump.sh minor",
+    "version:major": "./scripts/version-bump.sh major",
     "prepare": "husky",
     "pre-commit": "lint-staged"
   },
