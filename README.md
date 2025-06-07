@@ -5,19 +5,16 @@
 <img src="https://img.icons8.com/color/96/000000/form.png" alt="vForm Logo"/>
 
 A dynamic form builder for Vue.js with Ionic components
-</div>
 
-[![npm version](https://img.shields.io/npm/v/@uniquedj95/vform.svg)](https://www.npmjs.com/package/@uniquedj95/vform)
-[![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)](https://github.com/uniquedj95/vform/releases)
+[![Version](https://img.shields.io/badge/version-2.0.2-blue.svg)](https://github.com/uniquedj95/vform/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Vue Version](https://img.shields.io/badge/vue-3.5+-brightgreen.svg)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
 [![Downloads](https://img.shields.io/npm/dt/@uniquedj95/vform.svg)](https://www.npmjs.com/package/@uniquedj95/vform)
 [![Ionic Vue](https://img.shields.io/badge/Ionic-8.2-blue)](https://ionicframework.com/)
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/uniquedj95/vform/pulls)
 [![Bundle Size](https://img.shields.io/bundlephobia/min/@uniquedj95/vform)](https://bundlephobia.com/package/@uniquedj95/vform)
-[![Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)](https://github.com/uniquedj95/vform)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/uniquedj95/vform/pulls)
+</div>
 
 ## Table of Contents
 - [Overview](#overview)
