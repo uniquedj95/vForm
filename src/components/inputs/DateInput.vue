@@ -74,12 +74,12 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton, IonText } from "@ionic/vue";
 import { calendar } from "ionicons/icons";
 import type { FormField, FormSchema } from "../../types";
-import { computed, onMounted, PropType, ref, watch } from "vue";
+import { ComponentPublicInstance, computed, onMounted, PropType, ref, watch } from "vue";
 import { formatDate, getMonth, zeroPad, monthNames } from "../../utils";
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
-const inputRef = ref<typeof IonInput | null>(null);
+const inputRef = ref<ComponentPublicInstance | null>(null);
 const maxDate = ref(model.value.max as string | undefined); 
 const minDate = ref(model.value.max as string | undefined); 
 const pickerDate = ref<string>(model.value.value as string);

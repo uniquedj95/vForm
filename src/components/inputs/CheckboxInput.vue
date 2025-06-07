@@ -17,11 +17,11 @@
 <script lang="ts" setup>
 import { IonCheckbox, IonText } from "@ionic/vue";
 import { FormField, FormSchema } from "types";
-import { PropType, ref, watch } from "vue";
+import { ComponentPublicInstance, PropType, ref, watch } from "vue";
 
 const props = defineProps<{ schema?: FormSchema; }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
-const inputRef = ref<typeof IonCheckbox | null>(null);
+const inputRef = ref<ComponentPublicInstance | null>(null);
 const input = ref(model.value.value as boolean);
 
 watch(() => model.value.value, v => input.value = v as boolean);
