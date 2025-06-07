@@ -6,7 +6,7 @@
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
-  "style": "./dist/style.css",
+  "style": "./dist/vform.css",
   "files": [ "dist" ],
   "exports": {
     ".": {
@@ -14,7 +14,7 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.umd.js"
     },
-    "./styles.css": "./dist/style.css"
+    "./vform.css": "./dist/vform.css"
   },
   "scripts": {
     "build": "vite build",
