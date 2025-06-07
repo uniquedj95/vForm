@@ -37,7 +37,7 @@
       />
     </ion-input>
 
-    <ion-list v-if="showOptions && options.length > 0" class="suggestions-list ion-content-scroll-host">
+    <ion-list v-if="showOptions && options.length > 0" class="suggestions-list">
       <ion-item
         button
         v-for="option in options"
@@ -51,25 +51,12 @@
         />
         <ion-label>{{ option.label }}</ion-label>
       </ion-item>
-
-      <ion-infinite-scroll
-        @ionInfinite="loadData"
-        threshold="100px"
-        position="bottom"
-        v-if="enableInfiniteScroll"
-        :disabled="disableInfiniteScroll"
-      >
-        <ion-infinite-scroll-content
-          loading-spinner="bubbles"
-          loading-text="Loading more data..."
-        ></ion-infinite-scroll-content>
-      </ion-infinite-scroll>
     </ion-list>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch } from "vue";
+import { ref, computed, PropType, watch, ComponentPublicInstance } from "vue";
 import { chevronDown, close } from "ionicons/icons";
 import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
 import {
@@ -87,19 +74,12 @@ import {
   IonText,
   IonIcon,
   IonCheckbox,
-  IonInfiniteScroll,
-  IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent,
 } from "@ionic/vue";
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
-const inputRef = ref<typeof IonInput | null>(null);
+const inputRef = ref<ComponentPublicInstance | null>(null);
 const showOptions = ref(false);
-const enableInfiniteScroll = computed(
-  () => typeof model.value.options === "function"
-);
-const disableInfiniteScroll = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref("");
 const page = ref(1);
@@ -184,31 +164,14 @@ async function filterOptions() {
   const filtered: Array<Option> = [];
 
   if(typeof model.value.options === "function") {
-    const res = await model.value.options(filter.value, 1)
-    if(Array.isArray(res)) filtered.push(...res.filter((o) => !!o.label));
-    else filtered.push(...res.options.filter((o) => !!o.label));
+    const res = await model.value.options(filter.value)
+    filtered.push(...res.filter((o) => !!o.label));
   } else {
     filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
   }
 
   tags.value.forEach((tag) => checkOption(tag, filtered));
   options.value = filtered
-  disableInfiniteScroll.value = !enableInfiniteScroll.value
-}
-
-async function loadData(evt: InfiniteScrollCustomEvent) {
-  if (typeof model.value.options === "function") {
-    page.value++;
-    const res = await model.value.options(filter.value, page.value);
-    if (Array.isArray(res)) {
-      options.value.push(...res.filter((o) => !!o.label));
-      disableInfiniteScroll.value = res.length === 0;
-    } else {
-      options.value.push(...res.options.filter((o) => !!o.label));
-      disableInfiniteScroll.value = res.total === options.value.length;
-    }
-  }
-  evt.target.complete();
 }
 
 function initialize() {
@@ -259,9 +222,5 @@ defineExpose({
 ion-list {
   margin: 0;
   padding: 0;
-}
-
-ion-infinite-scroll {
-  margin: 0;
 }
 </style>
