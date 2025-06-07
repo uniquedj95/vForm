@@ -243,6 +243,13 @@ export interface FormField {
   labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
 
   /**
+   * The position of the options for select-type form input fields.
+   *
+   * @type "popover" | "action-sheet" | "alert"
+   */
+  interface?: "popover" | "action-sheet" | "alert";
+
+  /**
    * The children form fields for the repeat-type form input field.
    *
    * @type FormSchema
