@@ -2,7 +2,7 @@
 
 // filepath: /home/daniel/projects/formBuilder/scripts/version-bump.js
 import { readFileSync, writeFileSync } from 'fs';
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { join } from 'path';
 import process from 'process';
 
@@ -24,7 +24,13 @@ try {
 
   // Bump version using npm
   console.log(`Bumping ${bumpType} version from ${currentVersion}...`);
-  execSync(`npm version ${bumpType} --no-git-tag-version`);
+  const { status } = spawnSync('npm', ['version', bumpType, '--no-git-tag-version'], {
+    stdio: 'inherit',
+  });
+
+  if (status !== 0) {
+    throw new Error(`npm version command failed with status code: ${status}`);
+  }
 
   // Read updated package.json
   const updatedPackageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
