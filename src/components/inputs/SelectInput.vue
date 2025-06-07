@@ -323,10 +323,6 @@ defineExpose({
   z-index: 99000;
   max-height: 65vh;
   overflow-y: auto;
-  box-shadow: 
-    0 2px 4px -1px rgba(0, 0, 0, 0.2),
-    0 4px 5px 0 rgba(0, 0, 0, 0.14),
-    0 1px 10px 0 rgba(0, 0, 0, 0.12);
   transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -334,12 +330,20 @@ defineExpose({
   top: 100%;
   margin-top: 4px;
   border-radius: 4px;
+  box-shadow: 
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 .suggestions-list.top {
   bottom: 100%;
   margin-bottom: 4px;
   border-radius: 4px;
+  box-shadow: 
+    0 -2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 -4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 -1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 ion-list {
