@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 import pluginVue from 'eslint-plugin-vue';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
@@ -8,9 +9,20 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat';
 export default defineConfig([
   { files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'], plugins: { js }, extends: ['js/recommended'] },
   { files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'], languageOptions: { globals: globals.browser } },
-  tseslint.configs.recommended,
+  {
+    files: ['**/*.{ts,mts,cts,vue}'],
+    plugins: { '@typescript-eslint': tsPlugin },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    rules: { ...tsPlugin.configs.recommended.rules },
+  },
   pluginVue.configs['flat/essential'],
-  { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tseslint.parser } } },
+  { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tsParser } } },
   eslintConfigPrettier,
   globalIgnores([
     'node_modules/', // ignore `node_modules/` directory
