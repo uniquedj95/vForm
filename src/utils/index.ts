@@ -1,29 +1,29 @@
 /**
  * Form Builder Utility functions.
- * 
- * @packageDocumentation 
+ *
+ * @packageDocumentation
  * @module utils
  * @preferred
  * @author Daniel Justin.
  **/
-import { ComputedData, FormData, FormField, Option } from "types";
+import { ComputedData, FormData, FormField, Option } from 'types';
 
 /**
  * Full month names.
  **/
 export const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 /**
@@ -38,7 +38,7 @@ export function isEmpty(value: any): boolean {
     value === null ||
     value === undefined ||
     (Array.isArray(value) && !value.length) ||
-    (typeof value === "object" && !Object.keys(value).length) ||
+    (typeof value === 'object' && !Object.keys(value).length) ||
     !value
   );
 }
@@ -50,11 +50,11 @@ export function isEmpty(value: any): boolean {
  * @param pattern - The pattern to format the date string with. default is 'DD/MMM/2024'.
  * @returns The formatted date string.
  */
-export function formatDate(date: string, pattern: string = "DD/MMM/YYYY"): string {
+export function formatDate(date: string, pattern: string = 'DD/MMM/YYYY'): string {
   const _date = new Date(date);
 
   if (isNaN(_date.getTime())) {
-    throw new Error("Invalid date string");
+    throw new Error('Invalid date string');
   }
 
   const day = zeroPad(_date.getDate());
@@ -87,7 +87,7 @@ export function formatDate(date: string, pattern: string = "DD/MMM/YYYY"): strin
 
   return pattern.replace(
     /DD|D|MMMM|MMM|MM|M|YYYY|YY|HH|H|mm|m|ss|s|SSS|S/g,
-    (match) => replacements[match] || match
+    match => replacements[match] || match
   );
 }
 
@@ -110,9 +110,9 @@ export function zeroPad(num: number): string {
  */
 export function getMonth(month: number | string, part: string) {
   if (Number.isInteger(parseInt(month as string)) && Number(month) > 0) {
-    if (part === "MMMM") return monthNames[Number(month) - 1];
-    if (part === "MMM") return monthNames[Number(month) - 1].slice(0, 3);
-    if (part === "MM") return zeroPad(Number(month));
+    if (part === 'MMMM') return monthNames[Number(month) - 1];
+    if (part === 'MMM') return monthNames[Number(month) - 1].slice(0, 3);
+    if (part === 'MM') return zeroPad(Number(month));
   }
   return month as string;
 }
@@ -126,7 +126,7 @@ export function getMonth(month: number | string, part: string) {
  * @returns A boolean indicating whether the field can be rendered.
  */
 export function canRenderField(field: FormField, data: FormData, computedData: ComputedData) {
-  if (typeof field.condition === "function") {
+  if (typeof field.condition === 'function') {
     return field.condition(data, computedData);
   }
   return true;
@@ -140,20 +140,20 @@ export function canRenderField(field: FormField, data: FormData, computedData: C
  */
 export function deepClone<T = any>(obj: T): T {
   // Handle primitive types
-  if (typeof obj !== "object" || obj === null) {
+  if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
 
   // Handle Array
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item)) as any;
+    return obj.map(item => deepClone(item)) as any;
   }
 
   // Handle Object
   const cloned: any = {};
   Object.entries(obj).forEach(([key, value]) => {
     // Bind functions to the cloned object
-    if(typeof value === "function") {
+    if (typeof value === 'function') {
       cloned[key] = value.bind(cloned);
     } else {
       cloned[key] = deepClone(value);
@@ -165,7 +165,7 @@ export function deepClone<T = any>(obj: T): T {
 
 /**
  * Finds an option in a list of options that matches the given option.
- * 
+ *
  * The function checks for a match based on the `value` and `label` properties
  * of the `Option` object. It returns the first option that satisfies any of
  * the following conditions:
@@ -173,17 +173,19 @@ export function deepClone<T = any>(obj: T): T {
  * - The `label` of the option matches the `label` of the given option.
  * - The `value` of the option matches the `label` of the given option.
  * - The `label` of the option matches the `value` of the given option.
- * 
+ *
  * @param {Option} option - The option to find in the list.
  * @param {Array<Option>} options - The list of options to search through.
  * @returns {number} - The index first matching option, or -1 if no match is found.
  */
 export function findOption(option: Option, options: Array<Option>): number {
   return options.findIndex(opt => {
-    return opt.value === option.value ||
+    return (
+      opt.value === option.value ||
       opt.label === option.label ||
       opt.value === option.label ||
-      opt.label === option.value;
+      opt.label === option.value
+    );
   });
 }
 
@@ -197,7 +199,7 @@ export function findOption(option: Option, options: Array<Option>): number {
  */
 export function checkOption(option: Option, options: Array<Option>) {
   const index = findOption(option, options);
-  if(index >= 0) options[index].isChecked = true;
+  if (index >= 0) options[index].isChecked = true;
   else options.push({ ...option, isChecked: true });
 }
 
@@ -209,7 +211,7 @@ export function checkOption(option: Option, options: Array<Option>) {
  */
 export function uncheckOption(option: Option, options: Array<Option>) {
   const index = findOption(option, options);
-  if(index >= 0) options[index].isChecked = false;
+  if (index >= 0) options[index].isChecked = false;
 }
 
 /**
@@ -220,8 +222,8 @@ export function uncheckOption(option: Option, options: Array<Option>) {
  * @returns An array of options that match the filter string.
  */
 export function getFilteredOptions(options: Array<Option>, filter: string): Array<Option> {
-  if(!filter) return options;
-  return options.filter(option => 
+  if (!filter) return options;
+  return options.filter(option =>
     JSON.stringify(option).toLowerCase().includes(filter.toLowerCase())
   );
 }

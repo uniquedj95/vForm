@@ -3,16 +3,11 @@
  *
  * @type FormValue
  */
-export type FormValue = 
-  | string 
-  | number 
-  | boolean 
-  | Option 
-  | Array<Option>;
+export type FormValue = string | number | boolean | Option | Array<Option>;
 
 /**
  * A function type for validating form field values.
- * 
+ *
  * The function takes a `value` of type `FormValue` and an optional `schema` of type `FormSchema`.
  * It returns a promise that resolves to an array of error messages or null if validation passes.
  * Alternatively, it can return an array of error messages or null directly without a promise.
@@ -29,10 +24,7 @@ export type FormValidator = (
  *
  * @type ComputedValueHandler
  */
-export type ComputedValueHandler = (
-  value: FormValue,
-  schema: FormSchema
-) => Promise<any> | any;
+export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Promise<any> | any;
 
 /**
  * Represents the options for a form, which can be either an array of `Option` objects
@@ -40,34 +32,34 @@ export type ComputedValueHandler = (
  *
  * The function can optionally take a `filter` string as a parameter.
  */
-export type FormOptions = 
-  | Array<Option> 
+export type FormOptions =
+  | Array<Option>
   | ((filter?: string) => Array<Option> | Promise<Array<Option>>);
 
 /**
  * Represents the data of all form fields, mapped by field ID.
- * 
+ *
  * @type FormData
  */
 export type FormData = Record<string, FormValue | undefined>;
 
 /**
  * Represents computed data derived from form fields, mapped by field ID.
- * 
+ *
  * @type ComputedData
  */
 export type ComputedData = Record<string, any>;
 
 /**
  * Represents the structure of a form, with field IDs as keys and FormField objects as values.
- * 
+ *
  * @type FormSchema
  */
 export type FormSchema = Record<string, FormField>;
 
 /**
  * Defines responsive grid sizes for form fields across different viewport breakpoints.
- * 
+ *
  * @interface GridSize
  */
 export interface GridSize {
@@ -280,30 +272,30 @@ export interface FormField {
    *
    * @type "solid" | "outline"
    */
-  fill?: "solid" | "outline";
+  fill?: 'solid' | 'outline';
 
   /**
    * The position of the label for the form input field.
    *
    * @type "stacked" | "start" | "end" | "fixed" | "floating"
    */
-  labelPlacement?: "stacked" | "start" | "end" | "fixed" | "floating";
+  labelPlacement?: 'stacked' | 'start' | 'end' | 'fixed' | 'floating';
 
   /**
    * The position of the options for select-type form input fields.
-   * 
+   *
    * For multiple selections, action-sheet will fallback to popover.
    *
    * @type "popover" | "action-sheet" | "alert"
    */
-  interface?: "popover" | "action-sheet" | "alert";
+  interface?: 'popover' | 'action-sheet' | 'alert';
 
   /**
    * The position of the popover options list for select-type form input fields when interface is "popover".
    *
    * @type "top" | "bottom"
    */
-  optionsPlacement?: "top" | "bottom";
+  optionsPlacement?: 'top' | 'bottom';
 
   /**
    * The children form fields for the repeat-type form input field.
@@ -350,15 +342,15 @@ export interface OptionDescription {
   /**
    * The color to display the description text in.
    */
-  color: "primary" | "warning" | "danger" | "secondary" | "light";
-  
+  color: 'primary' | 'warning' | 'danger' | 'secondary' | 'light';
+
   /**
    * When to show the description.
    * - 'onChecked': Only display when the option is selected.
    * - 'always': Always display the description.
    */
-  show?: "onChecked" | "always";
-  
+  show?: 'onChecked' | 'always';
+
   /**
    * The description text to display.
    */
@@ -375,27 +367,27 @@ export interface Option {
    * The display text for the option.
    */
   label: string;
-  
+
   /**
    * The underlying value of the option.
    */
   value: string | number;
-  
+
   /**
    * Additional data associated with this option.
    */
   other?: any;
-  
+
   /**
    * Indicates if the option is currently selected.
    */
   isChecked?: boolean;
-  
+
   /**
    * Indicates if the option is disabled and cannot be selected.
    */
   disabled?: boolean;
-  
+
   /**
    * Optional descriptive information about the option.
    */
@@ -404,40 +396,40 @@ export interface Option {
 
 /**
  * Represents the types of inputs that can be used in a form.
- * 
+ *
  * @type InputType
  */
 export type InputType =
-  | "TextInput"
-  | "DateInput"
-  | "NumberInput"
-  | "EmailInput"
-  | "PasswordInput"
-  | "SelectInput"
-  | "TextAreaInput"
-  | "RepeatInput"
-  | "CheckboxInput"
+  | 'TextInput'
+  | 'DateInput'
+  | 'NumberInput'
+  | 'EmailInput'
+  | 'PasswordInput'
+  | 'SelectInput'
+  | 'TextAreaInput'
+  | 'RepeatInput'
+  | 'CheckboxInput';
 
 /**
  * Represents the basic field types for HTML input elements.
- * 
+ *
  * @type BaseFieldTypes
  */
 export type BaseFieldTypes =
-  | "text"
-  | "password"
-  | "email"
-  | "number"
-  | "tel"
-  | "url"
-  | "search"
-  | "time"
-  | "month"
-  | "week";
+  | 'text'
+  | 'password'
+  | 'email'
+  | 'number'
+  | 'tel'
+  | 'url'
+  | 'search'
+  | 'time'
+  | 'month'
+  | 'week';
 
 /**
  * Interface for custom buttons that can be added to forms.
- * 
+ *
  * @interface CustomButton
  */
 export interface CustomButton {
@@ -445,22 +437,22 @@ export interface CustomButton {
    * The text label displayed on the button.
    */
   label: string;
-  
+
   /**
    * The icon name to display on the button (uses Ionic icons).
    */
   icon: string;
-  
+
   /**
    * The fill style of the button.
    */
-  fill?: "solid" | "outline";
-  
+  fill?: 'solid' | 'outline';
+
   /**
    * The color theme of the button.
    */
-  color?: "primary" | "warning" | "danger" | "secondary" | "light";
-  
+  color?: 'primary' | 'warning' | 'danger' | 'secondary' | 'light';
+
   /**
    * The function to execute when the button is clicked.
    */

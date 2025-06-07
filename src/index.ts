@@ -11,21 +11,21 @@ import RepeatInput from './components/inputs/RepeatInput.vue';
 import CheckboxInput from './components/inputs/CheckboxInput.vue';
 
 export const VForm: Plugin = {
-    install(app: App) {
-        app.component('VForm', Form);
-        app.component('TextInput', TextInput);
-        app.component('DateInput', DateInput);
-        app.component('NumberInput', NumberInput);
-        app.component('EmailInput', EmailInput);
-        app.component('PasswordInput', PasswordInput);
-        app.component('SelectInput', SelectInput);
-        app.component("TextAreaInput", TextAreaInput);
-        app.component("RepeatInput", RepeatInput);
-        app.component("CheckboxInput", CheckboxInput);
-    }
-}
+  install(app: App) {
+    app.component('VForm', Form);
+    app.component('TextInput', TextInput);
+    app.component('DateInput', DateInput);
+    app.component('NumberInput', NumberInput);
+    app.component('EmailInput', EmailInput);
+    app.component('PasswordInput', PasswordInput);
+    app.component('SelectInput', SelectInput);
+    app.component('TextAreaInput', TextAreaInput);
+    app.component('RepeatInput', RepeatInput);
+    app.component('CheckboxInput', CheckboxInput);
+  },
+};
 
-export * from "./types";
+export * from './types';
 
 export type VFormRef = typeof Form;
 

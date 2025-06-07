@@ -13,14 +13,15 @@
     @ion-blur="onValueUpdate"
   >
     <ion-label slot="label" v-if="model.label">
-      {{ model.label }} 
+      {{ model.label }}
       <ion-text color="danger" v-if="model.required">*</ion-text>
     </ion-label>
-    <template v-for="part, index in patternParts">
+    <template v-for="(part, index) in patternParts">
       <ion-select
         slot="start"
+        :key="`select-${part}`"
         interface="popover"
-        :style="{minWidth: model.enableTime ? '10%' : '30%'}"
+        :style="{ minWidth: model.enableTime ? '10%' : '30%' }"
         :placeholder="part"
         :value="partValues[part]"
         @ion-focus="onFocus"
@@ -28,13 +29,18 @@
         @ion-blur="buildInputDate(part, undefined, $event)"
         v-if="/MM|MMM|MMMM/.test(part)"
       >
-        <ion-select-option v-for="month, i in monthNames" :key="month" :value="getMonth(i + 1, part)">
+        <ion-select-option
+          v-for="(month, i) in monthNames"
+          :key="month"
+          :value="getMonth(i + 1, part)"
+        >
           {{ getMonth(i + 1, part) }}
         </ion-select-option>
       </ion-select>
       <ion-input
         v-else
         slot="start"
+        :key="`input-${part}`"
         :placeholder="part"
         :auto-focus="model.autoFocus"
         :value="partValues[part]"
@@ -42,7 +48,7 @@
         @ion-input="buildInputDate(part, undefined, $event)"
         @ion-blur="buildInputDate(part, undefined, $event)"
       />
-      <ion-label slot="start" v-if="index < (patternParts.length - 1)">
+      <ion-label slot="start" :key="`separator-${index}`" v-if="index < patternParts.length - 1">
         &nbsp;{{ separators[index] }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </ion-label>
     </template>
@@ -60,7 +66,12 @@
       >
         <template #trigger>
           <ion-button fill="clear">
-            <ion-icon slot="icon-only" :icon="calendar" aria-hidden="true" @click="onFocus"></ion-icon>
+            <ion-icon
+              slot="icon-only"
+              :icon="calendar"
+              aria-hidden="true"
+              @click="onFocus"
+            ></ion-icon>
           </ion-button>
         </template>
       </vue-date-picker>
@@ -69,42 +80,53 @@
 </template>
 
 <script lang="ts" setup>
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
-import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton, IonText } from "@ionic/vue";
-import { calendar } from "ionicons/icons";
-import type { FormField, FormSchema } from "../../types";
-import { ComponentPublicInstance, computed, onMounted, PropType, ref, watch } from "vue";
-import { formatDate, getMonth, zeroPad, monthNames } from "../../utils";
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import {
+  IonInput,
+  IonLabel,
+  IonIcon,
+  IonSelect,
+  IonSelectOption,
+  IonButton,
+  IonText,
+} from '@ionic/vue';
+import { calendar } from 'ionicons/icons';
+import type { FormField, FormSchema } from '../../types';
+import { ComponentPublicInstance, computed, onMounted, PropType, ref, watch } from 'vue';
+import { formatDate, getMonth, zeroPad, monthNames } from '../../utils';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
-const maxDate = ref(model.value.max as string | undefined); 
-const minDate = ref(model.value.max as string | undefined); 
+const maxDate = ref(model.value.max as string | undefined);
+const minDate = ref(model.value.max as string | undefined);
 const pickerDate = ref<string>(model.value.value as string);
 const pattern = computed(() => {
-  if(model.value.pattern) return model.value.pattern;
-  let datePattern = model.value.pattern ?? "DD/MMM/YYYY";
+  if (model.value.pattern) return model.value.pattern;
+  let datePattern = model.value.pattern ?? 'DD/MMM/YYYY';
   if (model.value.enableTime) {
-    datePattern += " HH:mm:ss";
+    datePattern += ' HH:mm:ss';
   }
   return datePattern;
 });
 const separatorRegex = /[-/.,:\s]+/;
 const patternParts = computed(() => pattern.value.split(separatorRegex));
 const separators = computed(() => pattern.value.match(/[-/.,:\s]+/g) || []);
-const partValues = ref({} as Record<string, any>); 
+const partValues = ref({} as Record<string, any>);
 
-watch(() => model.value.value, v => {
-  pickerDate.value = v as string;
-  buildPickerDate(v as string);
-});
+watch(
+  () => model.value.value,
+  v => {
+    pickerDate.value = v as string;
+    buildPickerDate(v as string);
+  }
+);
 
 async function isValid() {
-  if(pickerDate.value === undefined) {
-    if(model.value.required) {
-      model.value.error = "This field is required";
+  if (pickerDate.value === undefined) {
+    if (model.value.required) {
+      model.value.error = 'This field is required';
       return false;
     }
     return true;
@@ -137,33 +159,35 @@ async function isValid() {
 }
 
 async function onValueUpdate() {
-  inputRef.value?.$el.classList.remove("ion-invalid");
-  inputRef.value?.$el.classList.remove("ion-valid");
-  
+  inputRef.value?.$el.classList.remove('ion-invalid');
+  inputRef.value?.$el.classList.remove('ion-valid');
+
   if (await isValid()) {
-    model.value.error = "";
+    model.value.error = '';
     model.value.value = pickerDate.value;
-    inputRef.value?.$el.classList.add("ion-valid");
+    inputRef.value?.$el.classList.add('ion-valid');
   } else {
-    inputRef.value?.$el.classList.add("ion-invalid");
+    inputRef.value?.$el.classList.add('ion-invalid');
   }
-  inputRef.value?.$el.classList.add("ion-touched");
+  inputRef.value?.$el.classList.add('ion-touched');
 }
 
 function onFocus() {
-  inputRef.value?.$el.classList.remove("ion-touched");
-  inputRef.value?.$el.classList.remove("ion-invalid");
-  model.value.error = "";
+  inputRef.value?.$el.classList.remove('ion-touched');
+  inputRef.value?.$el.classList.remove('ion-invalid');
+  model.value.error = '';
 }
 
 async function buildInputDate(part: string, defaultValue?: string, e?: Event) {
   let value = defaultValue ?? (e?.target as HTMLInputElement).value;
-  if(/MM|MMM|MMMM/.test(part)) value = getMonth(value, part);
-  if(Number.isInteger(parseInt(value))) value = zeroPad(parseInt(value));
+  if (/MM|MMM|MMMM/.test(part)) value = getMonth(value, part);
+  if (Number.isInteger(parseInt(value))) value = zeroPad(parseInt(value));
   partValues.value[part] = value;
   const formattedDate = patternParts.value.reduce((date, part, index) => {
-    date += partValues.value[part] + (index < patternParts.value.length - 1 ? separators.value[index] : '');
-    return date
+    date +=
+      partValues.value[part] +
+      (index < patternParts.value.length - 1 ? separators.value[index] : '');
+    return date;
   }, '');
   pickerDate.value = formattedDate;
   await onValueUpdate();
@@ -184,8 +208,8 @@ function onReset() {
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors: () => model.value.error
-})
+  getErrors: () => model.value.error,
+});
 
 onMounted(() => {
   patternParts.value.forEach((part, index) => {
