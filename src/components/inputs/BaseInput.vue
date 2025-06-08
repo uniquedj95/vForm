@@ -8,7 +8,7 @@
     :type="type ?? 'text'"
     :required="model.required"
     :error-text="model.error"
-    :auto-focus="model.autoFocus"
+    :autofocus="model.autoFocus"
     :placeholder="model.placeholder"
     :disabled="model.disabled"
     :counter="model.counter"
