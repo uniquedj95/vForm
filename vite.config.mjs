@@ -24,12 +24,15 @@ export default defineConfig({
     },
     rollupOptions: {
       input: 'src/index.ts',
-      external: ['vue', '@ionic/vue', '@vuepic/vue-datepicker'],
+      external: ['vue', '@ionic/vue', '@vuepic/vue-datepicker', 'vue-router', 'ionicons/icons', '@maskito/vue'],
       output: {
         globals: {
           vue: 'Vue',
           '@ionic/vue': 'IonicVue',
           '@vuepic/vue-datepicker': 'VueDatePicker',
+          'vue-router': 'VueRouter',
+          'ionicons/icons': 'IoniconsIcons',
+          '@maskito/vue': 'MaskitoVue',
         },
         exports: 'named',
         manualChunks: undefined, // Disable chunk splitting in library mode
