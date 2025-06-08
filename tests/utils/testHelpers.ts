@@ -169,6 +169,35 @@ export const createVueRouterMock = () => {
 };
 
 /**
+ * Mock maskito directive for testing
+ * Prevents "Failed to resolve directive: maskito" warnings
+ */
+export const createMaskitoMock = () => {
+  return vi.mock('@maskito/vue', () => ({
+    maskito: {
+      beforeMount: vi.fn(),
+      updated: vi.fn(),
+      unmounted: vi.fn(),
+    },
+  }));
+};
+
+/**
+ * Common global configuration for Vue Test Utils
+ * Includes directive mocks to prevent warnings
+ */
+export const getTestGlobals = () => ({
+  directives: {
+    maskito: {
+      beforeMount: vi.fn(),
+      updated: vi.fn(),
+      unmounted: vi.fn(),
+    },
+  },
+  stubs: ionicComponentStubs,
+});
+
+/**
  * Standard test methods that many components should expose
  * Reduces duplication in component method testing
  */

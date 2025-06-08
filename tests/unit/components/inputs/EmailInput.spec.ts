@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { createBaseInputMock, expectStandardFormMethods } from '../../../utils/testHelpers';
+import {
+  createBaseInputMock,
+  expectStandardFormMethods,
+  getTestGlobals,
+} from '../../../utils/testHelpers';
 import EmailInput from '../../../../src/components/inputs/EmailInput.vue';
 import BaseInput from '../../../../src/components/inputs/BaseInput.vue';
 
@@ -21,8 +25,10 @@ describe('EmailInput', () => {
     wrapper = mount(EmailInput, {
       props: defaultProps,
       global: {
+        ...getTestGlobals(),
         stubs: {
-          BaseInput: true,
+          ...getTestGlobals().stubs,
+          BaseInput: true, // Keep BaseInput stubbed for this test
         },
       },
     });
@@ -43,6 +49,7 @@ describe('EmailInput', () => {
         schema: {},
         type: 'email',
       },
+      global: getTestGlobals(),
     });
 
     expect(baseInput.props('type')).toBe('email');
