@@ -25,7 +25,6 @@
   "scripts": {
     "build": "vite build",
     "prepublishOnly": "npm run build",
-    "postpublish": "git push && git push --tags",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
