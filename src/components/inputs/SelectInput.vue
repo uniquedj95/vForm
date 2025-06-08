@@ -8,7 +8,7 @@
       :type="type ?? 'text'"
       :required="model.required"
       :error-text="model.error"
-      :auto-focus="model.autoFocus"
+      :autofocus="model.autoFocus"
       :placeholder="placeholder"
       :disabled="model.disabled"
       :counter="model.counter"
@@ -26,7 +26,7 @@
         </ion-chip>
       </ion-label>
       <ion-label slot="start" v-else class="ion-no-wrap">
-        {{ tags[0]?.label ?? "" }}
+        {{ tags[0]?.label ?? '' }}
       </ion-label>
       <ion-icon slot="end" :icon="chevronDown" />
       <ion-icon
@@ -38,20 +38,13 @@
       />
     </ion-input>
 
-    <ion-list v-if="showOptions && options.length > 0 && interfaceType === 'popover'" 
-              class="suggestions-list" 
-              :class="popoverPosition">
-      <ion-item
-        button
-        v-for="option in options"
-        :key="option.label"
-        @click="onSelect(option)"
-      >
-        <ion-checkbox
-          slot="start"
-          :checked="option.isChecked"
-          v-if="model.multiple"
-        />
+    <ion-list
+      v-if="showOptions && options.length > 0 && interfaceType === 'popover'"
+      class="suggestions-list"
+      :class="popoverPosition"
+    >
+      <ion-item button v-for="option in options" :key="option.label" @click="onSelect(option)">
+        <ion-checkbox slot="start" :checked="option.isChecked" v-if="model.multiple" />
         <ion-label>{{ option.label }}</ion-label>
       </ion-item>
     </ion-list>
@@ -59,15 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch, ComponentPublicInstance } from "vue";
-import { chevronDown, close } from "ionicons/icons";
-import { FormSchema, BaseFieldTypes, FormField, Option } from "types";
-import {
-  isEmpty,
-  checkOption,
-  getFilteredOptions,
-  uncheckOption,
-} from "../../utils";
+import { ref, computed, PropType, watch, ComponentPublicInstance } from 'vue';
+import { chevronDown, close } from 'ionicons/icons';
+import { FormSchema, BaseFieldTypes, FormField, Option } from 'types';
+import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
 import {
   IonInput,
   IonList,
@@ -79,8 +67,8 @@ import {
   IonCheckbox,
   actionSheetController,
   alertController,
-  AlertInput
-} from "@ionic/vue";
+  AlertInput,
+} from '@ionic/vue';
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -88,7 +76,7 @@ const inputRef = ref<ComponentPublicInstance | null>(null);
 const containerRef = ref<HTMLElement | null>(null);
 const showOptions = ref(false);
 const options = ref<Option[]>([]);
-const filter = ref("");
+const filter = ref('');
 const page = ref(1);
 
 const interfaceType = computed(() => {
@@ -99,14 +87,12 @@ const popoverPosition = computed(() => {
   return model.value.optionsPlacement === 'top' ? 'top' : 'bottom';
 });
 
-const tags = computed<Option[]>(() =>
-  options.value.filter((o) => !!o.isChecked)
-);
+const tags = computed<Option[]>(() => options.value.filter(o => !!o.isChecked));
 
 const placeholder = computed(() => {
   return !filter.value && isEmpty(tags.value) && !showOptions.value
-    ? model.value.placeholder ?? "Select an option"
-    : "";
+    ? (model.value.placeholder ?? 'Select an option')
+    : '';
 });
 
 watch([filter, () => model.value.options], filterOptions, {
@@ -116,11 +102,11 @@ watch([filter, () => model.value.options], filterOptions, {
 watch(() => model.value.value, initialize, { immediate: true, deep: true });
 
 function onReset() {
-  options.value.forEach((o) => uncheckOption(o, options.value));
-  model.value.error = "";
-  filter.value = "";
+  options.value.forEach(o => uncheckOption(o, options.value));
+  model.value.error = '';
+  filter.value = '';
   page.value = 1;
-  model.value.value = model.value.multiple ? [] : "";
+  model.value.value = model.value.multiple ? [] : '';
 }
 
 function onSelect(item: Option) {
@@ -132,7 +118,7 @@ function onSelect(item: Option) {
     checkOption(item, options.value);
     onValueUpdate();
   }
-  filter.value = "";
+  filter.value = '';
 }
 
 function openInterface() {
@@ -152,7 +138,7 @@ function openInterface() {
 
 async function openActionSheet() {
   await filterOptions();
-  
+
   if (model.value.multiple) {
     // For multiple selection, open an a popover instead of action sheet
     showOptions.value = true;
@@ -169,43 +155,43 @@ async function openActionSheet() {
         handler: () => {
           onSelect(option);
           return false;
-        }
+        },
       })),
       {
         text: 'Cancel',
-        role: 'cancel'
-      }
-    ]
+        role: 'cancel',
+      },
+    ],
   });
-  
+
   await actionSheet.present();
 }
 
 async function openAlert() {
   await filterOptions();
-  
+
   const inputs: AlertInput[] = options.value.map(option => ({
     label: option.label,
     type: model.value.multiple ? 'checkbox' : 'radio',
     value: option,
-    checked: option.isChecked
+    checked: option.isChecked,
   }));
-  
+
   const alert = await alertController.create({
     header: model.value.label || 'Select an option',
     inputs,
     buttons: [
       {
         text: 'Cancel',
-        role: 'cancel'
+        role: 'cancel',
       },
       {
         text: 'OK',
-        handler: (selectedOptions) => {
+        handler: selectedOptions => {
           if (model.value.multiple) {
             // Reset all options first
             options.value.forEach(o => uncheckOption(o, options.value));
-            
+
             // Then check selected options
             selectedOptions.forEach((selected: Option) => {
               const option = options.value.find(o => o.value === selected.value);
@@ -217,20 +203,20 @@ async function openAlert() {
             if (option) checkOption(option, options.value);
           }
           onValueUpdate();
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
-  
+
   await alert.present();
 }
 
 function onFocus(evt: any) {
   if (evt.target !== inputRef.value?.$el) return;
-  inputRef.value?.$el.classList.remove("ion-touched");
-  inputRef.value?.$el.classList.remove("ion-invalid");
-  model.value.error = "";
-  
+  inputRef.value?.$el.classList.remove('ion-touched');
+  inputRef.value?.$el.classList.remove('ion-invalid');
+  model.value.error = '';
+
   // Only show options immediately for popover interface
   if (interfaceType.value === 'popover') {
     showOptions.value = true;
@@ -239,7 +225,7 @@ function onFocus(evt: any) {
 
 async function isValid() {
   if (model.value.required && isEmpty(tags.value)) {
-    model.value.error = "This field is required";
+    model.value.error = 'This field is required';
     return false;
   }
   if (model.value.validation) {
@@ -253,42 +239,42 @@ async function isValid() {
 }
 
 async function onValueUpdate(evt?: any) {
-  if ((evt?.relatedTarget as HTMLElement)?.closest(".suggestions-list")) return;
+  if ((evt?.relatedTarget as HTMLElement)?.closest('.suggestions-list')) return;
   showOptions.value = false;
-  inputRef.value?.$el.classList.remove("ion-invalid");
-  inputRef.value?.$el.classList.remove("ion-valid");
+  inputRef.value?.$el.classList.remove('ion-invalid');
+  inputRef.value?.$el.classList.remove('ion-valid');
 
   if (await isValid()) {
-    model.value.error = "";
+    model.value.error = '';
     model.value.value = model.value.multiple ? tags.value : tags.value[0];
-    inputRef.value?.$el.classList.add("ion-valid");
+    inputRef.value?.$el.classList.add('ion-valid');
   } else {
-    inputRef.value?.$el.classList.add("ion-invalid");
+    inputRef.value?.$el.classList.add('ion-invalid');
   }
 
-  inputRef.value?.$el.classList.add("ion-touched");
+  inputRef.value?.$el.classList.add('ion-touched');
 }
 
 async function filterOptions() {
   const filtered: Array<Option> = [];
 
-  if(typeof model.value.options === "function") {
-    const res = await model.value.options(filter.value)
-    filtered.push(...res.filter((o) => !!o.label));
+  if (typeof model.value.options === 'function') {
+    const res = await model.value.options(filter.value);
+    filtered.push(...res.filter(o => !!o.label));
   } else {
     filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
   }
 
-  tags.value.forEach((tag) => checkOption(tag, filtered));
-  options.value = filtered
+  tags.value.forEach(tag => checkOption(tag, filtered));
+  options.value = filtered;
 }
 
 function initialize() {
   const defaultValue = model.value.value;
   if (defaultValue) {
     if (Array.isArray(defaultValue)) {
-      defaultValue.forEach((opt) => checkOption(opt, options.value));
-    } else if (typeof defaultValue === "object") {
+      defaultValue.forEach(opt => checkOption(opt, options.value));
+    } else if (typeof defaultValue === 'object') {
       checkOption(defaultValue, options.value);
     } else {
       checkOption(
@@ -330,7 +316,7 @@ defineExpose({
   top: 100%;
   margin-top: 4px;
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     0 2px 4px -1px rgba(0, 0, 0, 0.2),
     0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
@@ -340,7 +326,7 @@ defineExpose({
   bottom: 100%;
   margin-bottom: 4px;
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     0 -2px 4px -1px rgba(0, 0, 0, 0.2),
     0 -4px 5px 0 rgba(0, 0, 0, 0.14),
     0 -1px 10px 0 rgba(0, 0, 0, 0.12);
