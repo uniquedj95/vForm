@@ -22,7 +22,7 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
-    <ion-label slot="label" v-if="model.label" style="font-size: large; font-weight: bold">
+    <ion-label slot="label" v-if="model.label" class="input-label">
       {{ model.label }}
       <ion-text color="danger" v-if="model.required">*</ion-text>
     </ion-label>
