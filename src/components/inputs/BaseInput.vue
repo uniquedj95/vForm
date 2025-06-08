@@ -22,10 +22,7 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
-    <ion-label slot="label" v-if="model.label" class="input-label">
-      {{ model.label }}
-      <ion-text color="danger" v-if="model.required">*</ion-text>
-    </ion-label>
+    <InputLabel :model="model" />
     <ion-label v-if="model.prefix" slot="start">{{ model.prefix }}</ion-label>
     <ion-label v-if="model.suffix" slot="end">{{ model.suffix }} </ion-label>
     <ion-input-password-toggle slot="end" v-if="type === 'password'" />
@@ -33,15 +30,26 @@
 </template>
 
 <script lang="ts" setup>
-import { IonInput, IonLabel, IonInputPasswordToggle, IonText } from '@ionic/vue';
+import { IonInput, IonLabel, IonInputPasswordToggle } from '@ionic/vue';
 import { FormField, FormSchema, BaseFieldTypes } from '../../types';
 import { generateMaskitoOptions } from '../../utils';
 import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue';
+import { useInputValidation } from '../../composables/useInputValidation';
+import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const input = ref(model.value.value as string);
+const schema = computed(() => props.schema);
+
+// Use input validation composable
+const { isValid, onValueUpdate, onFocus, onReset, getErrors } = useInputValidation(
+  inputRef,
+  model,
+  input,
+  schema
+);
 
 const maskitoOptions = computed(() => {
   if (model.value.pattern) return generateMaskitoOptions(model.value.pattern);
@@ -53,52 +61,10 @@ watch(
   v => (input.value = v as string)
 );
 
-function onReset() {
-  input.value = '';
-  model.value.error = '';
-  model.value.value = '';
-}
-
-async function isValid() {
-  if (model.value.required && !input.value) {
-    model.value.error = 'This field is required';
-    return false;
-  }
-  if (model.value.validation) {
-    const errors = await model.value.validation(input.value, props?.schema);
-    if (errors && errors.length) {
-      model.value.error = errors.join();
-      return false;
-    }
-  }
-  return true;
-}
-
-async function onValueUpdate() {
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  inputRef.value?.$el.classList.remove('ion-valid');
-
-  if (await isValid()) {
-    model.value.error = '';
-    model.value.value = input.value;
-    inputRef.value?.$el.classList.add('ion-valid');
-  } else {
-    inputRef.value?.$el.classList.add('ion-invalid');
-  }
-
-  inputRef.value?.$el.classList.add('ion-touched');
-}
-
-function onFocus() {
-  inputRef.value?.$el.classList.remove('ion-touched');
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  model.value.error = '';
-}
-
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors: () => model.value.error,
+  getErrors,
   isValid,
 });
 </script>

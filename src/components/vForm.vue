@@ -44,10 +44,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue';
-import type { FormData, ComputedData, FormSchema, CustomButton, Option } from '../types';
-import { canRenderField, isEmpty } from '../utils';
+import type { FormData, ComputedData, FormSchema, CustomButton } from '../types';
+import { canRenderField } from '../utils';
+import { useFormValidation } from '../composables/useFormValidation';
+import { useDataTransformation } from '../composables/useDataTransformation';
 
 interface FormProps {
   schema: FormSchema;
@@ -80,56 +82,16 @@ const props = withDefaults(defineProps<FormProps>(), {
 });
 
 const emit = defineEmits<FormEmits>();
-const dynamicRefs = ref<Array<any>>([]);
 const activeSchema = ref(props.schema);
 
-const data = computed(() =>
-  Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
-    if (form.value !== undefined) {
-      if (typeof form.onChange === 'function') {
-        acc[key] = form.onChange(form.value);
-      } else {
-        acc[key] = form.value;
-      }
-    }
-    return acc;
-  }, {} as FormData)
-);
+// Use form validation composable
+const { dynamicRefs, isFormValid: validateForm, resetForm: resetFormInputs } = useFormValidation();
 
-const computedData = computed(() => {
-  return Object.entries(data.value).reduce((acc, [key, value]) => {
-    if (value !== undefined) {
-      if (activeSchema.value[key].children !== undefined) {
-        acc[key] = (value as Array<Option>).map(({ other }) => {
-          return Object.entries(other).reduce((results, [id, v]: [string, any]) => {
-            if (typeof activeSchema.value[key].children![id].computedValue === 'function') {
-              results[id] = activeSchema.value[key].children![id].computedValue(
-                v,
-                activeSchema.value
-              );
-            } else {
-              results[id] = v;
-            }
-            return results;
-          }, {} as ComputedData);
-        });
-      }
-
-      if (typeof activeSchema.value[key].computedValue === 'function' && value !== undefined) {
-        acc[key] = activeSchema.value[key].computedValue(value, activeSchema.value);
-      }
-    }
-    return acc;
-  }, {} as ComputedData);
-});
+// Use data transformation composable
+const { formData: data, computedData } = useDataTransformation(activeSchema);
 
 async function isFormValid() {
-  const errors: Array<string> = [];
-  for (const inputRef of dynamicRefs.value) {
-    if (typeof inputRef?.onValueUpdate === 'function') await inputRef.onValueUpdate();
-    if (typeof inputRef?.getErrors === 'function') errors.push(...inputRef.getErrors());
-  }
-  return errors.every(isEmpty);
+  return await validateForm();
 }
 
 async function submitForm() {
@@ -138,9 +100,7 @@ async function submitForm() {
 }
 
 function resetForm() {
-  dynamicRefs.value.forEach((inputRef: any) => {
-    if (typeof inputRef?.onReset === 'function') inputRef.onReset();
-  });
+  resetFormInputs();
 }
 
 function handleClearAction() {

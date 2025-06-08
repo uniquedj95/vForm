@@ -16,10 +16,7 @@
       :debounce="300"
       @click="openInterface"
     >
-      <ion-label slot="label" v-if="model.label" class="input-label">
-        {{ model.label }}
-        <ion-text color="danger" v-if="model.required">*</ion-text>
-      </ion-label>
+      <InputLabel :model="model" />
       <ion-label v-if="model.multiple" style="width: fit-content" slot="start">
         <ion-chip v-for="(tag, index) of tags" :key="index">
           <ion-label>{{ tag.label }}</ion-label>
@@ -56,19 +53,20 @@ import { ref, computed, PropType, watch, ComponentPublicInstance } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
 import { FormSchema, BaseFieldTypes, FormField, Option } from 'types';
 import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
+import { useInputValidation } from '../../composables/useInputValidation';
 import {
   IonInput,
   IonList,
   IonItem,
   IonLabel,
   IonChip,
-  IonText,
   IonIcon,
   IonCheckbox,
   actionSheetController,
   alertController,
   AlertInput,
 } from '@ionic/vue';
+import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -211,11 +209,41 @@ async function openAlert() {
   await alert.present();
 }
 
+// Custom validation for SelectInput - handles both required and custom validation
+async function customSelectValidation(): Promise<boolean | string> {
+  // Check required validation
+  if (model.value.required && isEmpty(tags.value)) {
+    return 'This field is required';
+  }
+
+  // Run field-specific validation function if it exists
+  if (model.value.validation) {
+    const errors = await model.value.validation(tags.value, props?.schema);
+    if (errors && errors.length) {
+      return errors.join();
+    }
+  }
+
+  return true;
+}
+
+// Use input validation composable with custom validation
+const { onFocus: baseOnFocus, applyValidationState } = useInputValidation(
+  inputRef,
+  model,
+  computed(() => (model.value.multiple ? tags.value : tags.value[0])),
+  computed(() => props?.schema),
+  customSelectValidation
+);
+
+// Custom getErrors function for SelectInput
+function getErrors() {
+  return model.value.error;
+}
+
 function onFocus(evt: any) {
   if (evt.target !== inputRef.value?.$el) return;
-  inputRef.value?.$el.classList.remove('ion-touched');
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  model.value.error = '';
+  baseOnFocus();
 
   // Only show options immediately for popover interface
   if (interfaceType.value === 'popover') {
@@ -223,36 +251,22 @@ function onFocus(evt: any) {
   }
 }
 
-async function isValid() {
-  if (model.value.required && isEmpty(tags.value)) {
-    model.value.error = 'This field is required';
-    return false;
-  }
-  if (model.value.validation) {
-    const errors = await model.value.validation(tags.value, props?.schema);
-    if (errors && errors.length) {
-      model.value.error = errors.join();
-      return false;
-    }
-  }
-  return true;
-}
-
 async function onValueUpdate(evt?: any) {
   if ((evt?.relatedTarget as HTMLElement)?.closest('.suggestions-list')) return;
   showOptions.value = false;
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  inputRef.value?.$el.classList.remove('ion-valid');
 
-  if (await isValid()) {
+  // Validate using custom validation logic
+  const validationResult = await customSelectValidation();
+
+  if (validationResult === true) {
     model.value.error = '';
     model.value.value = model.value.multiple ? tags.value : tags.value[0];
-    inputRef.value?.$el.classList.add('ion-valid');
   } else {
-    inputRef.value?.$el.classList.add('ion-invalid');
+    model.value.error =
+      typeof validationResult === 'string' ? validationResult : 'Validation failed';
   }
 
-  inputRef.value?.$el.classList.add('ion-touched');
+  await applyValidationState(validationResult === true);
 }
 
 async function filterOptions() {
@@ -291,7 +305,7 @@ function initialize() {
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors: () => model.value.error,
+  getErrors,
 });
 </script>
 

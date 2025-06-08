@@ -12,10 +12,7 @@
     @ion-focus="onFocus"
     @ion-blur="onValueUpdate"
   >
-    <ion-label slot="label" v-if="model.label" class="input-label">
-      {{ model.label }}
-      <ion-text color="danger" v-if="model.required">*</ion-text>
-    </ion-label>
+    <InputLabel :model="model" />
     <template v-for="(part, index) in patternParts">
       <ion-select
         slot="start"
@@ -82,19 +79,13 @@
 <script lang="ts" setup>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
-import {
-  IonInput,
-  IonLabel,
-  IonIcon,
-  IonSelect,
-  IonSelectOption,
-  IonButton,
-  IonText,
-} from '@ionic/vue';
+import { IonInput, IonLabel, IonIcon, IonSelect, IonSelectOption, IonButton } from '@ionic/vue';
 import { calendar } from 'ionicons/icons';
 import type { FormField, FormSchema } from '../../types';
 import { ComponentPublicInstance, computed, onMounted, PropType, ref, watch } from 'vue';
 import { formatDate, getMonth, zeroPad, monthNames } from '../../utils';
+import { useInputValidation } from '../../composables/useInputValidation';
+import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -102,6 +93,48 @@ const inputRef = ref<ComponentPublicInstance | null>(null);
 const maxDate = ref(model.value.max as string | undefined);
 const minDate = ref(model.value.max as string | undefined);
 const pickerDate = ref<string>(model.value.value as string);
+const schema = computed(() => props.schema);
+
+// Custom validation for DateInput
+async function customDateValidation(value: string): Promise<boolean | string> {
+  if (value === undefined) {
+    if (model.value.required) {
+      return 'This field is required';
+    }
+    return true;
+  }
+
+  const _date = new Date(value);
+  if (isNaN(_date.getTime())) {
+    return 'Invalid date string';
+  }
+
+  if (minDate.value && _date < new Date(minDate.value)) {
+    return `Date must be greater than ${minDate.value}`;
+  }
+
+  if (maxDate.value && _date > new Date(maxDate.value)) {
+    return `Date must be less than ${maxDate.value}`;
+  }
+
+  return true;
+}
+
+// Use input validation composable with custom date validation
+const { onValueUpdate, onFocus, getErrors } = useInputValidation(
+  inputRef,
+  model,
+  pickerDate,
+  schema,
+  customDateValidation
+);
+
+// Custom onReset for DateInput
+function onReset() {
+  pickerDate.value = '';
+  model.value.error = '';
+  model.value.value = '';
+}
 const pattern = computed(() => {
   if (model.value.pattern) return model.value.pattern;
   let datePattern = model.value.pattern ?? 'DD/MMM/YYYY';
@@ -122,61 +155,6 @@ watch(
     buildPickerDate(v as string);
   }
 );
-
-async function isValid() {
-  if (pickerDate.value === undefined) {
-    if (model.value.required) {
-      model.value.error = 'This field is required';
-      return false;
-    }
-    return true;
-  }
-
-  const _date = new Date(pickerDate.value);
-  if (isNaN(_date.getTime())) {
-    model.value.error = 'Invalid date string';
-    return false;
-  }
-
-  if (minDate.value && _date < new Date(minDate.value)) {
-    model.value.error = `Date must be greater than ${minDate.value}`;
-    return false;
-  }
-
-  if (maxDate.value && _date > new Date(maxDate.value)) {
-    model.value.error = `Date must be less than ${maxDate.value}`;
-    return false;
-  }
-
-  if (model.value.validation) {
-    const errors = await model.value.validation(pickerDate.value, props?.schema);
-    if (errors && errors.length) {
-      model.value.error = errors.toString();
-      return false;
-    }
-  }
-  return true;
-}
-
-async function onValueUpdate() {
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  inputRef.value?.$el.classList.remove('ion-valid');
-
-  if (await isValid()) {
-    model.value.error = '';
-    model.value.value = pickerDate.value;
-    inputRef.value?.$el.classList.add('ion-valid');
-  } else {
-    inputRef.value?.$el.classList.add('ion-invalid');
-  }
-  inputRef.value?.$el.classList.add('ion-touched');
-}
-
-function onFocus() {
-  inputRef.value?.$el.classList.remove('ion-touched');
-  inputRef.value?.$el.classList.remove('ion-invalid');
-  model.value.error = '';
-}
 
 async function buildInputDate(part: string, defaultValue?: string, e?: Event) {
   let value = defaultValue ?? (e?.target as HTMLInputElement).value;
@@ -199,16 +177,10 @@ async function buildPickerDate(date: string) {
   await onValueUpdate();
 }
 
-function onReset() {
-  pickerDate.value = '';
-  model.value.error = '';
-  model.value.value = '';
-}
-
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors: () => model.value.error,
+  getErrors,
 });
 
 onMounted(() => {
