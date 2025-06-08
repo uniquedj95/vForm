@@ -1,5 +1,11 @@
 /**
- * Form Builder Utility functions.
+ * Form Builder Utility functions
+ *
+ * This module provides utility functions for form handling, including date formatting,
+ * field rendering checks, deep cloning, option management, and more.
+ *
+ * It is designed to be used in conjunction with vform form builder components and can be extended
+ * or modified as needed for specific use cases.
  *
  * @packageDocumentation
  * @module utils
@@ -7,6 +13,7 @@
  * @author Daniel Justin.
  **/
 import { ComputedData, FormData, FormField, Option } from 'types';
+export * from './maskito';
 
 /**
  * Full month names.

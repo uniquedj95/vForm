@@ -2,6 +2,7 @@
   <ion-input
     ref="inputRef"
     v-model="input"
+    v-maskito="maskitoOptions"
     :clear-input="true"
     :fill="model.fill ?? 'outline'"
     :label-placement="model.labelPlacement ?? 'stacked'"
@@ -9,7 +10,7 @@
     :required="model.required"
     :error-text="model.error"
     :autofocus="model.autoFocus"
-    :placeholder="model.placeholder"
+    :placeholder="maskitoOptions?.placeholder ?? model.placeholder"
     :disabled="model.disabled"
     :counter="model.counter"
     :min="model.min"
@@ -21,7 +22,7 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
-    <ion-label slot="label" v-if="model.label">
+    <ion-label slot="label" v-if="model.label" style="font-size: large; font-weight: bold">
       {{ model.label }}
       <ion-text color="danger" v-if="model.required">*</ion-text>
     </ion-label>
@@ -33,13 +34,19 @@
 
 <script lang="ts" setup>
 import { IonInput, IonLabel, IonInputPasswordToggle, IonText } from '@ionic/vue';
-import { FormField, FormSchema, BaseFieldTypes } from 'types';
-import { ComponentPublicInstance, PropType, ref, watch } from 'vue';
+import { FormField, FormSchema, BaseFieldTypes } from '../../types';
+import { generateMaskitoOptions } from '../../utils';
+import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue';
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const input = ref(model.value.value as string);
+
+const maskitoOptions = computed(() => {
+  if (model.value.pattern) return generateMaskitoOptions(model.value.pattern);
+  return undefined;
+});
 
 watch(
   () => model.value.value,
