@@ -16,7 +16,7 @@
       :debounce="300"
       @click="openInterface"
     >
-      <ion-label slot="label" v-if="model.label">
+      <ion-label slot="label" v-if="model.label" class="input-label">
         {{ model.label }}
         <ion-text color="danger" v-if="model.required">*</ion-text>
       </ion-label>
