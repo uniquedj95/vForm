@@ -193,3 +193,10 @@ defineExpose({
   }),
 });
 </script>
+
+<style>
+.input-label {
+  font-size: large;
+  font-weight: bold;
+}
+</style>
