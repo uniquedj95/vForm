@@ -1,32 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createIonicMocks, ionicComponentStubs, formInputStubs } from '../../utils/testHelpers';
 import VForm from '../../../src/components/vForm.vue';
 
-// Mock child components and Ionic components
-vi.mock('@ionic/vue', () => {
-  return {
-    IonButton: {
-      name: 'IonButton',
-      template: '<button class="ion-button"><slot></slot></button>',
-    },
-    IonGrid: {
-      name: 'IonGrid',
-      template: '<div class="ion-grid"><slot></slot></div>',
-    },
-    IonRow: {
-      name: 'IonRow',
-      template: '<div class="ion-row"><slot></slot></div>',
-    },
-    IonCol: {
-      name: 'IonCol',
-      template: '<div class="ion-col"><slot></slot></div>',
-    },
-    IonIcon: {
-      name: 'IonIcon',
-      template: '<div class="ion-icon"></div>',
-    },
-  };
-});
+// Mock Ionic components
+createIonicMocks();
 
 describe('VForm', () => {
   let wrapper;
@@ -51,14 +29,9 @@ describe('VForm', () => {
       props: defaultProps,
       global: {
         stubs: {
-          // Stub all ionic components and form inputs
-          'ion-button': true,
-          'ion-grid': true,
-          'ion-row': true,
-          'ion-col': true,
-          'ion-icon': true,
-          'text-input': true,
-          'email-input': true,
+          // Use shared Ionic and form input stubs
+          ...ionicComponentStubs,
+          ...formInputStubs,
         },
       },
     });

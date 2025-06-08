@@ -39,6 +39,7 @@
 import { ComputedData, FormData, FormField, FormSchema, Option } from 'types';
 import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
 import { canRenderField, deepClone } from '../../utils';
+import { useFormValidation } from '../../composables/useFormValidation';
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import { add, remove } from 'ionicons/icons';
 
@@ -51,7 +52,9 @@ interface PropsI {
 defineProps<PropsI>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const childrens = ref<FormSchema[]>([]);
-const dynamicRefs = ref<Array<any>>([]);
+
+// Use form validation composable
+const { dynamicRefs, resetForm, getFormErrors, updateFormValues } = useFormValidation();
 
 const inputValue = computed<Array<Option>>(() => {
   return childrens.value.map((child, index) => ({
@@ -88,25 +91,15 @@ function removeSet(index: number) {
 }
 
 function onReset() {
-  dynamicRefs.value.forEach((inputRef: any) => {
-    if (typeof inputRef?.onReset === 'function') inputRef.onReset();
-  });
+  resetForm();
 }
 
 function getErrors() {
-  const errors: Array<string> = [];
-  for (const inputRef of dynamicRefs.value) {
-    if (typeof inputRef?.getErrors === 'function') errors.push(inputRef.getErrors());
-  }
-  return errors;
+  return getFormErrors();
 }
 
 async function onValueUpdate() {
-  for (const inputRef of dynamicRefs.value) {
-    if (typeof inputRef?.onValueUpdate === 'function') {
-      await inputRef.onValueUpdate();
-    }
-  }
+  await updateFormValues();
 }
 
 defineExpose({

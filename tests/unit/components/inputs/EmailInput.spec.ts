@@ -1,29 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createBaseInputMock, expectStandardFormMethods } from '../../../utils/testHelpers';
 import EmailInput from '../../../../src/components/inputs/EmailInput.vue';
 import BaseInput from '../../../../src/components/inputs/BaseInput.vue';
 
-vi.mock('../../../../src/components/inputs/BaseInput.vue', () => ({
-  default: {
-    name: 'BaseInput',
-    props: ['modelValue', 'schema', 'type'],
-    template: `
-      <div class="base-input">
-        <div v-if="modelValue.label" class="label">
-          {{ modelValue.label }}
-          <span v-if="modelValue.required" class="required-indicator">*</span>
-        </div>
-        <div class="input-field"></div>
-        <div v-if="modelValue.error" class="error">{{ modelValue.error }}</div>
-      </div>
-    `,
-    methods: {
-      onReset: vi.fn(),
-      onValueUpdate: vi.fn(),
-      getErrors: vi.fn().mockReturnValue([]),
-    },
-  },
-}));
+// Mock BaseInput component
+createBaseInputMock();
 
 describe('EmailInput', () => {
   let wrapper;
@@ -51,9 +33,7 @@ describe('EmailInput', () => {
   });
 
   it('exposes required methods', () => {
-    expect(typeof wrapper.vm.onReset).toBe('function');
-    expect(typeof wrapper.vm.onValueUpdate).toBe('function');
-    expect(typeof wrapper.vm.getErrors).toBe('function');
+    expectStandardFormMethods(wrapper);
   });
 
   it('forwards props to base input', () => {
