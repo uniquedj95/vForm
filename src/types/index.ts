@@ -408,7 +408,8 @@ export type InputType =
   | 'SelectInput'
   | 'TextAreaInput'
   | 'RepeatInput'
-  | 'CheckboxInput';
+  | 'CheckboxInput'
+  | 'RadioInput';
 
 /**
  * Represents the basic field types for HTML input elements.

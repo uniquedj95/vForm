@@ -9,6 +9,7 @@ import SelectInput from './components/inputs/SelectInput.vue';
 import TextAreaInput from './components/inputs/TextAreaInput.vue';
 import RepeatInput from './components/inputs/RepeatInput.vue';
 import CheckboxInput from './components/inputs/CheckboxInput.vue';
+import RadioInput from './components/inputs/RadioInput.vue';
 import { maskito } from '@maskito/vue';
 
 export const VForm: Plugin = {
@@ -23,6 +24,7 @@ export const VForm: Plugin = {
     app.component('TextAreaInput', TextAreaInput);
     app.component('RepeatInput', RepeatInput);
     app.component('CheckboxInput', CheckboxInput);
+    app.component('RadioInput', RadioInput);
     app.directive('maskito', maskito);
   },
 };
