@@ -236,11 +236,6 @@ const { onFocus: baseOnFocus, applyValidationState } = useInputValidation(
   customSelectValidation
 );
 
-// Custom getErrors function for SelectInput
-function getErrors() {
-  return model.value.error;
-}
-
 function onFocus(evt: any) {
   if (evt.target !== inputRef.value?.$el) return;
   baseOnFocus();
@@ -305,7 +300,7 @@ function initialize() {
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors,
+  getErrors: () => (model.value.error ? [model.value.error] : []),
 });
 </script>
 
