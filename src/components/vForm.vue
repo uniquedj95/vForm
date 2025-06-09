@@ -85,22 +85,14 @@ const emit = defineEmits<FormEmits>();
 const activeSchema = ref(props.schema);
 
 // Use form validation composable
-const { dynamicRefs, isFormValid: validateForm, resetForm: resetFormInputs } = useFormValidation();
+const { dynamicRefs, isFormValid, resetForm } = useFormValidation();
 
 // Use data transformation composable
 const { formData: data, computedData } = useDataTransformation(activeSchema);
 
-async function isFormValid() {
-  return await validateForm();
-}
-
 async function submitForm() {
   if (!(await isFormValid())) return;
   emit('submit', data.value, computedData.value);
-}
-
-function resetForm() {
-  resetFormInputs();
 }
 
 function handleClearAction() {

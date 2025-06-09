@@ -14,6 +14,6 @@ const inputRef = ref<typeof BaseInput | null>(null);
 defineExpose({
   onReset: () => inputRef.value?.onReset(),
   onValueUpdate: () => inputRef.value?.onValueUpdate(),
-  getErrors: () => inputRef.value?.getErrors(),
+  getErrors: () => inputRef.value?.getErrors?.() ?? [],
 });
 </script>

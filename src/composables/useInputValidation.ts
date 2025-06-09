@@ -1,4 +1,4 @@
-import { Ref, computed } from 'vue';
+import { Ref } from 'vue';
 import { FormField, FormSchema } from '../types';
 import { useValidationStyles } from './useValidationStyles';
 import { ComponentPublicInstance } from 'vue';
@@ -84,7 +84,9 @@ export function useInputValidation(
   /**
    * Standard getErrors handler
    */
-  const getErrors = computed(() => model.value.error);
+  function getErrors(): string[] {
+    return model.value.error ? [model.value.error] : [];
+  }
 
   return {
     isValid,

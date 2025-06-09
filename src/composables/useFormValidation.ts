@@ -11,13 +11,25 @@ export function useFormValidation() {
    * Check if form is valid by validating all input refs
    */
   async function isFormValid(): Promise<boolean> {
+    console.debug('Validating form inputs');
     const errors: Array<string> = [];
     for (const inputRef of dynamicRefs.value) {
       if (typeof inputRef?.onValueUpdate === 'function') {
         await inputRef.onValueUpdate();
       }
       if (typeof inputRef?.getErrors === 'function') {
-        errors.push(...inputRef.getErrors());
+        try {
+          const componentErrors = inputRef.getErrors();
+          if (Array.isArray(componentErrors)) {
+            errors.push(...componentErrors);
+          } else {
+            console.warn('getErrors() returned non-array value:', componentErrors);
+          }
+        } catch (error) {
+          console.error('Error calling getErrors on component:', error, inputRef);
+        }
+      } else {
+        console.warn('Component does not have getErrors function:', inputRef);
       }
     }
     return errors.every(isEmpty);
@@ -41,7 +53,16 @@ export function useFormValidation() {
     const errors: Array<string> = [];
     for (const inputRef of dynamicRefs.value) {
       if (typeof inputRef?.getErrors === 'function') {
-        errors.push(...inputRef.getErrors());
+        try {
+          const componentErrors = inputRef.getErrors();
+          if (Array.isArray(componentErrors)) {
+            errors.push(...componentErrors);
+          } else {
+            console.warn('getErrors() returned non-array value:', componentErrors);
+          }
+        } catch (error) {
+          console.error('Error calling getErrors on component:', error, inputRef);
+        }
       }
     }
     return errors;
