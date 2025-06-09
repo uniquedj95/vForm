@@ -110,9 +110,17 @@ DRY RUN: Would complete these steps:
 1. Stage all changes: git add .
 2. Commit with message: git commit -m \"Bump version to $NEW_VERSION\"
 3. Create version tag: git tag v$NEW_VERSION
-4. Push changes and tags: git push && git push --tags
-5. Create a release on GitHub to trigger automatic publishing
-
+4. Push changes and tags: git push && git push --tags"
+  
+  if command -v gh &> /dev/null; then
+    echo "5. Create GitHub release: gh release create v$NEW_VERSION"
+    echo "6. Automatic npm publishing would be triggered"
+  else
+    echo "5. Create a release on GitHub to trigger automatic publishing"
+    echo "   (Install GitHub CLI 'gh' for full automation)"
+  fi
+  
+  echo "
 No changes were actually made. Run without --dry-run to perform these actions.
 "
 else
@@ -134,13 +142,42 @@ else
   echo "Pushing to remote repository..."
   git push && git push --tags
 
-  echo "
+  # Check if GitHub CLI is installed
+  if command -v gh &> /dev/null; then
+    echo "Creating GitHub release..."
+    
+    # Generate release notes from recent commits
+    RELEASE_NOTES=$(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD~1)..HEAD 2>/dev/null || echo "- Version $NEW_VERSION release")
+    
+    # Create GitHub release
+    gh release create "v$NEW_VERSION" \
+      --title "Release v$NEW_VERSION" \
+      --notes "$RELEASE_NOTES" \
+      --latest
+    
+    echo "
+🎉 Fully automated release completed:
+✓ Changes committed with message: \"Bump version to $NEW_VERSION\"
+✓ Version tagged as: v$NEW_VERSION
+✓ Changes and tags pushed to remote repository
+✓ GitHub release created and published
+✓ Automatic npm publishing triggered
+
+Your package will be published automatically!"
+  else
+    echo "
 Release process completed:
 ✓ Changes committed with message: \"Bump version to $NEW_VERSION\"
 ✓ Version tagged as: v$NEW_VERSION
 ✓ Changes and tags pushed to remote repository
 
+⚠️  GitHub CLI (gh) not found. Install it to fully automate releases:
+   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+   echo \"deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+   sudo apt update && sudo apt install gh
+
 Next steps:
 - Create a release on GitHub to trigger automatic publishing
 "
+  fi
 fi

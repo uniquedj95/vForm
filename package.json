@@ -36,6 +36,9 @@
     "version:patch:dry": "./scripts/version-bump.sh --dry-run patch",
     "version:minor:dry": "./scripts/version-bump.sh --dry-run minor",
     "version:major:dry": "./scripts/version-bump.sh --dry-run major",
+    "release:patch": "./scripts/version-bump.sh patch",
+    "release:minor": "./scripts/version-bump.sh minor",
+    "release:major": "./scripts/version-bump.sh major",
     "prepare": "husky",
     "pre-commit": "lint-staged"
   },
