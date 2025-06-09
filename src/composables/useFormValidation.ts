@@ -58,7 +58,7 @@ export function useFormValidation() {
           if (Array.isArray(componentErrors)) {
             errors.push(...componentErrors);
           } else {
-            console.warn('getErrors() returned non-array value:', componentErrors);
+            errors.push(String(componentErrors));
           }
         } catch (error) {
           console.error('Error calling getErrors on component:', error, inputRef);
