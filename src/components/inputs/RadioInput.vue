@@ -7,6 +7,7 @@
     :error-text="model.error"
     :disabled="model.disabled"
     :compareWith="compareWith"
+    :allow-empty-selection="!model.required"
     @ionFocus="onFocus"
     @ionChange="onValueUpdate"
     @ionBlur="onValueUpdate"
@@ -16,7 +17,8 @@
       :key="option.value"
       :value="option"
       :disabled="model.disabled"
-      :label-placement="labelPlacement"
+      label-placement="end"
+      justify="start"
     >
       {{ option.label }}
     </ion-radio>
@@ -29,6 +31,7 @@ import { FormField, FormSchema, Option } from '../../types';
 import { ComponentPublicInstance, PropType, ref, watch, computed, onMounted } from 'vue';
 import { useInputValidation } from '../../composables/useInputValidation';
 import { getLabelText } from '../../utils';
+
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
@@ -37,10 +40,6 @@ const schema = computed(() => props.schema);
 const options = ref<Option[]>([]);
 
 const helpText = computed(() => getLabelText(model.value));
-
-const labelPlacement = computed<'start' | 'end'>(() => {
-  return model.value.labelPlacement ? (model.value.labelPlacement as 'start' | 'end') : 'end';
-});
 
 // Use the input validation helpers
 const { onValueUpdate, onFocus, getErrors } = useInputValidation(inputRef, model, input, schema);
