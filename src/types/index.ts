@@ -426,7 +426,9 @@ export type BaseFieldTypes =
   | 'search'
   | 'time'
   | 'month'
-  | 'week';
+  | 'week'
+  | 'date'
+  | 'datetime-local';
 
 /**
  * Interface for custom buttons that can be added to forms.

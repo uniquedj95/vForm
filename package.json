@@ -46,7 +46,20 @@
     "Vue",
     "ionic",
     "typescript",
-    "Form builder"
+    "Form builder",
+    "form",
+    "vform",
+    "maskito",
+    "mask",
+    "masking",
+    "vue 3",
+    "vue 3 form",
+    "vue 3 form builder",
+    "vue 3 form masking",
+    "ionic vue form",
+    "ionic vue form builder",
+    "ionic form",
+    "ionic form builder"
   ],
   "author": "Daniel Justin <danieljmuleke@gamil.com>",
   "license": "MIT",
@@ -83,8 +96,7 @@
   },
   "dependencies": {
     "@maskito/core": "^3.9.0",
-    "@maskito/vue": "^3.9.0",
-    "@vuepic/vue-datepicker": "11.0.2"
+    "@maskito/vue": "^3.9.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue}": [
