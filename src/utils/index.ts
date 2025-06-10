@@ -234,3 +234,15 @@ export function getFilteredOptions(options: Array<Option>, filter: string): Arra
     JSON.stringify(option).toLowerCase().includes(filter.toLowerCase())
   );
 }
+
+/**
+ * Generates a label text for a form field, appending an asterisk if the field is required.
+ *
+ * @param model - The form field model containing the label and required status.
+ * @returns The label text with an optional asterisk for required fields.
+ */
+export function getLabelText(model: FormField): string {
+  const label = model.label || '';
+  const asterisk = model.required ? ` *` : '';
+  return label + asterisk;
+}

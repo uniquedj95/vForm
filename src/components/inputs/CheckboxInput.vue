@@ -18,7 +18,7 @@ import { IonCheckbox } from '@ionic/vue';
 import { FormField, FormSchema } from 'types';
 import { ComponentPublicInstance, PropType, ref, watch, computed } from 'vue';
 import { useInputValidation } from '../../composables/useInputValidation';
-import { useCheckboxLabelText } from '../../composables/useCheckboxLabelText';
+import { getLabelText } from '../../utils';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -27,7 +27,7 @@ const input = ref(model.value.value as boolean);
 const schema = computed(() => props.schema);
 
 // Use checkbox label text composable
-const { labelTextWithAsterisk } = useCheckboxLabelText(model);
+const labelTextWithAsterisk = computed(() => getLabelText(model.value));
 
 // Use input validation composable with custom default value for checkbox
 const { onValueUpdate, onFocus, getErrors } = useInputValidation(inputRef, model, input, schema);

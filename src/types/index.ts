@@ -408,7 +408,8 @@ export type InputType =
   | 'SelectInput'
   | 'TextAreaInput'
   | 'RepeatInput'
-  | 'CheckboxInput';
+  | 'CheckboxInput'
+  | 'RadioInput';
 
 /**
  * Represents the basic field types for HTML input elements.
@@ -425,7 +426,9 @@ export type BaseFieldTypes =
   | 'search'
   | 'time'
   | 'month'
-  | 'week';
+  | 'week'
+  | 'date'
+  | 'datetime-local';
 
 /**
  * Interface for custom buttons that can be added to forms.
