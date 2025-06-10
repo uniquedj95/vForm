@@ -3,7 +3,7 @@
     v-model="input"
     ref="inputRef"
     :required="model.required"
-    :help-text="helpText"
+    :helper-text="helpText"
     :error-text="model.error"
     :disabled="model.disabled"
     :compareWith="compareWith"
