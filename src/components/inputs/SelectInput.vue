@@ -3,7 +3,7 @@
     <ion-input
       ref="inputRef"
       v-model="filter"
-      :fill="model.fill ?? 'outline'"
+      :fill="model.fill ?? 'solid'"
       :label-placement="model.labelPlacement ?? 'stacked'"
       :type="type ?? 'text'"
       :required="model.required"

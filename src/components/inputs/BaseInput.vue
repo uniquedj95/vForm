@@ -4,7 +4,7 @@
     v-model="input"
     v-maskito="maskitoOptions"
     :clear-input="true"
-    :fill="model.fill ?? 'outline'"
+    :fill="model.fill ?? 'solid'"
     :label-placement="model.labelPlacement ?? 'stacked'"
     :type="type ?? 'text'"
     :required="model.required"
