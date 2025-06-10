@@ -3,7 +3,7 @@
     ref="inputRef"
     v-model="input"
     :clear-input="true"
-    :fill="model.fill ?? 'outline'"
+    :fill="model.fill ?? 'solid'"
     :label-placement="model.labelPlacement ?? 'stacked'"
     :required="model.required"
     :error-text="model.error"
