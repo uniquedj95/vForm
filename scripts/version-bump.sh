@@ -17,6 +17,7 @@ show_usage() {
 # Initialize variables
 DRY_RUN=false
 BUMP_TYPE=""
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "master")
 
 # Parse command line options
 while [[ $# -gt 0 ]]; do
@@ -136,7 +137,7 @@ else
 
   # Create a version tag
   echo "Creating version tag..."
-  git tag v$NEW_VERSION
+  git tag v$NEW_VERSION $CURRENT_BRANCH
 
   # Push changes and tags
   echo "Pushing to remote repository..."
