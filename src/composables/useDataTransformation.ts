@@ -1,5 +1,6 @@
 import { computed, reactive, Ref, watch } from 'vue';
 import { FormData, FormSchema, ComputedData, Option } from 'types';
+import { deepEqual } from '../utils';
 
 /**
  * Composable for data transformation logic
@@ -32,9 +33,9 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
     (newData, oldData = {}) => {
       // Process only values that have changed
       Object.keys(newData).forEach(key => {
-        // Check if this specific value has changed
-        const hasValueChanged = JSON.stringify(newData[key]) !== JSON.stringify(oldData[key]);
-        if (!hasValueChanged) return;
+        // Check if this specific value has changed using our custom deep equality
+        const isEqual = deepEqual(newData[key], oldData[key]);
+        if (isEqual) return;
 
         const value = newData[key];
 
@@ -63,7 +64,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
 
                 // Only process children that have changed
                 Object.entries(item.other || {}).forEach(([id, v]: [string, any]) => {
-                  const hasChildChanged = JSON.stringify(v) !== JSON.stringify(oldItem.other?.[id]);
+                  const hasChildChanged = !deepEqual(v, oldItem.other?.[id]);
 
                   if (hasChildChanged) {
                     if (

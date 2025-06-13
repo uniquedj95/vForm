@@ -246,3 +246,38 @@ export function getLabelText(model: FormField): string {
   const asterisk = model.required ? ` *` : '';
   return label + asterisk;
 }
+
+/**
+ * Utility for deep comparison between two values.
+ *
+ * @param obj1 - The first value to compare.
+ * @param obj2 - The second value to compare.
+ * @returns `true` if the values are deeply equal, `false` otherwise.
+ */
+export function deepEqual(obj1: any, obj2: any): boolean {
+  // Handle simple cases
+  if (obj1 === obj2) return true;
+  if (obj1 == null || obj2 == null) return false;
+  if (typeof obj1 !== typeof obj2) return false;
+
+  // Handle primitive types
+  if (typeof obj1 !== 'object') return obj1 === obj2;
+
+  // Handle arrays
+  if (Array.isArray(obj1) && Array.isArray(obj2)) {
+    if (obj1.length !== obj2.length) return false;
+    return obj1.every((item, i) => deepEqual(item, obj2[i]));
+  }
+
+  // Handle objects
+  if (Array.isArray(obj1) !== Array.isArray(obj2)) return false;
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  return keys1.every(
+    key => Object.prototype.hasOwnProperty.call(obj2, key) && deepEqual(obj1[key], obj2[key])
+  );
+}
