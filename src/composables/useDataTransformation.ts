@@ -101,9 +101,9 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
               });
             }
           }
-
-          // Compute the value if a computedValue function exists
-          if (typeof activeSchema.value[key].computedValue === 'function') {
+          // Only compute the value if no children were processed
+          // This prevents overwriting child transformations
+          else if (typeof activeSchema.value[key].computedValue === 'function') {
             computedData[key] = activeSchema.value[key].computedValue(value, activeSchema.value);
           }
         } else {
