@@ -1,4 +1,4 @@
-import { computed, reactive, Ref, watch } from 'vue';
+import { computed, ref, Ref, watch } from 'vue';
 import { FormData, FormSchema, ComputedData, Option } from 'types';
 import { deepEqual } from '../utils';
 
@@ -26,7 +26,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
   /**
    * Transform form data to computed data
    */
-  const computedData = reactive({} as ComputedData);
+  const computedData = ref({} as ComputedData);
 
   /**
    * Process a child value using its computed value function or return as is
@@ -43,8 +43,8 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
    */
   const processItemChildren = (key: string, item: Option, oldItem: Option, index: number): void => {
     // Create the object if it doesn't exist
-    if (!computedData[key][index]) {
-      computedData[key][index] = {};
+    if (!computedData.value[key][index]) {
+      computedData.value[key][index] = {};
     }
 
     // Only process children that have changed
@@ -52,7 +52,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
       const hasChildChanged = !deepEqual(value, oldItem.other?.[id]);
 
       if (hasChildChanged) {
-        computedData[key][index][id] = processChildValue(key, id, value);
+        computedData.value[key][index][id] = processChildValue(key, id, value);
       }
     });
   };
@@ -90,8 +90,8 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
    */
   const processChildren = (key: string, value: any, oldData: Record<string, any>): void => {
     // Initialize if needed
-    if (!computedData[key]) {
-      computedData[key] = [];
+    if (!computedData.value[key]) {
+      computedData.value[key] = [];
     }
 
     const valueArray = value as Array<Option>;
@@ -101,7 +101,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
       processArrayItems(key, valueArray, oldData[key] as Array<Option>);
     } else {
       // Fallback for when oldData[key] is not an array
-      computedData[key] = valueArray.map(item => processNonArrayItem(key, item));
+      computedData.value[key] = valueArray.map(item => processNonArrayItem(key, item));
     }
   };
 
@@ -111,7 +111,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
   const processFormField = (key: string, value: any, oldData: Record<string, any>): void => {
     if (!value) {
       // Value is undefined, delete the key from the computed data if it exists
-      delete computedData[key];
+      delete computedData.value[key];
       return;
     }
 
@@ -123,14 +123,13 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
     // Only compute the value if no children were processed
     // This prevents overwriting child transformations
     else if (typeof schema.computedValue === 'function') {
-      computedData[key] = schema.computedValue(value, activeSchema.value);
+      computedData.value[key] = schema.computedValue(value, activeSchema.value);
     }
   };
 
   watch(
     formData,
     (newData, oldData = {}) => {
-      // Process only values that have changed
       Object.keys(newData).forEach(key => {
         // Check if this specific value has changed using our custom deep equality
         const isEqual = deepEqual(newData[key], oldData[key]);
