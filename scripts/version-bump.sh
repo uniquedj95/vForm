@@ -137,7 +137,7 @@ else
 
   # Create a version tag
   echo "Creating version tag..."
-  git tag v$NEW_VERSION $CURRENT_BRANCH
+  git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION" $CURRENT_BRANCH
 
   # Push changes and tags
   echo "Pushing to remote repository..."
