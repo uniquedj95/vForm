@@ -28,6 +28,105 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
    */
   const computedData = reactive({} as ComputedData);
 
+  /**
+   * Process a child value using its computed value function or return as is
+   */
+  const processChildValue = (key: string, childId: string, value: any): any => {
+    if (typeof activeSchema.value[key].children![childId]?.computedValue === 'function') {
+      return activeSchema.value[key].children![childId].computedValue(value, activeSchema.value);
+    }
+    return value;
+  };
+
+  /**
+   * Process a single item's children
+   */
+  const processItemChildren = (key: string, item: Option, oldItem: Option, index: number): void => {
+    // Create the object if it doesn't exist
+    if (!computedData[key][index]) {
+      computedData[key][index] = {};
+    }
+
+    // Only process children that have changed
+    Object.entries(item.other ?? {}).forEach(([id, value]: [string, any]) => {
+      const hasChildChanged = !deepEqual(value, oldItem.other?.[id]);
+
+      if (hasChildChanged) {
+        computedData[key][index][id] = processChildValue(key, id, value);
+      }
+    });
+  };
+
+  /**
+   * Process items when old data is an array
+   */
+  const processArrayItems = (
+    key: string,
+    valueArray: Array<Option>,
+    oldArray: Array<Option>
+  ): void => {
+    valueArray.forEach((item, index) => {
+      // Get the old item or empty object if it doesn't exist
+      const oldItem = oldArray[index] ?? { other: {} };
+      processItemChildren(key, item, oldItem, index);
+    });
+  };
+
+  /**
+   * Process a single item for the non-array case
+   */
+  const processNonArrayItem = (key: string, { other }: Option): Record<string, any> => {
+    return Object.entries(other ?? {}).reduce(
+      (results, [id, value]: [string, any]) => {
+        results[id] = processChildValue(key, id, value);
+        return results;
+      },
+      {} as Record<string, any>
+    );
+  };
+
+  /**
+   * Process children for the entire form field
+   */
+  const processChildren = (key: string, value: any, oldData: Record<string, any>): void => {
+    // Initialize if needed
+    if (!computedData[key]) {
+      computedData[key] = [];
+    }
+
+    const valueArray = value as Array<Option>;
+
+    // For arrays, compare each item and its children
+    if (Array.isArray(oldData[key])) {
+      processArrayItems(key, valueArray, oldData[key] as Array<Option>);
+    } else {
+      // Fallback for when oldData[key] is not an array
+      computedData[key] = valueArray.map(item => processNonArrayItem(key, item));
+    }
+  };
+
+  /**
+   * Process a single form field value
+   */
+  const processFormField = (key: string, value: any, oldData: Record<string, any>): void => {
+    if (!value) {
+      // Value is undefined, delete the key from the computed data if it exists
+      delete computedData[key];
+      return;
+    }
+
+    const schema = activeSchema.value[key];
+
+    if (schema.children !== undefined) {
+      processChildren(key, value, oldData);
+    }
+    // Only compute the value if no children were processed
+    // This prevents overwriting child transformations
+    else if (typeof schema.computedValue === 'function') {
+      computedData[key] = schema.computedValue(value, activeSchema.value);
+    }
+  };
+
   watch(
     formData,
     (newData, oldData = {}) => {
@@ -37,79 +136,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
         const isEqual = deepEqual(newData[key], oldData[key]);
         if (isEqual) return;
 
-        const value = newData[key];
-
-        if (value) {
-          if (activeSchema.value[key].children !== undefined) {
-            // Initialize if needed
-            if (!computedData[key]) {
-              computedData[key] = [];
-            }
-
-            const valueArray = value as Array<Option>;
-
-            // For arrays, compare each item and its children
-            if (Array.isArray(oldData[key])) {
-              const oldArray = oldData[key] as Array<Option>;
-
-              // Process each item in the array
-              valueArray.forEach((item, index) => {
-                // Create the object if it doesn't exist
-                if (!computedData[key][index]) {
-                  computedData[key][index] = {};
-                }
-
-                // Get the old item or empty object if it doesn't exist
-                const oldItem = oldArray[index] ?? { other: {} };
-
-                // Only process children that have changed
-                Object.entries(item.other ?? {}).forEach(([id, v]: [string, any]) => {
-                  const hasChildChanged = !deepEqual(v, oldItem.other?.[id]);
-
-                  if (hasChildChanged) {
-                    if (
-                      typeof activeSchema.value[key].children![id]?.computedValue === 'function'
-                    ) {
-                      computedData[key][index][id] = activeSchema.value[key].children![
-                        id
-                      ].computedValue(v, activeSchema.value);
-                    } else {
-                      computedData[key][index][id] = v;
-                    }
-                  }
-                });
-              });
-            } else {
-              // Fallback for when oldData[key] is not an array
-              computedData[key] = valueArray.map(({ other }: Option) => {
-                return Object.entries(other ?? {}).reduce(
-                  (results, [id, v]: [string, any]) => {
-                    if (
-                      typeof activeSchema.value[key].children![id]?.computedValue === 'function'
-                    ) {
-                      results[id] = activeSchema.value[key].children![id].computedValue(
-                        v,
-                        activeSchema.value
-                      );
-                    } else {
-                      results[id] = v;
-                    }
-                    return results;
-                  },
-                  {} as Record<string, any>
-                );
-              });
-            }
-          }
-          // Only compute the value if no children were processed
-          // This prevents overwriting child transformations
-          else if (typeof activeSchema.value[key].computedValue === 'function') {
-            computedData[key] = activeSchema.value[key].computedValue(value, activeSchema.value);
-          }
-        } else {
-          // Value is undefined, delete the key from the computed data if it exists
-          delete computedData[key];
-        }
+        processFormField(key, newData[key], oldData);
       });
     },
     {
