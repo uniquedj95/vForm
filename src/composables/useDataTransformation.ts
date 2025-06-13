@@ -60,10 +60,10 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
                 }
 
                 // Get the old item or empty object if it doesn't exist
-                const oldItem = oldArray[index] || { other: {} };
+                const oldItem = oldArray[index] ?? { other: {} };
 
                 // Only process children that have changed
-                Object.entries(item.other || {}).forEach(([id, v]: [string, any]) => {
+                Object.entries(item.other ?? {}).forEach(([id, v]: [string, any]) => {
                   const hasChildChanged = !deepEqual(v, oldItem.other?.[id]);
 
                   if (hasChildChanged) {
@@ -82,7 +82,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
             } else {
               // Fallback for when oldData[key] is not an array
               computedData[key] = valueArray.map(({ other }: Option) => {
-                return Object.entries(other || {}).reduce(
+                return Object.entries(other ?? {}).reduce(
                   (results, [id, v]: [string, any]) => {
                     if (
                       typeof activeSchema.value[key].children![id]?.computedValue === 'function'
