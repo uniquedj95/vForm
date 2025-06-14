@@ -130,12 +130,22 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
   watch(
     formData,
     (newData, oldData = {}) => {
+      // First, handle existing and updated fields
       Object.keys(newData).forEach(key => {
         // Check if this specific value has changed using our custom deep equality
         const isEqual = deepEqual(newData[key], oldData[key]);
         if (isEqual) return;
 
         processFormField(key, newData[key], oldData);
+      });
+
+      // Then, handle keys that have been removed
+      // Check if any keys from oldData no longer exist in newData
+      Object.keys(oldData).forEach(key => {
+        if (!(key in newData) && key in computedData.value) {
+          // Delete keys from computedData that no longer exist in formData
+          delete computedData.value[key];
+        }
       });
     },
     {
