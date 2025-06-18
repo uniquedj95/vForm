@@ -28,7 +28,8 @@ A dynamic form builder for Vue.js with Ionic components
   - [Field Configuration Options](#field-configuration-options)
 - [Form Events](#form-events)
 - [Form Methods](#form-methods)
-- [Form Props](#form-props)
+- [Input Dependencies](#input-dependencies)
+  - [Dynamic Options](#dynamic-options)
 - [Advanced Components](#advanced-components)
   - [SelectInput](#selectinput)
   - [Custom Buttons](#custom-buttons)
@@ -46,6 +47,7 @@ vForm is a Vue.js component that dynamically generates forms based on a provided
 
 - **Dynamic Form Generation**: Create forms dynamically based on a schema definition.
 - **Conditional Field Rendering**: Fields can be shown or hidden based on other form values.
+- **Dependent Options**: Load options for select inputs based on the values of other fields.
 - **Responsive Grid Layout**: Utilizes Ionic Grid for a responsive design that works across different screen sizes.
 - **Enhanced Date Input Field**: Custom date formatting and handling with integrated date picker.
 - **Multiple Selection Interfaces**: Three different interfaces for select inputs (popover, action sheet, alert).
@@ -314,6 +316,80 @@ When accessing the VForm via a template ref, you can utilize these methods:
 | `resetForm()`   | Resets all form fields to their initial state          | `void`                                               |
 | `isFormValid()` | Validates all form fields and returns validation state | `Promise<boolean>`                                   |
 | `resolveData()` | Returns the current form data and computed data        | `{ formData: FormData, computedData: ComputedData }` |
+
+### Input Dependencies
+
+vForm provides a powerful system for creating dependent form inputs, where the options displayed in one input depend on the values selected in another. This is especially useful for hierarchical selections like country → state → city or category → subcategory.
+
+#### Dynamic Options
+
+To create dependent select inputs, use the `dependsOn` property and the extended `options` function:
+
+```javascript
+const formSchema = {
+  country: {
+    type: 'SelectInput',
+    label: 'Country',
+    value: '',
+    options: [
+      { label: 'Malawi', value: 'malawi' },
+      { label: 'Zambia', value: 'zambia' },
+    ],
+    required: true,
+  },
+  district: {
+    type: 'SelectInput',
+    label: 'District',
+    value: '',
+    dependsOn: 'country', // This field depends on the country field
+    options: async (filter, dependencyValues) => {
+      // Get the country value
+      if (!dependencyValues?.country) return [];
+
+      const countryId =
+        typeof dependencyValues.country === 'object'
+          ? dependencyValues.country.value
+          : dependencyValues.country;
+
+      // In a real app, you would make an API call here
+      if (countryId === 'malawi') {
+        return [
+          { label: 'Lilongwe', value: 'lilongwe' },
+          { label: 'Blantyre', value: 'blantyre' },
+        ];
+      }
+      return []; // Return empty options for unknown countries
+    },
+    required: true,
+  },
+};
+```
+
+#### Multiple Dependencies
+
+An input can also depend on multiple other inputs:
+
+```javascript
+{
+  locality: {
+    type: 'SelectInput',
+    label: 'Locality',
+    dependsOn: ['country', 'region'],  // Array of field IDs this depends on
+    options: async (filter, dependencyValues) => {
+      // Access to all dependency values
+      if (!dependencyValues) return [];
+
+      const country = dependencyValues.country;
+      const region = dependencyValues.region;
+
+      // Return options based on both dependencies
+      // ...
+    }
+  }
+}
+```
+
+For more details and examples, see the [Dependencies Documentation](./docs/DEPENDENCIES.md).
 
 ### Advanced Components
 

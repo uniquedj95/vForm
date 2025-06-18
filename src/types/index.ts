@@ -30,11 +30,15 @@ export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Pro
  * Represents the options for a form, which can be either an array of `Option` objects
  * or a function that returns an array of `Option` objects.
  *
- * The function can optionally take a `filter` string as a parameter.
+ * The function can optionally take a `filter` string as parameter, and a
+ * `dependencyValues` object containing values from fields this field depends on.
  */
 export type FormOptions =
   | Array<Option>
-  | ((filter?: string) => Array<Option> | Promise<Array<Option>>);
+  | ((
+      filter?: string,
+      dependencyValues?: Record<string, FormValue>
+    ) => Array<Option> | Promise<Array<Option>>);
 
 /**
  * Represents the data of all form fields, mapped by field ID.
@@ -303,6 +307,17 @@ export interface FormField {
    * @type FormSchema
    */
   children?: FormSchema;
+
+  /**
+   * Specifies other field IDs that this field depends on.
+   * Can be a single field ID or an array of field IDs.
+   *
+   * When dependsOn is specified, the options function will receive dependency values
+   * as its second parameter when other fields change.
+   *
+   * @type string | string[]
+   */
+  dependsOn?: string | string[];
 
   /**
    * The custom validation function for the form input field.
