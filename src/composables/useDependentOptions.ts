@@ -34,9 +34,8 @@ export function useDependentOptions(
 
     // Register dependencies
     dependsOn.forEach(depId => {
-      if (!dependencies.value[depId]) {
-        dependencies.value[depId] = [];
-      }
+      dependencies.value[depId] ??= [];
+
       if (!dependencies.value[depId].includes(fieldId)) {
         dependencies.value[depId].push(fieldId);
       }
@@ -56,7 +55,7 @@ export function useDependentOptions(
 
     return dependsOn.reduce(
       (values, depId) => {
-        values[depId] = data.value[depId] || computedData.value[depId];
+        values[depId] = data.value[depId] ?? computedData.value[depId];
         return values;
       },
       {} as Record<string, any>
