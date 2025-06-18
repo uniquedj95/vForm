@@ -12,6 +12,15 @@ import CheckboxInput from './components/inputs/CheckboxInput.vue';
 import RadioInput from './components/inputs/RadioInput.vue';
 import { maskito } from '@maskito/vue';
 
+// Export composables
+export { useFormValidation } from './composables/useFormValidation';
+export { useInputValidation } from './composables/useInputValidation';
+export { useDataTransformation } from './composables/useDataTransformation';
+export { useDependentOptions } from './composables/useDependentOptions';
+
+// Export types
+export * from './types';
+
 export const VForm: Plugin = {
   install(app: App) {
     app.component('VForm', Form);
@@ -28,8 +37,6 @@ export const VForm: Plugin = {
     app.directive('maskito', maskito);
   },
 };
-
-export * from './types';
 
 export type VFormRef = typeof Form;
 

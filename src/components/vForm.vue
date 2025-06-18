@@ -16,6 +16,8 @@
             :is="activeSchema[formId].type"
             v-model="activeSchema[formId]"
             :schema="activeSchema"
+            :dependency-manager="dependencyManager"
+            :form-id="formId"
             ref="dynamicRefs"
             :ref-key="formId"
           />
@@ -50,6 +52,7 @@ import type { FormData, ComputedData, FormSchema, CustomButton } from '../types'
 import { canRenderField } from '../utils';
 import { useFormValidation } from '../composables/useFormValidation';
 import { useDataTransformation } from '../composables/useDataTransformation';
+import { useDependentOptions } from '../composables/useDependentOptions';
 
 interface FormProps {
   schema: FormSchema;
@@ -89,6 +92,10 @@ const { dynamicRefs, isFormValid, resetForm } = useFormValidation();
 
 // Use data transformation composable
 const { formData: data, computedData } = useDataTransformation(activeSchema);
+
+// Use dependent options composable
+type DependencyManager = ReturnType<typeof useDependentOptions>;
+const dependencyManager: DependencyManager = useDependentOptions(activeSchema, data, computedData);
 
 async function submitForm() {
   if (!(await isFormValid())) return;

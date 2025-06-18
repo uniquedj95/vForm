@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch, ComponentPublicInstance } from 'vue';
+import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
 import { FormSchema, BaseFieldTypes, FormField, Option } from 'types';
 import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
@@ -68,7 +68,21 @@ import {
 } from '@ionic/vue';
 import InputLabel from '../shared/InputLabel.vue';
 
-const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();
+interface DependencyManager {
+  registerDependency: (
+    fieldId: string,
+    dependsOn: string[],
+    loader: (dependencyValues: Record<string, any>) => Promise<Option[]>
+  ) => void;
+  updateOptions: (fieldId: string) => void;
+}
+
+const props = defineProps({
+  schema: Object as PropType<FormSchema>,
+  type: String as PropType<BaseFieldTypes>,
+  dependencyManager: Object as PropType<DependencyManager>,
+  formId: String,
+});
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
 const containerRef = ref<HTMLElement | null>(null);
@@ -267,8 +281,27 @@ async function onValueUpdate(evt?: any) {
 async function filterOptions() {
   const filtered: Array<Option> = [];
 
+  // Get dependency values if we have dependencies
+  let dependencyValues: Record<string, any> | undefined = undefined;
+  if (props.dependencyManager && props.formId && model.value.dependsOn) {
+    // This will be populated if we're in a form with dependencies
+    const dependsOn = Array.isArray(model.value.dependsOn)
+      ? model.value.dependsOn
+      : [model.value.dependsOn];
+
+    // Get values from the form data
+    if (props.schema) {
+      dependencyValues = {};
+      for (const dep of dependsOn) {
+        if (props.schema[dep]) {
+          dependencyValues[dep] = props.schema[dep].value;
+        }
+      }
+    }
+  }
+
   if (typeof model.value.options === 'function') {
-    const res = await model.value.options(filter.value);
+    const res = await model.value.options(filter.value, dependencyValues);
     filtered.push(...res.filter(o => !!o.label));
   } else {
     filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
@@ -296,6 +329,46 @@ function initialize() {
     }
   }
 }
+
+// On mount, register dependencies if they exist
+onMounted(() => {
+  if (
+    props.dependencyManager &&
+    props.formId &&
+    model.value.dependsOn &&
+    typeof props.dependencyManager.registerDependency === 'function'
+  ) {
+    // Convert to array if it's a single value
+    const dependsOn = Array.isArray(model.value.dependsOn)
+      ? model.value.dependsOn
+      : [model.value.dependsOn];
+
+    // Register this field as dependent on the specified fields
+    props.dependencyManager.registerDependency(
+      props.formId,
+      dependsOn,
+      async (dependencyValues: Record<string, any>) => {
+        // Use the options directly if it's an array
+        if (Array.isArray(model.value.options)) {
+          return model.value.options;
+        }
+        // Use the options function if available
+        else if (typeof model.value.options === 'function') {
+          try {
+            // Pass the filter value and dependency values to get options
+            const result = await model.value.options(filter.value, dependencyValues);
+            return Array.isArray(result) ? result : [];
+          } catch (error) {
+            console.error(`Error loading options for ${props.formId}:`, error);
+            return [];
+          }
+        }
+        // Default to empty array
+        return [];
+      }
+    );
+  }
+});
 
 defineExpose({
   onValueUpdate,
