@@ -48,7 +48,7 @@ describe('useDependentOptions composable', () => {
     expect(mockOptionsFunction).not.toHaveBeenCalled();
 
     // Set a country value
-    data.value = { country: 'malawi' };
+    data.value.country = 'malawi';
 
     // Wait for any promises to resolve
     await new Promise(resolve => setTimeout(resolve, 0));
