@@ -64,59 +64,73 @@ export function useDependentOptions(
   }
 
   /**
+   * Check if a value exists in the options
+   */
+  function valueExistsInOptions(value: any, options: Option[]): boolean {
+    if (!value) return false;
+
+    // Handle array values (multiple selection)
+    if (Array.isArray(value)) {
+      return value.some(val => options.some(option => compareValues(val, option.value)));
+    }
+
+    // Handle single values
+    return options.some(option => compareValues(value, option.value));
+  }
+
+  /**
+   * Compare a form value with an option value
+   */
+  function compareValues(formValue: any, optionValue: string | number): boolean {
+    // Handle object values (like Option objects)
+    if (typeof formValue === 'object' && formValue !== null) {
+      return formValue.value === optionValue;
+    }
+
+    // Convert to string for safer comparison of primitives
+    return String(formValue) === String(optionValue);
+  }
+
+  /**
    * Update options for a field based on its dependencies
    */
   async function updateOptions(fieldId: string) {
+    // Skip if no loader registered for this field
     if (!optionLoaders.value[fieldId]) return;
 
-    const loader = optionLoaders.value[fieldId];
+    // Get dependency values and check if they exist
     const dependencyValues = getDependencyValues(fieldId);
-
-    // Only proceed if we have all required dependency values
     const dependencyIds = Object.keys(dependencyValues);
+
+    // Skip if no dependencies or missing values
+    if (dependencyIds.length === 0) return;
+
     const allDependenciesHaveValues = dependencyIds.every(
       id => dependencyValues[id] !== undefined && dependencyValues[id] !== null
     );
+    if (!allDependenciesHaveValues) return;
 
-    if (allDependenciesHaveValues && dependencyIds.length > 0) {
-      try {
-        // Load new options
-        const options = await loader(undefined, dependencyValues);
+    try {
+      // Load new options
+      const loader = optionLoaders.value[fieldId];
+      const options = await loader(undefined, dependencyValues);
 
-        // Update the schema with new options
-        if (schema.value[fieldId]) {
-          schema.value[fieldId].options = options;
+      // Skip if schema field no longer exists
+      if (!schema.value[fieldId]) return;
 
-          // Reset the value if it's not in the new options
-          const currentValue = schema.value[fieldId].value;
+      // Update the options
+      schema.value[fieldId].options = options;
 
-          if (currentValue) {
-            const currentValueExists = options.some(option => {
-              if (Array.isArray(currentValue)) {
-                return currentValue.some(val => {
-                  if (typeof val === 'object' && val !== null) {
-                    return val.value === option.value;
-                  }
-                  return String(val) === String(option.value); // Convert to string for comparison
-                });
-              }
+      // Check if current value is still valid
+      const currentValue = schema.value[fieldId].value;
+      if (!currentValue) return;
 
-              if (typeof currentValue === 'object' && currentValue !== null) {
-                return currentValue.value === option.value;
-              }
-
-              // Convert both to string for safer comparison
-              return String(currentValue) === String(option.value);
-            });
-
-            if (!currentValueExists) {
-              schema.value[fieldId].value = schema.value[fieldId].multiple ? [] : '';
-            }
-          }
-        }
-      } catch (error) {
-        console.error(`Error loading options for ${fieldId}:`, error);
+      // Reset value if not found in new options
+      if (!valueExistsInOptions(currentValue, options)) {
+        schema.value[fieldId].value = schema.value[fieldId].multiple ? [] : '';
       }
+    } catch (error) {
+      console.error(`Error loading options for ${fieldId}:`, error);
     }
   }
 
@@ -135,7 +149,7 @@ export function useDependentOptions(
         }
       });
     },
-    { deep: true }
+    { deep: true, immediate: true }
   );
 
   return {
