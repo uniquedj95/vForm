@@ -92,8 +92,10 @@ export function useDependentOptions(
 
   /**
    * Update options for a field based on its dependencies
+   * @param fieldId - The field ID to update options for
+   * @param filterValue - Optional filter value to pass to the loader
    */
-  async function updateOptions(fieldId: string) {
+  async function updateOptions(fieldId: string, filterValue?: string) {
     // Skip if no loader registered for this field
     if (!optionLoaders.value[fieldId]) return;
 
@@ -112,7 +114,7 @@ export function useDependentOptions(
     try {
       // Load new options
       const loader = optionLoaders.value[fieldId];
-      const options = await loader(undefined, dependencyValues);
+      const options = await loader(filterValue, dependencyValues);
 
       // Skip if schema field no longer exists
       if (!schema.value[fieldId]) return;
@@ -143,6 +145,8 @@ export function useDependentOptions(
         if (data.value[depId] !== undefined || computedData.value[depId] !== undefined) {
           // Update all fields that depend on this one
           dependentFields.forEach(fieldId => {
+            // Call updateOptions without a filterValue to maintain compatibility
+            // The SelectInput component will pass the filter when needed
             updateOptions(fieldId);
           });
         }
