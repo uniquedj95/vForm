@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
-import { FormSchema, BaseFieldTypes, FormField, Option } from 'types';
+import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from 'types';
 import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
 import { useInputValidation } from '../../composables/useInputValidation';
 import {
@@ -72,7 +72,7 @@ interface DependencyManager {
   registerDependency: (
     fieldId: string,
     dependsOn: string[],
-    loader: (dependencyValues: Record<string, any>) => Promise<Option[]>
+    loader: (filter?: string, dependencyValues?: Record<string, FormValue>) => Promise<Option[]>
   ) => void;
   updateOptions: (fieldId: string) => void;
 }
@@ -347,7 +347,7 @@ onMounted(() => {
     props.dependencyManager.registerDependency(
       props.formId,
       dependsOn,
-      async (dependencyValues: Record<string, any>) => {
+      async (filterText?: string, dependencyValues?: Record<string, any>) => {
         // Use the options directly if it's an array
         if (Array.isArray(model.value.options)) {
           return model.value.options;
@@ -355,8 +355,9 @@ onMounted(() => {
         // Use the options function if available
         else if (typeof model.value.options === 'function') {
           try {
-            // Pass the filter value and dependency values to get options
-            const result = await model.value.options(filter.value, dependencyValues);
+            // Pass the provided filter text (or use current filter) and dependency values to get options
+            const currentFilter = filterText !== undefined ? filterText : filter.value;
+            const result = await model.value.options(currentFilter, dependencyValues);
             return Array.isArray(result) ? result : [];
           } catch (error) {
             console.error(`Error loading options for ${props.formId}:`, error);
