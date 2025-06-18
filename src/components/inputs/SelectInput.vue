@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
-import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from 'types';
+import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from '../../types';
 import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
 import { useInputValidation } from '../../composables/useInputValidation';
 import {
@@ -74,7 +74,7 @@ interface DependencyManager {
     dependsOn: string[],
     loader: (filter?: string, dependencyValues?: Record<string, FormValue>) => Promise<Option[]>
   ) => void;
-  updateOptions: (fieldId: string) => void;
+  updateOptions: (fieldId: string, filterValue?: string) => void;
 }
 
 const props = defineProps({
@@ -281,27 +281,20 @@ async function onValueUpdate(evt?: any) {
 async function filterOptions() {
   const filtered: Array<Option> = [];
 
-  // Get dependency values if we have dependencies
-  let dependencyValues: Record<string, any> | undefined = undefined;
+  // If this field has dependencies and a dependency manager
   if (props.dependencyManager && props.formId && model.value.dependsOn) {
-    // This will be populated if we're in a form with dependencies
-    const dependsOn = Array.isArray(model.value.dependsOn)
-      ? model.value.dependsOn
-      : [model.value.dependsOn];
+    // Use the dependency manager to get options with the current filter value
+    props.dependencyManager.updateOptions(props.formId, filter.value);
 
-    // Get values from the form data
-    if (props.schema) {
-      dependencyValues = {};
-      for (const dep of dependsOn) {
-        if (props.schema[dep]) {
-          dependencyValues[dep] = props.schema[dep].value;
-        }
-      }
+    // The dependency manager will update the schema's options
+    // We'll use those options directly from the model
+    if (Array.isArray(model.value.options)) {
+      filtered.push(...model.value.options.filter(o => !!o.label));
     }
   }
-
-  if (typeof model.value.options === 'function') {
-    const res = await model.value.options(filter.value, dependencyValues);
+  // No dependencies, use regular filtering
+  else if (typeof model.value.options === 'function') {
+    const res = await model.value.options(filter.value);
     filtered.push(...res.filter(o => !!o.label));
   } else {
     filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
