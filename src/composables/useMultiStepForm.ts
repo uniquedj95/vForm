@@ -104,14 +104,14 @@ export function useMultiStepForm(config: MultiStepConfig) {
 
   async function nextStep(): Promise<boolean> {
     if (canGoNext.value) {
-      return await goToStep(currentStepIndex.value + 1);
+      return goToStep(currentStepIndex.value + 1);
     }
     return false;
   }
 
   async function previousStep(): Promise<boolean> {
     if (canGoPrevious.value) {
-      return await goToStep(currentStepIndex.value - 1);
+      return goToStep(currentStepIndex.value - 1);
     }
     return false;
   }
