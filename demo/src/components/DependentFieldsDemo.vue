@@ -168,7 +168,7 @@ const formSchema: FormSchema = {
         'and dependency values:',
         dependencyValues
       );
-      const country = dependencyValues?.country as string;
+      const country = (dependencyValues?.country as Option)?.value;
       return countryStates[country] || [];
     },
     dependsOn: 'country',
