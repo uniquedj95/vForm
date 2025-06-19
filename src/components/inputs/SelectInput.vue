@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
-import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from '@/types';
-import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '@/utils';
+import { FormSchema, BaseFieldTypes, FormField, Option } from '@/types';
+import { isEmpty, checkOption, getFilteredOptions, uncheckOption, deepEqual } from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
 import {
   IonInput,
@@ -68,19 +68,9 @@ import {
 } from '@ionic/vue';
 import InputLabel from '../shared/InputLabel.vue';
 
-interface DependencyManager {
-  registerDependency: (
-    fieldId: string,
-    dependsOn: string[],
-    loader: (filter?: string, dependencyValues?: Record<string, FormValue>) => Promise<Option[]>
-  ) => void;
-  updateOptions: (fieldId: string, filterValue?: string) => void;
-}
-
 const props = defineProps({
   schema: Object as PropType<FormSchema>,
   type: String as PropType<BaseFieldTypes>,
-  dependencyManager: Object as PropType<DependencyManager>,
   formId: String,
 });
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -112,6 +102,29 @@ watch([filter, () => model.value.options], filterOptions, {
   deep: true,
 });
 watch(() => model.value.value, initialize, { immediate: true, deep: true });
+
+// Watch for dependency value changes when this field has dependencies
+// This ensures options are refreshed when dependency values change
+watch(
+  () => {
+    if (!model.value.dependsOn || !props.schema) return null;
+
+    // Convert dependsOn to array if it's a single value
+    const dependsOn = Array.isArray(model.value.dependsOn)
+      ? model.value.dependsOn
+      : [model.value.dependsOn];
+
+    // Return the current values of all dependency fields
+    return dependsOn.map(depId => props.schema![depId]?.value);
+  },
+  async (newValues, oldValues) => {
+    // Only trigger if we have both new and old values and they're different
+    if (newValues && oldValues && !deepEqual(newValues, oldValues)) {
+      await filterOptions();
+    }
+  },
+  { deep: true }
+);
 
 function onReset() {
   options.value.forEach(o => uncheckOption(o, options.value));
@@ -281,23 +294,32 @@ async function onValueUpdate(evt?: any) {
 async function filterOptions() {
   const filtered: Array<Option> = [];
 
-  // If this field has dependencies and a dependency manager
-  if (props.dependencyManager && props.formId && model.value.dependsOn) {
-    // Use the dependency manager to get options with the current filter value
-    props.dependencyManager.updateOptions(props.formId, filter.value);
+  // Handle function-based options (including dependent options)
+  if (typeof model.value.options === 'function') {
+    // Get dependency values if this field has dependencies
+    let dependencyValues: Record<string, any> = {};
 
-    // The dependency manager will update the schema's options
-    // We'll use those options directly from the model
-    if (Array.isArray(model.value.options)) {
-      filtered.push(...model.value.options.filter(o => !!o.label));
+    if (model.value.dependsOn && props.schema) {
+      const dependsOn = Array.isArray(model.value.dependsOn)
+        ? model.value.dependsOn
+        : [model.value.dependsOn];
+
+      dependencyValues = dependsOn.reduce(
+        (acc, depId) => {
+          acc[depId] = props.schema![depId]?.value;
+          return acc;
+        },
+        {} as Record<string, any>
+      );
     }
-  }
-  // No dependencies, use regular filtering
-  else if (typeof model.value.options === 'function') {
-    const res = await model.value.options(filter.value);
+
+    // Call the options function with filter and dependency values
+    const res = await model.value.options(filter.value, dependencyValues);
     filtered.push(...res.filter(o => !!o.label));
-  } else {
-    filtered.push(...getFilteredOptions(model.value.options ?? [], filter.value));
+  }
+  // Handle static array options
+  else if (Array.isArray(model.value.options)) {
+    filtered.push(...getFilteredOptions(model.value.options, filter.value));
   }
 
   tags.value.forEach(tag => checkOption(tag, filtered));
@@ -323,45 +345,9 @@ function initialize() {
   }
 }
 
-// On mount, register dependencies if they exist
+// On mount, ensure options are loaded initially
 onMounted(() => {
-  if (
-    props.dependencyManager &&
-    props.formId &&
-    model.value.dependsOn &&
-    typeof props.dependencyManager.registerDependency === 'function'
-  ) {
-    // Convert to array if it's a single value
-    const dependsOn = Array.isArray(model.value.dependsOn)
-      ? model.value.dependsOn
-      : [model.value.dependsOn];
-
-    // Register this field as dependent on the specified fields
-    props.dependencyManager.registerDependency(
-      props.formId,
-      dependsOn,
-      async (filterText?: string, dependencyValues?: Record<string, any>) => {
-        // Use the options directly if it's an array
-        if (Array.isArray(model.value.options)) {
-          return model.value.options;
-        }
-        // Use the options function if available
-        else if (typeof model.value.options === 'function') {
-          try {
-            // Pass the provided filter text (or use current filter) and dependency values to get options
-            const currentFilter = filterText !== undefined ? filterText : filter.value;
-            const result = await model.value.options(currentFilter, dependencyValues);
-            return Array.isArray(result) ? result : [];
-          } catch (error) {
-            console.error(`Error loading options for ${props.formId}:`, error);
-            return [];
-          }
-        }
-        // Default to empty array
-        return [];
-      }
-    );
-  }
+  filterOptions();
 });
 
 defineExpose({
