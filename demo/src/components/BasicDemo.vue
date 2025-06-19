@@ -121,6 +121,7 @@ const formSchema: FormSchema = {
   age: {
     type: 'NumberInput',
     label: 'Age',
+    value: null,
     placeholder: 'Your age',
     min: 13,
     max: 120,
