@@ -23,7 +23,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const totalSteps = computed(() => config.steps.length);
   const progressPercentage = computed(() => {
     if (totalSteps.value === 0) return 0;
-    return ((currentStepIndex.value + 1) / totalSteps.value) * 100;
+    return Math.round(((currentStepIndex.value + 1) / totalSteps.value) * 100);
   });
 
   // Combined data from all steps
