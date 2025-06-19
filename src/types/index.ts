@@ -331,6 +331,7 @@ export interface FormField {
    *
    * @param value - The new value of the form input field.
    * @param schema - The schema of the form.
+   * @returns {FormValue} The processed form value.
    */
   onChange?: (value: FormValue, schema: FormSchema) => FormValue;
 

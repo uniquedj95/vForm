@@ -140,7 +140,6 @@ function onReset() {
   page.value = 1;
   model.value.value = model.value.multiple ? [] : '';
   uncheckAllOptions(options.value);
-  console.log('SelectInput reset');
 }
 
 function onSelect(item: Option) {
