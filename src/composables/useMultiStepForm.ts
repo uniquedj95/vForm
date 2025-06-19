@@ -7,9 +7,18 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const stepComputedData = ref<Record<string, ComputedData>>({});
   const stepValidationErrors = ref<Record<string, string[]>>({});
 
-  // Initialize step data
+  // Helper function to get default values from step schema
+  function getStepDefaults(step: any): FormData {
+    const defaults: FormData = {};
+    Object.entries(step.schema).forEach(([fieldId, field]: [string, any]) => {
+      defaults[fieldId] = field.value;
+    });
+    return defaults;
+  }
+
+  // Initialize step data with default values from schema
   config.steps.forEach(step => {
-    stepData.value[step.id] = {};
+    stepData.value[step.id] = getStepDefaults(step);
     stepComputedData.value[step.id] = {};
     stepValidationErrors.value[step.id] = [];
   });
@@ -55,11 +64,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
     // Reset to initial values from step schema
     const step = config.steps.find(s => s.id === stepId);
     if (step) {
-      const clearedData: FormData = {};
-      Object.entries(step.schema).forEach(([fieldId, field]) => {
-        clearedData[fieldId] = field.value;
-      });
-      stepData.value[stepId] = clearedData;
+      stepData.value[stepId] = getStepDefaults(step);
       stepComputedData.value[stepId] = {};
     }
   }

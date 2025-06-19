@@ -185,10 +185,16 @@ describe('useMultiStepForm', () => {
 
     const data = getMultiStepFormData();
 
-    expect(data.steps['step1']).toEqual({ field1: 'value1' });
-    expect(data.steps['step2']).toEqual({ field3: 'value3' });
+    // Step data should include both updated values and default values from schema
+    expect(data.steps['step1']).toEqual({ field1: 'value1', field2: '' });
+    expect(data.steps['step2']).toEqual({ field3: 'value3', field4: '' });
     expect(data.computedSteps['step1']).toEqual({ computed1: 'computed value' });
-    expect(data.allFormData).toEqual({ field1: 'value1', field3: 'value3' });
+    expect(data.allFormData).toEqual({
+      field1: 'value1',
+      field2: '',
+      field3: 'value3',
+      field4: '',
+    });
     expect(data.allComputedData).toEqual({ computed1: 'computed value' });
   });
 });
