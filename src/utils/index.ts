@@ -148,6 +148,17 @@ export function uncheckOption(option: Option, options: Array<Option>) {
 }
 
 /**
+ * Unchecks all options in the provided array of options.
+ *
+ * @param {Array<Option>} options - The array of options to uncheck.
+ */
+export function uncheckAllOptions(options: Array<Option>) {
+  options.forEach(option => {
+    option.isChecked = false;
+  });
+}
+
+/**
  * Filters an array of options based on a provided filter string.
  *
  * @param {Array<Option>} options - The array of options to filter.
