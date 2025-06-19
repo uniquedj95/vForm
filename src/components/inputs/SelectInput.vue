@@ -125,12 +125,9 @@ watch(
     return dependsOn.map(depId => props.schema![depId]?.value);
   },
   async (newValues, oldValues) => {
-    // Only trigger if we have both new and old values and they're different
     if (newValues && oldValues && !deepEqual(newValues, oldValues)) {
-      // Reset the field when dependencies change
       onReset();
-
-      // Reload options with new dependency values
+      options.value = [];
       await filterOptions();
     }
   },
@@ -143,6 +140,7 @@ function onReset() {
   page.value = 1;
   model.value.value = model.value.multiple ? [] : '';
   uncheckAllOptions(options.value);
+  console.log('SelectInput reset');
 }
 
 function onSelect(item: Option) {
