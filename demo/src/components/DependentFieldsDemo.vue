@@ -78,6 +78,64 @@
             </ion-list>
           </ion-card-content>
         </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Resetting Dependent Fields</ion-card-title>
+            <ion-card-subtitle
+              >Best practices for clearing dependent field values</ion-card-subtitle
+            >
+          </ion-card-header>
+
+          <ion-card-content>
+            <p>
+              When a dependency changes, you often want to reset the dependent field's value to
+              prevent invalid combinations. The form library provides automatic reset functionality
+              with a manual workaround when needed.
+            </p>
+
+            <h4>Method 1: Automatic Reset (Built-in)</h4>
+            <p>
+              The SelectInput component automatically detects dependency changes and resets the
+              field value. This works automatically with the <code>dependsOn</code> property:
+            </p>
+            <pre><code>state: {
+  type: 'SelectInput',
+  label: 'State',
+  dependsOn: 'country',
+  options: (filter, dependencyValues) => {
+    // Returns options based on country
+    return getStatesForCountry(dependencyValues.country);
+  }
+}</code></pre>
+            <p>
+              When the country changes, the state field automatically resets to empty and reloads
+              options.
+            </p>
+
+            <h4>Method 2: Manual Reset (Workaround)</h4>
+            <p>
+              If the automatic reset doesn't work as expected, you can manually reset dependent
+              fields using the <code>onChange</code> callback:
+            </p>
+            <pre><code>country: {
+  type: 'SelectInput',
+  label: 'Country',
+  options: [...],
+  onChange: (value, schema) => {
+    // Manual reset as workaround
+    schema.state.value = '';
+    return value;
+  }
+}</code></pre>
+
+            <p>
+              <strong>Note:</strong> Use the onChange approach as a workaround when the automatic
+              reset doesn't work properly, or when you need to reset multiple fields or perform
+              additional logic when dependencies change.
+            </p>
+          </ion-card-content>
+        </ion-card>
       </div>
     </ion-content>
   </ion-page>
@@ -156,6 +214,11 @@ const formSchema: FormSchema = {
     ],
     required: true,
     grid: { xs: '12', md: '6' },
+    // Workaround: Reset dependent field when country changes
+    onChange: (value, schema) => {
+      schema.state.value = ''; // Reset state when country changes
+      return value;
+    },
   },
   state: {
     type: 'SelectInput',

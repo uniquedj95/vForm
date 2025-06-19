@@ -14,7 +14,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
     Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
       if (form.value !== undefined) {
         if (typeof form.onChange === 'function') {
-          acc[key] = form.onChange(form.value);
+          acc[key] = form.onChange(form.value, activeSchema.value);
         } else {
           acc[key] = form.value;
         }
