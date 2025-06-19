@@ -66,7 +66,16 @@ The demo showcases:
 - **Dependent Fields**: Dynamic field behavior and cascading options
 - **Custom Styles**: Theming and visual customization
 
-Visit `http://localhost:3000` to explore the interactive examples.
+Visit the displayed URL (usually `http://localhost:3000`) to explore the interactive examples.
+
+### Development Workflow
+
+When working on the library and wanting to test changes in the demo:
+
+```bash
+# Update demo with latest library changes
+npm run demo:update
+```
 
 ## Features
 

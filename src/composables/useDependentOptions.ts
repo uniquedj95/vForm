@@ -1,5 +1,5 @@
 import { ref, watch, Ref } from 'vue';
-import type { FormSchema, Option, FormData, ComputedData } from '../types';
+import type { FormSchema, Option, FormData, ComputedData } from '@/types';
 
 /**
  * This composable manages dependent options for select inputs.

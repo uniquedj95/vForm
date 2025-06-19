@@ -51,9 +51,9 @@
 <script setup lang="ts">
 import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
-import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from '../../types';
-import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '../../utils';
-import { useInputValidation } from '../../composables/useInputValidation';
+import { FormSchema, BaseFieldTypes, FormField, Option, FormValue } from '@/types';
+import { isEmpty, checkOption, getFilteredOptions, uncheckOption } from '@/utils';
+import { useInputValidation } from '@/composables/useInputValidation';
 import {
   IonInput,
   IonList,

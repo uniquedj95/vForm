@@ -29,9 +29,9 @@
 
 <script lang="ts" setup>
 import { IonTextarea } from '@ionic/vue';
-import { FormField, FormSchema } from '../../types';
+import { FormField, FormSchema } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed } from 'vue';
-import { useInputValidation } from '../../composables/useInputValidation';
+import { useInputValidation } from '@/composables/useInputValidation';
 import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema }>();

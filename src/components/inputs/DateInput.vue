@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { FormField, FormSchema } from '../../types';
+import type { FormField, FormSchema } from '@/types';
 import { PropType, ref } from 'vue';
 import BaseInput from './BaseInput.vue';
 

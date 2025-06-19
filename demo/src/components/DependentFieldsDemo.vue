@@ -102,7 +102,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/vue';
-import type { FormData, ComputedData, FormSchema, Option } from '../../../src/types';
+import type { FormData, ComputedData, FormSchema, Option } from '@uniquedj95/vform';
 
 const submittedData = ref<any>(null);
 

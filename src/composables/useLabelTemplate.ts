@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue';
-import type { FormField } from '../types';
+import type { FormField } from '@/types';
 
 /**
  * Composable for common label template logic

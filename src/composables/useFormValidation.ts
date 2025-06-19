@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { isEmpty } from '../utils';
+import { isEmpty } from '@/utils';
 
 /**
  * Composable for common form validation logic

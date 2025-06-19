@@ -15,10 +15,10 @@
 
 <script lang="ts" setup>
 import { IonCheckbox } from '@ionic/vue';
-import { FormField, FormSchema } from '../../types';
+import { FormField, FormSchema } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed } from 'vue';
-import { useInputValidation } from '../../composables/useInputValidation';
-import { getLabelText } from '../../utils';
+import { useInputValidation } from '@/composables/useInputValidation';
+import { getLabelText } from '@/utils';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });

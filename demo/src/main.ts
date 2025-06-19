@@ -3,9 +3,9 @@ import { IonicVue } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import App from './App.vue';
 
-// Import VForm from the parent directory (built version)
-// In a real app, you would import from the npm package: import VForm from '@uniquedj95/vform';
-import VForm from '../../src/index';
+// Import VForm from the installed npm package
+import VForm from '@uniquedj95/vform';
+import '@uniquedj95/vform/vform.css';
 
 import BasicDemo from './components/BasicDemo.vue';
 import AdvancedDemo from './components/AdvancedDemo.vue';

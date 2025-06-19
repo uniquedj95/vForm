@@ -6,7 +6,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src',
-      '@uniquedj95/vform': '../dist/index.es.js',
     },
   },
   server: {
