@@ -52,7 +52,14 @@
 import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
 import { FormSchema, BaseFieldTypes, FormField, Option } from '@/types';
-import { isEmpty, checkOption, getFilteredOptions, uncheckOption, deepEqual } from '@/utils';
+import {
+  isEmpty,
+  checkOption,
+  getFilteredOptions,
+  uncheckOption,
+  deepEqual,
+  uncheckAllOptions,
+} from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
 import {
   IonInput,
@@ -120,6 +127,10 @@ watch(
   async (newValues, oldValues) => {
     // Only trigger if we have both new and old values and they're different
     if (newValues && oldValues && !deepEqual(newValues, oldValues)) {
+      // Reset the field when dependencies change
+      onReset();
+
+      // Reload options with new dependency values
       await filterOptions();
     }
   },
@@ -127,11 +138,11 @@ watch(
 );
 
 function onReset() {
-  options.value.forEach(o => uncheckOption(o, options.value));
   model.value.error = '';
   filter.value = '';
   page.value = 1;
   model.value.value = model.value.multiple ? [] : '';
+  uncheckAllOptions(options.value);
 }
 
 function onSelect(item: Option) {
