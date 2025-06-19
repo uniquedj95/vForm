@@ -7,12 +7,12 @@
             <ion-list-header>VForm Demo</ion-list-header>
             <ion-note>Explore all features</ion-note>
 
-            <ion-menu-toggle auto-hide="false" v-for="(page, index) in pages" :key="index">
+            <ion-menu-toggle :auto-hide="false" v-for="(page, index) in pages" :key="index">
               <ion-item
                 router-link-exact
                 :router-link="page.url"
                 lines="none"
-                detail="false"
+                :detail="false"
                 class="hydrated"
                 :class="{ selected: selectedIndex === index }"
               >
@@ -62,6 +62,7 @@ import {
   checkboxOutline,
   linkOutline,
   colorPaletteOutline,
+  layersOutline,
 } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -72,6 +73,11 @@ const pages = [
     title: 'Basic Form',
     url: '/basic',
     icon: documentTextOutline,
+  },
+  {
+    title: 'Multi-Step Form',
+    url: '/multi-step',
+    icon: layersOutline,
   },
   {
     title: 'Advanced Features',
