@@ -28,6 +28,7 @@
     "demo:setup": "./setup-demo.sh",
     "demo:dev": "cd demo && npm run dev",
     "demo:build": "cd demo && npm run build",
+    "demo:update": "npm run build && cd demo && npm install file:..",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

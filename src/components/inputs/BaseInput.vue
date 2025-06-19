@@ -31,10 +31,10 @@
 
 <script lang="ts" setup>
 import { IonInput, IonLabel, IonInputPasswordToggle } from '@ionic/vue';
-import { FormField, FormSchema, BaseFieldTypes } from '../../types';
-import { generateMaskitoOptions } from '../../utils';
+import { FormField, FormSchema, BaseFieldTypes } from '@/types';
+import { generateMaskitoOptions } from '@/utils';
 import { ComponentPublicInstance, computed, PropType, ref, watch } from 'vue';
-import { useInputValidation } from '../../composables/useInputValidation';
+import { useInputValidation } from '@/composables/useInputValidation';
 import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema; type?: BaseFieldTypes }>();

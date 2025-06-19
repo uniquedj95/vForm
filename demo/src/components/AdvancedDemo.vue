@@ -64,7 +64,7 @@ import {
   IonToolbar,
   alertController,
 } from '@ionic/vue';
-import type { FormData, ComputedData, FormSchema, CustomButton } from '../../../src/types';
+import type { FormData, ComputedData, FormSchema, CustomButton } from '@uniquedj95/vform';
 
 const submittedData = ref<any>(null);
 

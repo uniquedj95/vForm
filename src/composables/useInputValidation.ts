@@ -1,5 +1,5 @@
 import { Ref } from 'vue';
-import { FormField, FormSchema } from '../types';
+import { FormField, FormSchema } from '@/types';
 import { useValidationStyles } from './useValidationStyles';
 import { ComponentPublicInstance } from 'vue';
 

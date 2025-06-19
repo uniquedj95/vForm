@@ -7,8 +7,8 @@
 
 <script lang="ts" setup>
 import { IonLabel, IonText } from '@ionic/vue';
-import type { FormField } from '../../types';
-import { useLabelTemplate } from '../../composables/useLabelTemplate';
+import type { FormField } from '@/types';
+import { useLabelTemplate } from '@/composables/useLabelTemplate';
 import { toRef } from 'vue';
 
 const props = defineProps<{

@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue';
-import type { FormField } from '../types';
-import { DEFAULT_FILL, DEFAULT_LABEL_PLACEMENT } from '../constants';
+import type { FormField } from '@/types';
+import { DEFAULT_FILL, DEFAULT_LABEL_PLACEMENT } from '@/constants';
 
 /**
  * Composable for common input component props

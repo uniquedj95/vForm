@@ -89,27 +89,44 @@ Forms are defined using a declarative schema that includes:
 
 ## Running the Demo
 
-1. First build the VForm library:
+1. First build and install the VForm library:
 
    ```bash
    cd /path/to/vform
-   npm run build
+   npm run demo:setup
    ```
 
-2. Install demo dependencies:
+   This will:
+
+   - Build the VForm library
+   - Install demo dependencies
+   - Install the local VForm package in the demo
+
+2. Start the development server:
+
+   ```bash
+   npm run demo:dev
+   ```
+
+   Or from the demo directory:
 
    ```bash
    cd demo
-   npm install
-   ```
-
-3. Start the development server:
-
-   ```bash
    npm run dev
    ```
 
-4. Open your browser to `http://localhost:3000`
+3. Open your browser to the displayed URL (usually `http://localhost:3000`)
+
+### Development Workflow
+
+When making changes to the VForm library and wanting to see them in the demo:
+
+```bash
+# Update the demo with the latest VForm build
+npm run demo:update
+```
+
+This command rebuilds the library and reinstalls it in the demo.
 
 ## Demo Navigation
 

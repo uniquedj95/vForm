@@ -36,10 +36,10 @@
 </template>
 
 <script setup lang="ts">
-import { ComputedData, FormData, FormField, FormSchema, Option } from '../../types';
+import { ComputedData, FormData, FormField, FormSchema, Option } from '@/types';
 import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
-import { canRenderField, deepClone } from '../../utils';
-import { useFormValidation } from '../../composables/useFormValidation';
+import { canRenderField, deepClone } from '@/utils';
+import { useFormValidation } from '@/composables/useFormValidation';
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import { add, remove } from 'ionicons/icons';
 

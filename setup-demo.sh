@@ -33,12 +33,15 @@ cd demo
 echo "📥 Installing demo dependencies..."
 npm install
 
+# Install the local vform package
+echo "🔗 Installing local VForm package..."
+npm install file:..
+
 echo "✅ Demo setup complete!"
 echo ""
 echo "🎉 Ready to run the demo!"
 echo ""
 echo "To start the demo:"
-echo "  cd demo"
-echo "  npm run dev"
+echo "  npm run demo:dev"
 echo ""
 echo "The demo will be available at http://localhost:3000"

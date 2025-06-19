@@ -12,7 +12,7 @@
  * @preferred
  * @author Daniel Justin.
  **/
-import { ComputedData, FormData, FormField, Option } from 'types';
+import { ComputedData, FormData, FormField, Option } from '@/types';
 export * from './maskito';
 
 /**

@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from 'vue';
-import { FormData, FormSchema, ComputedData, Option } from 'types';
-import { deepEqual } from '../utils';
+import { FormData, FormSchema, ComputedData, Option } from '@/types';
+import { deepEqual } from '@/utils';
 
 /**
  * Composable for data transformation logic

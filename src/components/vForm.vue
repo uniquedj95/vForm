@@ -48,11 +48,11 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue';
-import type { FormData, ComputedData, FormSchema, CustomButton } from '../types';
-import { canRenderField } from '../utils';
-import { useFormValidation } from '../composables/useFormValidation';
-import { useDataTransformation } from '../composables/useDataTransformation';
-import { useDependentOptions } from '../composables/useDependentOptions';
+import type { FormData, ComputedData, FormSchema, CustomButton } from '@/types';
+import { canRenderField } from '@/utils';
+import { useFormValidation } from '@/composables/useFormValidation';
+import { useDataTransformation } from '@/composables/useDataTransformation';
+import { useDependentOptions } from '@/composables/useDependentOptions';
 
 interface FormProps {
   schema: FormSchema;

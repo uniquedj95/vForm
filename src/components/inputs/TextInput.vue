@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { ref, type PropType } from 'vue';
-import { FormField, FormSchema } from '../../types';
+import { FormField, FormSchema } from '@/types';
 import BaseInput from './BaseInput.vue';
 
 defineProps<{ schema?: FormSchema }>();
