@@ -20,6 +20,7 @@ A dynamic form builder for Vue.js with Ionic components
 ## Table of Contents
 
 - [Overview](#overview)
+- [🎯 Demo](#demo)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -42,6 +43,30 @@ A dynamic form builder for Vue.js with Ionic components
 ## Overview
 
 vForm is a Vue.js component that dynamically generates forms based on a provided schema. It leverages Ionic components for a responsive and mobile-friendly design, supporting complex forms with conditional rendering and validation logic. It provides a robust and flexible form-building solution for Vue.js applications, allowing for a high degree of customization and control over the form behavior and appearance.
+
+## 🎯 Demo
+
+Explore all VForm features with our comprehensive interactive demo:
+
+```bash
+# Clone the repository
+git clone https://github.com/uniquedj95/vform.git
+cd vform
+
+# Setup and run the demo
+npm run demo:setup
+npm run demo:dev
+```
+
+The demo showcases:
+
+- **Basic Forms**: All input types and basic functionality
+- **Advanced Features**: Masking, computed fields, custom buttons
+- **Validation Examples**: Custom validators and error handling
+- **Dependent Fields**: Dynamic field behavior and cascading options
+- **Custom Styles**: Theming and visual customization
+
+Visit `http://localhost:3000` to explore the interactive examples.
 
 ## Features
 
