@@ -31,6 +31,7 @@ A dynamic form builder for Vue.js with Ionic components
 - [Form Methods](#form-methods)
 - [Input Dependencies](#input-dependencies)
   - [Dynamic Options](#dynamic-options)
+  - [Resetting Dependent Fields](#resetting-dependent-fields)
 - [Advanced Components](#advanced-components)
   - [SelectInput](#selectinput)
   - [Custom Buttons](#custom-buttons)
@@ -424,6 +425,80 @@ An input can also depend on multiple other inputs:
 ```
 
 For more details and examples, see the [Dependencies Documentation](./docs/DEPENDENCIES.md).
+
+#### Resetting Dependent Fields
+
+When a dependency changes, you often want to reset the dependent field's value to prevent invalid combinations (e.g., when changing from "USA" to "Canada", the previously selected "California" state should be cleared).
+
+**Method 1: Automatic Reset (Built-in)**
+
+The SelectInput component automatically detects dependency changes and resets the field value when using the `dependsOn` property:
+
+```javascript
+const formSchema = {
+  country: {
+    type: 'SelectInput',
+    label: 'Country',
+    options: [
+      { label: 'United States', value: 'us' },
+      { label: 'Canada', value: 'ca' },
+    ],
+  },
+  state: {
+    type: 'SelectInput',
+    label: 'State/Province',
+    dependsOn: 'country',
+    options: (filter, dependencyValues) => {
+      const country = dependencyValues?.country?.value;
+      return getStatesForCountry(country);
+    },
+  },
+};
+```
+
+When the country changes, the state field automatically resets to empty and reloads options.
+
+**Method 2: Manual Reset (Workaround)**
+
+If the automatic reset doesn't work as expected, you can manually reset dependent fields using the `onChange` callback:
+
+```javascript
+{
+  country: {
+    type: 'SelectInput',
+    label: 'Country',
+    options: [...],
+    onChange: (value, schema) => {
+      // Manual reset as workaround
+      schema.state.value = '';
+      return value;
+    },
+  }
+}
+```
+
+**Method 3: Multiple Field Reset**
+
+You can reset multiple dependent fields at once using onChange:
+
+```javascript
+{
+  country: {
+    type: 'SelectInput',
+    label: 'Country',
+    options: [...],
+    onChange: (value, schema) => {
+      // Reset all location-dependent fields
+      schema.state.value = '';
+      schema.city.value = '';
+      schema.zipCode.value = '';
+      return value;
+    },
+  }
+}
+```
+
+**Note:** Use the onChange approach as a workaround when the automatic reset doesn't work properly, or when you need to reset multiple fields or perform additional logic when dependencies change.
 
 ### Advanced Components
 

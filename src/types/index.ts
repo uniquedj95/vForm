@@ -329,9 +329,10 @@ export interface FormField {
   /**
    * The custom function for listening to changes in the form input field.
    *
-   * @type ComputedValueHandler
+   * @param value - The new value of the form input field.
+   * @param schema - The schema of the form.
    */
-  onChange?: (value: FormValue) => FormValue;
+  onChange?: (value: FormValue, schema: FormSchema) => FormValue;
 
   /**
    * The custom function used for computing alternative values based on the current value of the form input field.
