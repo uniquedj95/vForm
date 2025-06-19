@@ -118,11 +118,9 @@ export function useMultiStepForm(config: MultiStepConfig) {
 
   function resetForm() {
     currentStepIndex.value = 0;
-    config.steps.forEach(step => {
-      clearStepData(step.id);
-    });
     stepValidationErrors.value = {};
     config.steps.forEach(step => {
+      clearStepData(step.id);
       stepValidationErrors.value[step.id] = [];
     });
   }
