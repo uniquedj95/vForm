@@ -63,16 +63,14 @@ interface StepIndicatorProps {
   allowNavigation?: boolean;
 }
 
-interface StepIndicatorEmits {
-  (e: 'step-click', stepIndex: number): void;
-}
-
 const props = withDefaults(defineProps<StepIndicatorProps>(), {
   showProgress: true,
   allowNavigation: false,
 });
 
-const emit = defineEmits<StepIndicatorEmits>();
+const emit = defineEmits<{
+  (e: 'step-click', stepIndex: number): void;
+}>();
 
 const progressPercentage = computed(() => {
   if (props.steps.length === 0) return 0;
