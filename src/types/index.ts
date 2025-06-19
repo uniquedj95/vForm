@@ -62,6 +62,114 @@ export type ComputedData = Record<string, any>;
 export type FormSchema = Record<string, FormField>;
 
 /**
+ * Represents the position of step indicators in a multi-step form.
+ *
+ * @type StepPosition
+ */
+export type StepPosition = 'top' | 'bottom' | 'left' | 'right';
+
+/**
+ * Represents the display mode for step indicators.
+ *
+ * @type StepDisplayMode
+ */
+export type StepDisplayMode = 'numbers' | 'labels';
+
+/**
+ * Represents a single step in a multi-step form.
+ *
+ * @interface FormStep
+ */
+export interface FormStep {
+  /**
+   * Unique identifier for the step.
+   */
+  id: string;
+
+  /**
+   * The title of the step.
+   */
+  title: string;
+
+  /**
+   * Optional subtitle for the step.
+   */
+  subtitle?: string;
+
+  /**
+   * The form schema for this step.
+   */
+  schema: FormSchema;
+
+  /**
+   * Custom validation function for the entire step.
+   */
+  validation?: (
+    formData: FormData,
+    computedData: ComputedData
+  ) => Promise<Array<string> | null> | Array<string> | null;
+}
+
+/**
+ * Configuration for multi-step forms.
+ *
+ * @interface MultiStepConfig
+ */
+export interface MultiStepConfig {
+  /**
+   * Array of form steps.
+   */
+  steps: FormStep[];
+
+  /**
+   * Position of the step indicators.
+   */
+  stepPosition?: StepPosition;
+
+  /**
+   * Display mode for step indicators.
+   */
+  stepDisplayMode?: StepDisplayMode;
+
+  /**
+   * Whether to show step progress.
+   */
+  showProgress?: boolean;
+
+  /**
+   * Whether to allow clicking on step indicators to navigate.
+   */
+  allowStepNavigation?: boolean;
+}
+
+/**
+ * Data structure for multi-step form submission.
+ *
+ * @interface MultiStepFormData
+ */
+export interface MultiStepFormData {
+  /**
+   * Form data for each step, mapped by step ID.
+   */
+  steps: Record<string, FormData>;
+
+  /**
+   * Computed data for each step, mapped by step ID.
+   */
+  computedSteps: Record<string, ComputedData>;
+
+  /**
+   * Combined form data from all steps.
+   */
+  allFormData: FormData;
+
+  /**
+   * Combined computed data from all steps.
+   */
+  allComputedData: ComputedData;
+}
+
+/**
  * Defines responsive grid sizes for form fields across different viewport breakpoints.
  *
  * @interface GridSize

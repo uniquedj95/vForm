@@ -17,6 +17,7 @@ export { useFormValidation } from './composables/useFormValidation';
 export { useInputValidation } from './composables/useInputValidation';
 export { useDataTransformation } from './composables/useDataTransformation';
 export { useDependentOptions } from './composables/useDependentOptions';
+export { useMultiStepForm } from './composables/useMultiStepForm';
 
 // Export types
 export * from './types';
