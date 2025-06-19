@@ -20,13 +20,18 @@ A dynamic form builder for Vue.js with Ionic components
 ## Table of Contents
 
 - [Overview](#overview)
-- [🎯 Demo](#demo)
+- [Demo](#demo)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Schema Structure](#schema-structure)
   - [Example Schema](#example-schema)
   - [Field Configuration Options](#field-configuration-options)
+- [Multi-Step Forms](#multi-step-forms)
+  - [Basic Multi-Step Setup](#basic-multi-step-setup)
+  - [Step Configuration](#step-configuration)
+  - [Step Indicator Positioning](#step-indicator-positioning)
+  - [Step Validation](#step-validation)
 - [Form Events](#form-events)
 - [Form Methods](#form-methods)
 - [Input Dependencies](#input-dependencies)
@@ -37,7 +42,6 @@ A dynamic form builder for Vue.js with Ionic components
   - [Custom Buttons](#custom-buttons)
   - [RepeatInput](#repeatinput)
   - [Option Descriptions](#option-descriptions)
-  - [Date Pattern Formatting](#date-pattern-formatting)
 - [Issue Reporting and Feedback](#issue-reporting-and-feedback)
 - [Contributors](#contributors)
 
@@ -45,7 +49,7 @@ A dynamic form builder for Vue.js with Ionic components
 
 vForm is a Vue.js component that dynamically generates forms based on a provided schema. It leverages Ionic components for a responsive and mobile-friendly design, supporting complex forms with conditional rendering and validation logic. It provides a robust and flexible form-building solution for Vue.js applications, allowing for a high degree of customization and control over the form behavior and appearance.
 
-## 🎯 Demo
+## Demo
 
 Explore all VForm features with our comprehensive interactive demo:
 
@@ -62,6 +66,7 @@ npm run demo:dev
 The demo showcases:
 
 - **Basic Forms**: All input types and basic functionality
+- **Multi-Step Forms**: Step indicators, validation, and smart navigation
 - **Advanced Features**: Masking, computed fields, custom buttons
 - **Validation Examples**: Custom validators and error handling
 - **Dependent Fields**: Dynamic field behavior and cascading options
@@ -80,14 +85,15 @@ npm run demo:update
 
 ## Features
 
+- **Multi-Step Forms**: Create guided, step-by-step forms with configurable step indicators, validation, and smart navigation.
 - **Dynamic Form Generation**: Create forms dynamically based on a schema definition.
 - **Conditional Field Rendering**: Fields can be shown or hidden based on other form values.
 - **Dependent Options**: Load options for select inputs based on the values of other fields.
 - **Responsive Grid Layout**: Utilizes Ionic Grid for a responsive design that works across different screen sizes.
-- **Enhanced Date Input Field**: Custom date formatting and handling with integrated date picker.
+- **Enhanced Date Input Field**: Built-in date and datetime picker support with Ionic components.
 - **Multiple Selection Interfaces**: Three different interfaces for select inputs (popover, action sheet, alert).
 - **Repeatable Field Groups**: Create dynamic, repeatable sets of form fields.
-- **Advanced Validation**: Built-in validation with support for custom validation functions.
+- **Advanced Validation**: Built-in validation with support for custom validation functions and step-by-step validation.
 - **Computed Values**: Generate and transform values based on other form fields.
 - **Customizable Styling**: Control appearance with flexible styling options.
 - **Form Actions**: Customizable buttons with support for additional custom actions.
@@ -334,7 +340,216 @@ The following input types are supported:
 | ---------- | ------------ | ------------------------------------- |
 | `children` | `FormSchema` | Schema for the repeatable field group |
 
-### Form Events
+## Multi-Step Forms
+
+vForm supports multi-step forms with configurable step indicators, validation, and smart navigation. Multi-step forms break complex forms into manageable sections, improving user experience and data collection.
+
+### Basic Multi-Step Setup
+
+To create a multi-step form, define a `multiStepConfig` prop:
+
+```vue
+<template>
+  <v-form
+    :schema="formSchema"
+    :multi-step-config="multiStepConfig"
+    @submit="handleSubmit"
+    @step-change="handleStepChange"
+  />
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { FormSchema, MultiStepConfig } from '@uniquedj95/vform';
+
+const formSchema = reactive<FormSchema>({
+  // Personal Information Step
+  firstName: {
+    type: 'TextInput',
+    label: 'First Name',
+    required: true,
+  },
+  lastName: {
+    type: 'TextInput',
+    label: 'Last Name',
+    required: true,
+  },
+  // Contact Information Step
+  email: {
+    type: 'EmailInput',
+    label: 'Email',
+    required: true,
+  },
+  phone: {
+    type: 'TextInput',
+    label: 'Phone Number',
+  },
+  // Review Step
+  comments: {
+    type: 'TextAreaInput',
+    label: 'Additional Comments',
+  },
+});
+
+const multiStepConfig: MultiStepConfig = {
+  steps: [
+    {
+      id: 'personal',
+      title: 'Personal Information',
+      subtitle: 'Basic details about you',
+      schema: {
+        firstName: formSchema.firstName,
+        lastName: formSchema.lastName,
+      },
+    },
+    {
+      id: 'contact',
+      title: 'Contact Details',
+      subtitle: 'How we can reach you',
+      schema: {
+        email: formSchema.email,
+        phone: formSchema.phone,
+      },
+    },
+    {
+      id: 'review',
+      title: 'Review & Submit',
+      subtitle: 'Final review of your information',
+      schema: {
+        comments: formSchema.comments,
+      },
+    },
+  ],
+  stepPosition: 'top',
+  showProgress: true,
+  allowStepNavigation: true,
+};
+
+function handleSubmit(allData: FormData, perStepData: MultiStepFormData) {
+  console.log('All form data:', allData);
+  console.log('Per-step data:', perStepData);
+}
+
+function handleStepChange(stepIndex: number, stepId: string) {
+  console.log(`Moved to step ${stepIndex + 1}: ${stepId}`);
+}
+</script>
+```
+
+### Step Configuration
+
+Each step in the multi-step configuration supports the following properties:
+
+| Property     | Type         | Description                                   | Required |
+| ------------ | ------------ | --------------------------------------------- | -------- |
+| `id`         | `string`     | Unique identifier for the step                | Yes      |
+| `title`      | `string`     | Display title for the step                    | Yes      |
+| `subtitle`   | `string`     | Optional subtitle/description for the step    | No       |
+| `schema`     | `FormSchema` | Schema object containing fields for this step | Yes      |
+| `validation` | `function`   | Custom validation function for the step       | No       |
+
+### Step Indicator Positioning
+
+The step indicator can be positioned in four different locations:
+
+```typescript
+const multiStepConfig: MultiStepConfig = {
+  stepPosition: 'top', // Above the form content (default)
+  // stepPosition: 'bottom', // Below the form content
+  // stepPosition: 'left',   // Left side of the form content
+  // stepPosition: 'right',  // Right side of the form content
+  // ... other config
+};
+```
+
+#### Position Behaviors
+
+- **Top/Bottom**: Step indicators display horizontally with connecting lines
+- **Left**: Step indicators display vertically with titles to the right of numbered markers
+- **Right**: Step indicators display vertically with titles to the left of numbered markers
+
+### Step Validation
+
+Multi-step forms include built-in validation that prevents users from proceeding to the next step until the current step is valid:
+
+- **Next Step**: Validates all fields in the current step before advancing
+- **Step Navigation**: When clicking step indicators, validates current step if moving forward
+- **Submit**: Validates all steps before final submission
+
+```typescript
+const multiStepConfig: MultiStepConfig = {
+  steps: [
+    {
+      id: 'personal',
+      title: 'Personal Information',
+      schema: {
+        /* fields */
+      },
+      // Optional custom validation for this step
+      validation: async (stepData, computedData) => {
+        const errors: string[] = [];
+
+        // Custom validation logic
+        if (stepData.firstName && stepData.lastName && stepData.firstName === stepData.lastName) {
+          errors.push('First and last name cannot be the same');
+        }
+
+        return errors;
+      },
+    },
+    // ... other steps
+  ],
+  // ... other config
+};
+```
+
+### Multi-Step Configuration Options
+
+| Property              | Type                                     | Description                                   | Default  |
+| --------------------- | ---------------------------------------- | --------------------------------------------- | -------- |
+| `steps`               | `FormStep[]`                             | Array of step configurations                  | Required |
+| `stepPosition`        | `'top' \| 'bottom' \| 'left' \| 'right'` | Position of the step indicator                | `'top'`  |
+| `showProgress`        | `boolean`                                | Show progress bar and step counter            | `true`   |
+| `allowStepNavigation` | `boolean`                                | Allow clicking on step indicators to navigate | `false`  |
+
+### Multi-Step Events
+
+| Event         | Description                               | Signature                                                       |
+| ------------- | ----------------------------------------- | --------------------------------------------------------------- |
+| `step-change` | Emitted when user navigates between steps | `(stepIndex: number, stepId: string) => void`                   |
+| `submit`      | Emitted when multi-step form is submitted | `(allData: FormData, multiStepData: MultiStepFormData) => void` |
+
+The `submit` event provides both the combined data from all steps and the per-step data structure:
+
+```typescript
+// Combined data from all steps
+allData: FormData = {
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john@example.com',
+  // ...
+};
+
+// Per-step data structure
+multiStepData: MultiStepFormData = {
+  steps: {
+    personal: { firstName: 'John', lastName: 'Doe' },
+    contact: { email: 'john@example.com', phone: '...' },
+    review: { comments: '...' },
+  },
+  computedSteps: {
+    /* computed values per step */
+  },
+  allFormData: {
+    /* same as allData */
+  },
+  allComputedData: {
+    /* all computed values */
+  },
+};
+```
+
+## Form Events
 
 | Event    | Description                                                      | Signature                                                      |
 | -------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -609,40 +824,21 @@ When using SelectInput or CheckboxInput, you can add descriptions to options:
 }
 ```
 
-#### Date Pattern Formatting
-
-The DateInput component supports various date pattern formats:
-
-| Pattern | Description                                     | Example                 |
-| ------- | ----------------------------------------------- | ----------------------- |
-| DD      | Day of the month, two digits with leading zeros | 01 to 31                |
-| D       | Day of the month without leading zeros          | 1 to 31                 |
-| MMM     | Month name, abbreviated                         | Jan, Feb, Mar, etc.     |
-| MMMM    | Month name, full                                | January, February, etc. |
-| MM      | Month as a number, with leading zeros           | 01 to 12                |
-| M       | Month as a number, without leading zeros        | 1 to 12                 |
-| YYYY    | Year, four digits                               | 2025                    |
-| YY      | Year, two digits                                | 25                      |
-| HH      | Hour, two digits with leading zeros (24-hour)   | 00 to 23                |
-| mm      | Minutes, two digits with leading zeros          | 00 to 59                |
-| ss      | Seconds, two digits with leading zeros          | 00 to 59                |
-
-Example: `DD/MMM/YYYY HH:mm:ss` would format as `07/Jun/2025 14:30:00`
-
 ### Form Props
 
-| Property           | Type                           | Description                                                            | Default    |
-| ------------------ | ------------------------------ | ---------------------------------------------------------------------- | ---------- |
-| `schema`           | `FormSchema`                   | The schema object defining the form structure and field configurations | _Required_ |
-| `showLabels`       | `boolean`                      | Determines if labels are displayed for each field                      | `true`     |
-| `showClearButton`  | `boolean`                      | Controls the visibility of the clear/reset button                      | `true`     |
-| `showCancelButton` | `boolean`                      | Controls the visibility of the cancel button                           | `true`     |
-| `buttonPlacement`  | `'start' \| 'middle' \| 'end'` | Specifies the alignment of action buttons within the form              | `'start'`  |
-| `submitButtonText` | `string`                       | Custom text for the submit button                                      | `"Submit"` |
-| `clearButtonText`  | `string`                       | Custom text for the clear/reset button                                 | `"Reset"`  |
-| `cancelButtonText` | `string`                       | Custom text for the cancel button                                      | `"Cancel"` |
-| `hideButtons`      | `boolean`                      | When true, hides all action buttons                                    | `false`    |
-| `customButtons`    | `Array<CustomButton>`          | Array of custom buttons to add to the form                             | `[]`       |
+| Property           | Type                           | Description                                                            | Default     |
+| ------------------ | ------------------------------ | ---------------------------------------------------------------------- | ----------- |
+| `schema`           | `FormSchema`                   | The schema object defining the form structure and field configurations | _Required_  |
+| `multiStepConfig`  | `MultiStepConfig`              | Configuration for multi-step forms (optional)                          | `undefined` |
+| `showLabels`       | `boolean`                      | Determines if labels are displayed for each field                      | `true`      |
+| `showClearButton`  | `boolean`                      | Controls the visibility of the clear/reset button                      | `true`      |
+| `showCancelButton` | `boolean`                      | Controls the visibility of the cancel button                           | `true`      |
+| `buttonPlacement`  | `'start' \| 'middle' \| 'end'` | Specifies the alignment of action buttons within the form              | `'start'`   |
+| `submitButtonText` | `string`                       | Custom text for the submit button                                      | `"Submit"`  |
+| `clearButtonText`  | `string`                       | Custom text for the clear/reset button                                 | `"Reset"`   |
+| `cancelButtonText` | `string`                       | Custom text for the cancel button                                      | `"Cancel"`  |
+| `hideButtons`      | `boolean`                      | When true, hides all action buttons                                    | `false`     |
+| `customButtons`    | `Array<CustomButton>`          | Array of custom buttons to add to the form                             | `[]`        |
 
 ## Issue Reporting and Feedback
 
@@ -676,6 +872,11 @@ import {
   FormOptions,
   GridSize,
   CustomButton,
+  // Multi-step types
+  MultiStepConfig,
+  MultiStepFormData,
+  FormStep,
+  StepPosition,
 } from '@uniquedj95/vform';
 ```
 
