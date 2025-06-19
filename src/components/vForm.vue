@@ -336,6 +336,14 @@ function handleCancelAction() {
 
 async function handleNextStep() {
   if (multiStepForm) {
+    // First validate the current step's form inputs
+    const isCurrentStepValid = await isFormValid();
+
+    if (!isCurrentStepValid) {
+      // Show validation errors - they're already displayed by the form inputs
+      return;
+    }
+
     const success = await multiStepForm.nextStep();
     if (success && currentStep.value) {
       emit('step-change', currentStepIndex.value, currentStep.value.id);
@@ -354,6 +362,16 @@ async function handlePreviousStep() {
 
 async function handleStepClick(stepIndex: number) {
   if (multiStepForm) {
+    // If moving forward, validate current step first
+    if (stepIndex > currentStepIndex.value) {
+      const isCurrentStepValid = await isFormValid();
+
+      if (!isCurrentStepValid) {
+        // Show validation errors - they're already displayed by the form inputs
+        return;
+      }
+    }
+
     const success = await multiStepForm.goToStep(stepIndex);
     if (success && currentStep.value) {
       emit('step-change', stepIndex, currentStep.value.id);
