@@ -10,7 +10,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
   // Helper function to get default values from step schema
   function getStepDefaults(step: FormStep): FormData {
     const defaults: FormData = {};
-    Object.entries(step.schema).forEach(([fieldId, field]: [string, any]) => {
+    Object.entries(step.schema).forEach(([fieldId, field]: [string, FormStep['schema'][string]]) => {
       defaults[fieldId] = field.value;
     });
     return defaults;
