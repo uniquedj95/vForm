@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue';
-import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData } from '@/types';
+import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData, FormStep } from '@/types';
 
 export function useMultiStepForm(config: MultiStepConfig) {
   const currentStepIndex = ref(0);
@@ -8,7 +8,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const stepValidationErrors = ref<Record<string, string[]>>({});
 
   // Helper function to get default values from step schema
-  function getStepDefaults(step: any): FormData {
+  function getStepDefaults(step: FormStep): FormData {
     const defaults: FormData = {};
     Object.entries(step.schema).forEach(([fieldId, field]: [string, any]) => {
       defaults[fieldId] = field.value;
