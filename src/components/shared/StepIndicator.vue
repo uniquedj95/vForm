@@ -192,11 +192,6 @@ function handleStepClick(stepIndex: number) {
   color: var(--ion-color-primary-contrast);
 }
 
-.step-indicator__check-icon {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
 .step-indicator__step-info {
   flex: 1;
   min-width: 0;

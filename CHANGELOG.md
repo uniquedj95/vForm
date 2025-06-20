@@ -22,7 +22,6 @@
   - Left-positioned indicators show titles/subtitles to the right of markers
   - Right-positioned indicators show titles/subtitles to the left of markers
   - Responsive design with proper spacing
-  - Completed step visual indicators (checkmarks)
   - Progress bar display for top/bottom positions
 
 - **Enhanced Form Validation**:
