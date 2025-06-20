@@ -163,7 +163,6 @@ const formSchema: FormSchema = {
     label: 'Phone Number',
     value: '',
     placeholder: '(000) 000-0000',
-    mask: '(000) 000-0000',
     grid: { xs: '12', md: '6' },
   },
   birthDate: {
