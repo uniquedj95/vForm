@@ -197,4 +197,12 @@ describe('useMultiStepForm', () => {
     });
     expect(data.allComputedData).toEqual({ computed1: 'computed value' });
   });
+
+  it('should initialize step data with default values from schema', () => {
+    const { stepData } = useMultiStepForm(multiStepConfig);
+
+    // Check that step data is initialized with default values from schema
+    expect(stepData.value['step1']).toEqual({ field1: '', field2: '' });
+    expect(stepData.value['step2']).toEqual({ field3: '', field4: '' });
+  });
 });
