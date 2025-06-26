@@ -351,9 +351,8 @@ To create a multi-step form, define a `multiStepConfig` prop:
 ```vue
 <template>
   <v-form
-    :schema="formSchema"
     :multi-step-config="multiStepConfig"
-    @submit="handleSubmit"
+    @multi-step-submit="handleSubmit"
     @step-change="handleStepChange"
   />
 </template>
@@ -362,35 +361,6 @@ To create a multi-step form, define a `multiStepConfig` prop:
 import { reactive } from 'vue';
 import { FormSchema, MultiStepConfig } from '@uniquedj95/vform';
 
-const formSchema = reactive<FormSchema>({
-  // Personal Information Step
-  firstName: {
-    type: 'TextInput',
-    label: 'First Name',
-    required: true,
-  },
-  lastName: {
-    type: 'TextInput',
-    label: 'Last Name',
-    required: true,
-  },
-  // Contact Information Step
-  email: {
-    type: 'EmailInput',
-    label: 'Email',
-    required: true,
-  },
-  phone: {
-    type: 'TextInput',
-    label: 'Phone Number',
-  },
-  // Review Step
-  comments: {
-    type: 'TextAreaInput',
-    label: 'Additional Comments',
-  },
-});
-
 const multiStepConfig: MultiStepConfig = {
   steps: [
     {
@@ -398,8 +368,16 @@ const multiStepConfig: MultiStepConfig = {
       title: 'Personal Information',
       subtitle: 'Basic details about you',
       schema: {
-        firstName: formSchema.firstName,
-        lastName: formSchema.lastName,
+        firstName: {
+          type: 'TextInput',
+          label: 'First Name',
+          required: true,
+        },
+        lastName: {
+          type: 'TextInput',
+          label: 'Last Name',
+          required: true,
+        },
       },
     },
     {
@@ -407,8 +385,15 @@ const multiStepConfig: MultiStepConfig = {
       title: 'Contact Details',
       subtitle: 'How we can reach you',
       schema: {
-        email: formSchema.email,
-        phone: formSchema.phone,
+        email: {
+          type: 'EmailInput',
+          label: 'Email',
+          required: true,
+        },
+        phone: {
+          type: 'TextInput',
+          label: 'Phone Number',
+        },
       },
     },
     {
@@ -416,7 +401,10 @@ const multiStepConfig: MultiStepConfig = {
       title: 'Review & Submit',
       subtitle: 'Final review of your information',
       schema: {
-        comments: formSchema.comments,
+        comments: {
+          type: 'TextAreaInput',
+          label: 'Additional Comments',
+        },
       },
     },
   ],
@@ -425,9 +413,8 @@ const multiStepConfig: MultiStepConfig = {
   allowStepNavigation: true,
 };
 
-function handleSubmit(allData: FormData, perStepData: MultiStepFormData) {
+function handleSubmit(allData: MultiStepFormData) {
   console.log('All form data:', allData);
-  console.log('Per-step data:', perStepData);
 }
 
 function handleStepChange(stepIndex: number, stepId: string) {
@@ -522,15 +509,7 @@ const multiStepConfig: MultiStepConfig = {
 The `submit` event provides both the combined data from all steps and the per-step data structure:
 
 ```typescript
-// Combined data from all steps
-allData: FormData = {
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'john@example.com',
-  // ...
-};
-
-// Per-step data structure
+// multi-step data structure
 multiStepData: MultiStepFormData = {
   steps: {
     personal: { firstName: 'John', lastName: 'Doe' },
@@ -541,10 +520,10 @@ multiStepData: MultiStepFormData = {
     /* computed values per step */
   },
   allFormData: {
-    /* same as allData */
+    /* all form Data raw values */
   },
   allComputedData: {
-    /* all computed values */
+    /* all form data computed values */
   },
 };
 ```
