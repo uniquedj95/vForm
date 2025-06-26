@@ -149,7 +149,9 @@ function onSelect(item: Option) {
     const modelIndex = ((model.value.value as Option[]) ?? []).findIndex(
       o => o.value === item.value
     );
-    (model.value.value as Option[]).splice(modelIndex, 1);
+    if (modelIndex >= 0 && Array.isArray(model.value.value)) {
+      model.value.value.splice(modelIndex, 1);
+    }
     options.value[index].isChecked = false;
   } else {
     if (!model.value.multiple) onReset();
