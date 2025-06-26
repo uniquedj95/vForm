@@ -143,14 +143,19 @@ function onReset() {
 }
 
 function onSelect(item: Option) {
-  if (item.isChecked) return uncheckOption(item, options.value);
-  if (model.value.multiple) {
-    checkOption(item, options.value);
+  const index = options.value.findIndex(option => option.value === item.value && option.isChecked);
+  if (index >= 0) {
+    // Deselect the item
+    const modelIndex = ((model.value.value as Option[]) ?? []).findIndex(
+      o => o.value === item.value
+    );
+    (model.value.value as Option[]).splice(modelIndex, 1);
+    options.value[index].isChecked = false;
   } else {
-    onReset();
+    if (!model.value.multiple) onReset();
     checkOption(item, options.value);
-    onValueUpdate();
   }
+  onValueUpdate();
   filter.value = '';
 }
 

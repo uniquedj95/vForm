@@ -138,6 +138,22 @@ const formSchema: FormSchema = {
     ],
     grid: { xs: '12', md: '6' },
   },
+  preferences: {
+    type: 'SelectInput',
+    label: 'Preferences',
+    multiple: true,
+    options: [
+      { label: 'Newsletters', value: 'newsletters' },
+      { label: 'Product Updates', value: 'product_updates' },
+      { label: 'Promotions', value: 'promotions' },
+      { label: 'Beta Features', value: 'beta_features' },
+      { label: 'Community Events', value: 'community_events' },
+      { label: 'Surveys', value: 'surveys' },
+      { label: 'No Preferences', value: 'none' },
+    ],
+    placeholder: 'Select your preference',
+    grid: { xs: '12', md: '6' },
+  },
   notifications: {
     type: 'CheckboxInput',
     label: 'Email Notifications',
