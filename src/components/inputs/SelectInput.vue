@@ -397,7 +397,7 @@ onMounted(async () => {
   await filterOptions();
 
   // Then initialize the selection based on the default value
-  initialize();
+  await initialize();
 });
 
 defineExpose({
