@@ -319,50 +319,89 @@ async function filterOptions() {
         ? model.value.dependsOn
         : [model.value.dependsOn];
 
+      // Check if dependencies have values, especially on initial load
+      let allDependenciesHaveValues = true;
+
       dependencyValues = dependsOn.reduce(
         (acc, depId) => {
           acc[depId] = props.schema![depId]?.value;
+
+          // Check if this dependency has a value
+          if (acc[depId] === undefined || acc[depId] === null || acc[depId] === '') {
+            allDependenciesHaveValues = false;
+          }
+
           return acc;
         },
         {} as Record<string, any>
       );
-    }
 
-    // Call the options function with filter and dependency values
-    const res = await model.value.options(filter.value, dependencyValues);
-    filtered.push(...res.filter(o => !!o.label));
+      // Log dependency values for debugging if needed
+      console.log(`${model.value.label || 'Field'} dependency values:`, dependencyValues);
+
+      // Proceed only if all dependencies have values
+      if (allDependenciesHaveValues) {
+        // Call the options function with filter and dependency values
+        const res = await model.value.options(filter.value, dependencyValues);
+        filtered.push(...res.filter(o => !!o.label));
+      }
+    } else {
+      // No dependencies, just call the options function
+      const res = await model.value.options(filter.value, {});
+      filtered.push(...res.filter(o => !!o.label));
+    }
   }
   // Handle static array options
   else if (Array.isArray(model.value.options)) {
     filtered.push(...getFilteredOptions(model.value.options, filter.value));
   }
 
+  // Preserve currently selected values in the new options list
   tags.value.forEach(tag => checkOption(tag, filtered));
   options.value = filtered;
 }
 
-function initialize() {
+async function initialize() {
   const defaultValue = model.value.value;
   if (defaultValue) {
+    // Make sure options are loaded before initializing selection
+    if (options.value.length === 0) {
+      await filterOptions();
+    }
+
     if (Array.isArray(defaultValue)) {
       defaultValue.forEach(opt => checkOption(opt, options.value));
     } else if (typeof defaultValue === 'object') {
       checkOption(defaultValue, options.value);
     } else {
-      checkOption(
-        {
-          value: defaultValue as any,
-          label: defaultValue as string,
-        },
-        options.value
-      );
+      // Find the matching option for this value to get the correct label
+      const matchingOption = options.value.find(opt => opt.value === defaultValue);
+
+      if (matchingOption) {
+        checkOption(matchingOption, options.value);
+      } else {
+        checkOption(
+          {
+            value: defaultValue as any,
+            label: defaultValue as string,
+          },
+          options.value
+        );
+      }
     }
+
+    // Make sure the model value is updated
+    onValueUpdate();
   }
 }
 
 // On mount, ensure options are loaded initially
-onMounted(() => {
-  filterOptions();
+onMounted(async () => {
+  // First load options
+  await filterOptions();
+
+  // Then initialize the selection based on the default value
+  initialize();
 });
 
 defineExpose({
