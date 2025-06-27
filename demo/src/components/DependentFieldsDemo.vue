@@ -206,7 +206,7 @@ const formSchema: FormSchema = {
   country: {
     type: 'SelectInput',
     label: 'Country',
-    value: '',
+    value: 'us',
     options: [
       { label: 'United States', value: 'us' },
       { label: 'Canada', value: 'ca' },
