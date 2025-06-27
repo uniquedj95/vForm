@@ -59,6 +59,7 @@ import {
   uncheckOption,
   deepEqual,
   uncheckAllOptions,
+  findOption,
 } from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
 import {
@@ -146,11 +147,9 @@ function onSelect(item: Option) {
   const index = options.value.findIndex(option => option.value === item.value && option.isChecked);
   if (index >= 0) {
     // Deselect the item
-    const modelIndex = ((model.value.value as Option[]) ?? []).findIndex(
-      o => o.value === item.value
-    );
-    if (modelIndex >= 0 && Array.isArray(model.value.value)) {
-      model.value.value.splice(modelIndex, 1);
+    if (Array.isArray(model.value.value)) {
+      const modelIndex = findOption(item, model.value.value);
+      if (modelIndex >= 0) model.value.value.splice(modelIndex, 1);
     }
     options.value[index].isChecked = false;
   } else {
@@ -335,9 +334,6 @@ async function filterOptions() {
         },
         {} as Record<string, any>
       );
-
-      // Log dependency values for debugging if needed
-      console.log(`${model.value.label || 'Field'} dependency values:`, dependencyValues);
 
       // Proceed only if all dependencies have values
       if (allDependenciesHaveValues) {
