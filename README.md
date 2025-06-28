@@ -32,6 +32,9 @@ A dynamic form builder for Vue.js with Ionic components
   - [Step Configuration](#step-configuration)
   - [Step Indicator Positioning](#step-indicator-positioning)
   - [Step Validation](#step-validation)
+- [Form Sections](#form-sections)
+  - [Basic Section Usage](#basic-section-usage)
+  - [Section Configuration](#section-configuration)
 - [Form Events](#form-events)
 - [Form Methods](#form-methods)
 - [Input Dependencies](#input-dependencies)
@@ -66,6 +69,7 @@ npm run demo:dev
 The demo showcases:
 
 - **Basic Forms**: All input types and basic functionality
+- **Form Sections**: Organized forms with section headers and titles
 - **Multi-Step Forms**: Step indicators, validation, and smart navigation
 - **Advanced Features**: Masking, computed fields, custom buttons
 - **Validation Examples**: Custom validators and error handling
@@ -86,6 +90,7 @@ npm run demo:update
 ## Features
 
 - **Multi-Step Forms**: Create guided, step-by-step forms with configurable step indicators, validation, and smart navigation.
+- **Form Sections**: Organize forms into logical sections with titles and subtitles for better user experience.
 - **Dynamic Form Generation**: Create forms dynamically based on a schema definition.
 - **Conditional Field Rendering**: Fields can be shown or hidden based on other form values.
 - **Dependent Options**: Load options for select inputs based on the values of other fields.
@@ -261,6 +266,7 @@ The following input types are supported:
 | `SelectInput`   | Dropdown selection                           |
 | `CheckboxInput` | Toggle on/off input                          |
 | `RepeatInput`   | Repeatable group of fields                   |
+| `FormSection`   | Section header with title and subtitle       |
 
 #### Common Properties
 
@@ -528,6 +534,154 @@ multiStepData: MultiStepFormData = {
 };
 ```
 
+## Form Sections
+
+Form sections allow you to organize your forms into logical groups with titles and subtitles, making complex forms more readable and user-friendly. Sections are rendered as separate components within your form schema.
+
+### Basic Section Usage
+
+To create sections in your form, add `FormSection` items to your schema alongside regular form fields:
+
+```vue
+<template>
+  <v-form :schema="formSchema" @submit="handleSubmit" />
+</template>
+
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { FormSchema, FormData, ComputedData } from '@uniquedj95/vform';
+
+const formSchema: FormSchema = {
+  // Personal Information Section
+  personalInfoSection: {
+    type: 'FormSection',
+    title: 'Personal Information',
+    subtitle: 'Basic details about yourself',
+  },
+  firstName: {
+    type: 'TextInput',
+    label: 'First Name',
+    required: true,
+  },
+  lastName: {
+    type: 'TextInput',
+    label: 'Last Name',
+    required: true,
+  },
+  email: {
+    type: 'EmailInput',
+    label: 'Email Address',
+    required: true,
+  },
+
+  // Employment Section
+  employmentSection: {
+    type: 'FormSection',
+    title: 'Employment Details',
+    subtitle: 'Information about your job',
+  },
+  jobTitle: {
+    type: 'TextInput',
+    label: 'Job Title',
+    required: true,
+  },
+  department: {
+    type: 'SelectInput',
+    label: 'Department',
+    options: [
+      { label: 'Engineering', value: 'engineering' },
+      { label: 'Marketing', value: 'marketing' },
+      { label: 'Sales', value: 'sales' },
+    ],
+  },
+
+  // Address Section
+  addressSection: {
+    type: 'FormSection',
+    title: 'Address Information',
+  },
+  streetAddress: {
+    type: 'TextInput',
+    label: 'Street Address',
+    required: true,
+  },
+  city: {
+    type: 'TextInput',
+    label: 'City',
+    required: true,
+  },
+};
+
+function handleSubmit(formData: FormData, computedData: ComputedData) {
+  console.log('Form submitted:', { formData, computedData });
+  // Note: Section items don't appear in form data as they're display-only
+}
+</script>
+```
+
+### Section Configuration
+
+Form sections support the following configuration options:
+
+| Property    | Type            | Description                                | Required |
+| ----------- | --------------- | ------------------------------------------ | -------- |
+| `type`      | `'FormSection'` | Identifies this as a section (not a field) | ✓        |
+| `title`     | `string`        | The main section title                     | ✓        |
+| `subtitle`  | `string`        | Optional subtitle for additional context   |          |
+| `className` | `string`        | Optional CSS class for custom styling      |          |
+| `grid`      | `GridSize`      | Grid layout configuration for the section  |          |
+
+#### Grid Configuration
+
+Sections support the same responsive grid configuration as form fields:
+
+```typescript
+const sectionWithGrid: FormSchema = {
+  customSection: {
+    type: 'FormSection',
+    title: 'Custom Section',
+    subtitle: 'This section has custom grid settings',
+    grid: {
+      xs: '12', // Full width on extra small screens
+      md: '10', // 10/12 width on medium screens
+      lg: '8', // 8/12 width on large screens
+    },
+    className: 'my-custom-section',
+  },
+  // ... form fields
+};
+```
+
+#### Section Styling
+
+Sections are styled with default CSS that provides a clean, professional appearance:
+
+- **Title**: Primary color, medium font weight, clear hierarchy
+- **Subtitle**: Muted color, smaller font size
+- **Border**: Bottom border in primary color for visual separation
+- **Spacing**: Appropriate margins for visual grouping
+
+You can customize section appearance using the `className` property and your own CSS:
+
+```css
+.my-custom-section .form-section-title {
+  color: #custom-color;
+  font-size: 1.5rem;
+}
+
+.my-custom-section .form-section-subtitle {
+  font-style: italic;
+}
+```
+
+#### Important Notes
+
+- **Data Handling**: Form sections are display-only components and do not contribute to form data
+- **Validation**: Sections cannot have validation rules as they don't hold values
+- **Order**: Sections will appear in the form in the order they're defined in your schema
+- **Multi-Step Compatibility**: Sections work seamlessly within multi-step forms
+- **Responsive**: Sections automatically adapt to different screen sizes using Ionic's grid system
+
 ## Form Events
 
 | Event    | Description                                                      | Signature                                                      |
@@ -536,7 +690,7 @@ multiStepData: MultiStepFormData = {
 | `clear`  | Emitted when the form fields are cleared to their initial state  | `() => void`                                                   |
 | `cancel` | Emitted when the form submission is canceled, resetting fields   | `() => void`                                                   |
 
-### Form Methods
+## Form Methods
 
 When accessing the VForm via a template ref, you can utilize these methods:
 
@@ -546,7 +700,7 @@ When accessing the VForm via a template ref, you can utilize these methods:
 | `isFormValid()` | Validates all form fields and returns validation state | `Promise<boolean>`                                   |
 | `resolveData()` | Returns the current form data and computed data        | `{ formData: FormData, computedData: ComputedData }` |
 
-### Input Dependencies
+## Input Dependencies
 
 vForm provides a powerful system for creating dependent form inputs, where the options displayed in one input depend on the values selected in another. This is especially useful for hierarchical selections like country → state → city or category → subcategory.
 
