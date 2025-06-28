@@ -189,7 +189,7 @@ import type {
   MultiStepConfig,
   MultiStepFormData,
 } from '@/types';
-import { canRenderField } from '@/utils';
+import { canRenderField, isFormField, isFormSection } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
@@ -285,7 +285,7 @@ watch(
       activeSchema.value = newSchema;
       for (const [key, field] of Object.entries(newSchema)) {
         // Only process FormField items, not FormSection items
-        if (field.type !== 'FormSection' && 'value' in field && field.value !== undefined) {
+        if (isFormField(field) && 'value' in field && field.value !== undefined) {
           (activeSchema.value[key] as any).value = field.value;
         }
       }
@@ -384,11 +384,11 @@ watch(
   async () => {
     for (const [k, f] of Object.entries(activeSchema.value)) {
       // Only process FormField items, not FormSection items
-      if (f.type !== 'FormSection' && !canRenderField(f as any, data.value, computedData.value)) {
+      if (isFormField(f) && !canRenderField(f as any, data.value, computedData.value)) {
         // Reset the value of the field if it's not rendered
         const originalSchema =
           isMultiStep.value && currentStep.value ? currentStep.value.schema[k] : props.schema?.[k];
-        if (originalSchema && originalSchema.type !== 'FormSection' && 'value' in originalSchema) {
+        if (originalSchema && isFormField(originalSchema) && 'value' in originalSchema) {
           (f as any).value = originalSchema.value;
         }
       }
@@ -403,9 +403,7 @@ watch(
 // Helper function to determine if an item (field or section) should be rendered
 function shouldRenderItem(item: any, formData: any, computedFormData: any): boolean {
   // Always render FormSection items
-  if (item.type === 'FormSection') {
-    return true;
-  }
+  if (isFormSection(item)) return true;
   // For FormField items, use the existing canRenderField logic
   return canRenderField(item, formData, computedFormData);
 }
