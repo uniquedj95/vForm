@@ -143,6 +143,8 @@ else
   echo "Pushing to remote repository..."
   git push && git push --tags
 
+
+
   # Check if GitHub CLI is installed
   if command -v gh &> /dev/null; then
     echo "Creating GitHub release..."
@@ -181,4 +183,10 @@ Next steps:
 - Create a release on GitHub to trigger automatic publishing
 "
   fi
+
+  echo "Update demo with the new version:
+  - Update the demo project to use the new version of the package
+  - Run the demo to verify everything works as expected."
+  npm run demo:update
+  echo "Demo updated with the new version: $NEW_VERSION"
 fi
