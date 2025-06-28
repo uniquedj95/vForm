@@ -33,16 +33,15 @@
         <div class="multi-step-form-content">
           <IonGrid>
             <IonRow>
-              <template v-for="formId of Object.keys(activeSchema)">
+              <template v-for="formId of Object.keys(activeSchema)" :key="formId">
                 <IonCol
-                  :key="formId"
                   :size="activeSchema[formId].grid?.xs ?? '12'"
                   :size-sm="activeSchema[formId].grid?.sm"
                   :size-md="activeSchema[formId].grid?.md"
                   :size-lg="activeSchema[formId].grid?.lg"
                   :size-xl="activeSchema[formId].grid?.xl"
                   class="ion-margin-vertical"
-                  v-if="canRenderField(activeSchema[formId], data, computedData)"
+                  v-if="shouldRenderItem(activeSchema[formId], data, computedData)"
                 >
                   <component
                     :is="activeSchema[formId].type"
@@ -136,16 +135,15 @@
     <!-- Single-step form (original behavior) -->
     <IonGrid v-else>
       <IonRow>
-        <template v-for="formId of Object.keys(activeSchema)">
+        <template v-for="formId of Object.keys(activeSchema)" :key="formId">
           <IonCol
-            :key="formId"
             :size="activeSchema[formId].grid?.xs ?? '12'"
             :size-sm="activeSchema[formId].grid?.sm"
             :size-md="activeSchema[formId].grid?.md"
             :size-lg="activeSchema[formId].grid?.lg"
             :size-xl="activeSchema[formId].grid?.xl"
             class="ion-margin-vertical"
-            v-if="canRenderField(activeSchema[formId], data, computedData)"
+            v-if="shouldRenderItem(activeSchema[formId], data, computedData)"
           >
             <component
               :is="activeSchema[formId].type"
@@ -286,8 +284,9 @@ watch(
     if (!isMultiStep.value && newSchema) {
       activeSchema.value = newSchema;
       for (const [key, field] of Object.entries(newSchema)) {
-        if (field.value !== undefined) {
-          activeSchema.value[key].value = field.value;
+        // Only process FormField items, not FormSection items
+        if (field.type !== 'FormSection' && 'value' in field && field.value !== undefined) {
+          (activeSchema.value[key] as any).value = field.value;
         }
       }
     }
@@ -384,12 +383,13 @@ watch(
   data,
   async () => {
     for (const [k, f] of Object.entries(activeSchema.value)) {
-      if (!canRenderField(f, data.value, computedData.value)) {
+      // Only process FormField items, not FormSection items
+      if (f.type !== 'FormSection' && !canRenderField(f as any, data.value, computedData.value)) {
         // Reset the value of the field if it's not rendered
         const originalSchema =
           isMultiStep.value && currentStep.value ? currentStep.value.schema[k] : props.schema?.[k];
-        if (originalSchema) {
-          f.value = originalSchema.value;
+        if (originalSchema && originalSchema.type !== 'FormSection' && 'value' in originalSchema) {
+          (f as any).value = originalSchema.value;
         }
       }
     }
@@ -399,6 +399,16 @@ watch(
     immediate: true,
   }
 );
+
+// Helper function to determine if an item (field or section) should be rendered
+function shouldRenderItem(item: any, formData: any, computedFormData: any): boolean {
+  // Always render FormSection items
+  if (item.type === 'FormSection') {
+    return true;
+  }
+  // For FormField items, use the existing canRenderField logic
+  return canRenderField(item, formData, computedFormData);
+}
 
 defineExpose({
   resetForm: handleClearAction,

@@ -1,4 +1,36 @@
 /**
+ * Represents a form section with title and optional subtitle.
+ *
+ * @interface FormSection
+ */
+export interface FormSection {
+  /**
+   * Identifies this as a form section (not a form field).
+   */
+  type: 'FormSection';
+
+  /**
+   * The section title.
+   */
+  title: string;
+
+  /**
+   * Optional subtitle for the section.
+   */
+  subtitle?: string;
+
+  /**
+   * Optional styling class for the section.
+   */
+  className?: string;
+
+  /**
+   * Grid configuration for the section container.
+   */
+  grid?: GridSize;
+}
+
+/**
  * Represents the possible value types that can be stored in a form field.
  *
  * @type FormValue
@@ -55,11 +87,11 @@ export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
 
 /**
- * Represents the structure of a form, with field IDs as keys and FormField objects as values.
+ * Represents the structure of a form, with field IDs as keys and FormField or FormSection objects as values.
  *
  * @type FormSchema
  */
-export type FormSchema = Record<string, FormField>;
+export type FormSchema = Record<string, FormField | FormSection>;
 
 /**
  * Represents the position of step indicators in a multi-step form.
@@ -534,7 +566,8 @@ export type InputType =
   | 'TextAreaInput'
   | 'RepeatInput'
   | 'CheckboxInput'
-  | 'RadioInput';
+  | 'RadioInput'
+  | 'FormSection';
 
 /**
  * Represents the basic field types for HTML input elements.

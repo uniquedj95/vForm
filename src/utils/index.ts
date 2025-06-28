@@ -12,7 +12,7 @@
  * @preferred
  * @author Daniel Justin.
  **/
-import { ComputedData, FormData, FormField, Option } from '@/types';
+import { ComputedData, FormData, FormField, FormSection, Option } from '@/types';
 export * from './maskito';
 
 /**
@@ -217,4 +217,24 @@ export function deepEqual(obj1: any, obj2: any): boolean {
   return keys1.every(
     key => Object.prototype.hasOwnProperty.call(obj2, key) && deepEqual(obj1[key], obj2[key])
   );
+}
+
+/**
+ * Type guard to check if an item is a FormField (not a FormSection)
+ *
+ * @param item - The item to check
+ * @returns `true` if the item is a FormField, `false` if it's a FormSection
+ */
+export function isFormField(item: FormField | FormSection): item is FormField {
+  return item.type !== 'FormSection';
+}
+
+/**
+ * Type guard to check if an item is a FormSection (not a FormField)
+ *
+ * @param item - The item to check
+ * @returns `true` if the item is a FormSection, `false` if it's a FormField
+ */
+export function isFormSection(item: FormField | FormSection): item is FormSection {
+  return item.type === 'FormSection';
 }

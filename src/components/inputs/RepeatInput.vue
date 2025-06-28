@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { ComputedData, FormData, FormField, FormSchema, Option } from '@/types';
 import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
-import { canRenderField, deepClone } from '@/utils';
+import { canRenderField, deepClone, isFormField } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import { add, remove } from 'ionicons/icons';
@@ -62,7 +62,10 @@ const inputValue = computed<Array<Option>>(() => {
     value: index,
     other: Object.entries(child).reduce(
       (acc, [id, field]) => {
-        acc[id] = field.value;
+        // Only process FormField items, not FormSection items
+        if (isFormField(field)) {
+          acc[id] = field.value;
+        }
         return acc;
       },
       {} as Record<string, any>
