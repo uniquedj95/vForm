@@ -10,6 +10,7 @@ import TextAreaInput from './components/inputs/TextAreaInput.vue';
 import RepeatInput from './components/inputs/RepeatInput.vue';
 import CheckboxInput from './components/inputs/CheckboxInput.vue';
 import RadioInput from './components/inputs/RadioInput.vue';
+import FormSection from './components/shared/SectionTitle.vue';
 import { maskito } from '@maskito/vue';
 
 // Export composables
@@ -35,6 +36,7 @@ export const VForm: Plugin = {
     app.component('RepeatInput', RepeatInput);
     app.component('CheckboxInput', CheckboxInput);
     app.component('RadioInput', RadioInput);
+    app.component('FormSection', FormSection);
     app.directive('maskito', maskito);
   },
 };

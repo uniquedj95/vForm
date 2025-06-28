@@ -8,6 +8,7 @@ import VForm from '@uniquedj95/vform';
 import '@uniquedj95/vform/vform.css';
 
 import BasicDemo from './components/BasicDemo.vue';
+import SectionDemo from './components/SectionDemo.vue';
 import MultiStepDemo from './components/MultiStepDemo.vue';
 import AdvancedDemo from './components/AdvancedDemo.vue';
 import ValidationDemo from './components/ValidationDemo.vue';
@@ -17,6 +18,7 @@ import CustomStylesDemo from './components/CustomStylesDemo.vue';
 const routes = [
   { path: '/', redirect: '/basic' },
   { path: '/basic', component: BasicDemo, meta: { title: 'Basic Form' } },
+  { path: '/sections', component: SectionDemo, meta: { title: 'Section Demo' } },
   { path: '/multi-step', component: MultiStepDemo, meta: { title: 'Multi-Step Form' } },
   { path: '/advanced', component: AdvancedDemo, meta: { title: 'Advanced Features' } },
   { path: '/validation', component: ValidationDemo, meta: { title: 'Validation Examples' } },

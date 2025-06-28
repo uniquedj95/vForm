@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from 'vue';
 import { FormData, FormSchema, ComputedData, Option } from '@/types';
-import { deepEqual } from '@/utils';
+import { deepEqual, isFormField } from '@/utils';
 
 /**
  * Composable for data transformation logic
@@ -12,7 +12,8 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
    */
   const formData = computed(() =>
     Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
-      if (form.value !== undefined) {
+      // Only process FormField items, not FormSection items
+      if (isFormField(form) && form.value !== undefined) {
         if (typeof form.onChange === 'function') {
           acc[key] = form.onChange(form.value, activeSchema.value);
         } else {
@@ -32,8 +33,12 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
    * Process a child value using its computed value function or return as is
    */
   const processChildValue = (key: string, childId: string, value: any): any => {
-    if (typeof activeSchema.value[key].children![childId]?.computedValue === 'function') {
-      return activeSchema.value[key].children![childId].computedValue(value, activeSchema.value);
+    const schemaItem = activeSchema.value[key];
+    if (isFormField(schemaItem) && schemaItem.children) {
+      const childField = schemaItem.children[childId];
+      if (childField && isFormField(childField) && typeof childField.computedValue === 'function') {
+        return childField.computedValue(value, activeSchema.value);
+      }
     }
     return value;
   };
@@ -117,13 +122,16 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
 
     const schema = activeSchema.value[key];
 
-    if (schema.children !== undefined) {
-      processChildren(key, value, oldData);
-    }
-    // Only compute the value if no children were processed
-    // This prevents overwriting child transformations
-    else if (typeof schema.computedValue === 'function') {
-      computedData.value[key] = schema.computedValue(value, activeSchema.value);
+    // Only process if it's a FormField, not a FormSection
+    if (isFormField(schema)) {
+      if (schema.children !== undefined) {
+        processChildren(key, value, oldData);
+      }
+      // Only compute the value if no children were processed
+      // This prevents overwriting child transformations
+      else if (typeof schema.computedValue === 'function') {
+        computedData.value[key] = schema.computedValue(value, activeSchema.value);
+      }
     }
   };
 

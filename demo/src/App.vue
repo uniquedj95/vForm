@@ -63,6 +63,7 @@ import {
   linkOutline,
   colorPaletteOutline,
   layersOutline,
+  listOutline,
 } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -73,6 +74,11 @@ const pages = [
     title: 'Basic Form',
     url: '/basic',
     icon: documentTextOutline,
+  },
+  {
+    title: 'Section Demo',
+    url: '/sections',
+    icon: listOutline,
   },
   {
     title: 'Multi-Step Form',

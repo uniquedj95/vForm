@@ -1,5 +1,6 @@
 import { ref, watch, Ref } from 'vue';
 import type { FormSchema, Option, FormData, ComputedData } from '@/types';
+import { isFormField } from '@/utils';
 
 /**
  * This composable manages dependent options for select inputs.
@@ -119,16 +120,21 @@ export function useDependentOptions(
       // Skip if schema field no longer exists
       if (!schema.value[fieldId]) return;
 
+      const field = schema.value[fieldId];
+
+      // Only process if it's a FormField, not a FormSection
+      if (!isFormField(field)) return;
+
       // Update the options
-      schema.value[fieldId].options = options;
+      field.options = options;
 
       // Check if current value is still valid
-      const currentValue = schema.value[fieldId].value;
+      const currentValue = field.value;
       if (!currentValue) return;
 
       // Reset value if not found in new options
       if (!valueExistsInOptions(currentValue, options)) {
-        schema.value[fieldId].value = schema.value[fieldId].multiple ? [] : '';
+        field.value = field.multiple ? [] : '';
       }
     } catch (error) {
       console.error(`Error loading options for ${fieldId}:`, error);

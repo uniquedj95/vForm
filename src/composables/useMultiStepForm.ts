@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData, FormStep } from '@/types';
+import { isFormField } from '@/utils';
 
 export function useMultiStepForm(config: MultiStepConfig) {
   const currentStepIndex = ref(0);
@@ -10,9 +11,14 @@ export function useMultiStepForm(config: MultiStepConfig) {
   // Helper function to get default values from step schema
   function getStepDefaults(step: FormStep): FormData {
     const defaults: FormData = {};
-    Object.entries(step.schema).forEach(([fieldId, field]: [string, FormStep['schema'][string]]) => {
-      defaults[fieldId] = field.value;
-    });
+    Object.entries(step.schema).forEach(
+      ([fieldId, field]: [string, FormStep['schema'][string]]) => {
+        // Only process FormField items, not FormSection items
+        if (isFormField(field)) {
+          defaults[fieldId] = field.value;
+        }
+      }
+    );
     return defaults;
   }
 

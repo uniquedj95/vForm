@@ -60,6 +60,7 @@ import {
   deepEqual,
   uncheckAllOptions,
   findOption,
+  isFormField,
 } from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
 import {
@@ -123,7 +124,10 @@ watch(
       : [model.value.dependsOn];
 
     // Return the current values of all dependency fields
-    return dependsOn.map(depId => props.schema![depId]?.value);
+    return dependsOn.map(depId => {
+      const field = props.schema![depId];
+      return isFormField(field) ? field.value : undefined;
+    });
   },
   async (newValues, oldValues) => {
     if (newValues && oldValues && !deepEqual(newValues, oldValues)) {
@@ -323,7 +327,8 @@ async function filterOptions() {
 
       dependencyValues = dependsOn.reduce(
         (acc, depId) => {
-          acc[depId] = props.schema![depId]?.value;
+          const field = props.schema![depId];
+          acc[depId] = isFormField(field) ? field.value : undefined;
 
           // Check if this dependency has a value
           if (acc[depId] === undefined || acc[depId] === null || acc[depId] === '') {
