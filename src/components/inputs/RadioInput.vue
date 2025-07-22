@@ -12,21 +12,20 @@
     @ionChange="onValueUpdate"
     @ionBlur="onValueUpdate"
   >
-    <ion-radio
+    <ion-item
       v-for="option of options"
       :key="option.value"
-      :value="option"
-      :disabled="model.disabled"
-      label-placement="end"
-      justify="start"
+      :lines="model.showOptionsSeparator ? 'none' : 'full'"
     >
-      {{ option.label }}
-    </ion-radio>
+      <ion-radio :value="option" :disabled="model.disabled" label-placement="end" justify="start">
+        {{ option.label }}
+      </ion-radio>
+    </ion-item>
   </ion-radio-group>
 </template>
 
 <script lang="ts" setup>
-import { IonRadioGroup, IonRadio } from '@ionic/vue';
+import { IonRadioGroup, IonRadio, IonItem } from '@ionic/vue';
 import { FormField, FormSchema, Option } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed, onMounted } from 'vue';
 import { useInputValidation } from '@/composables/useInputValidation';

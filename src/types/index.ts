@@ -460,6 +460,13 @@ export interface FormField {
   dependsOn?: string | string[];
 
   /**
+   * Whether to display separators between options in select-type inputs.
+   *
+   * @type boolean
+   */
+  showOptionsSeparator?: boolean;
+
+  /**
    * The custom validation function for the form input field.
    *
    * @type FormValidator

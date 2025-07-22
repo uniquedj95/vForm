@@ -40,7 +40,13 @@
       class="suggestions-list"
       :class="popoverPosition"
     >
-      <ion-item button v-for="option in options" :key="option.label" @click="onSelect(option)">
+      <ion-item
+        button
+        v-for="option in options"
+        :key="option.label"
+        @click="onSelect(option)"
+        :lines="model.showOptionsSeparator ? 'none' : 'full'"
+      >
         <ion-checkbox slot="start" :checked="option.isChecked" v-if="model.multiple" />
         <ion-label>{{ option.label }}</ion-label>
       </ion-item>
