@@ -161,7 +161,7 @@
               :form-id="formId"
               ref="dynamicRefs"
               :ref-key="formId"
-              stye="width: 100%"
+              style="width: 100%"
             />
           </IonCol>
         </template>
