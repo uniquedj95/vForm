@@ -23,7 +23,8 @@ export function useMultiStepForm(config: MultiStepConfig) {
       }
     });
     return defaults;
-  } // Initialize step data with default values from schema
+  }
+  // Initialize step data with default values from schema
   config.steps.forEach(step => {
     stepData.value[step.id] = getStepDefaults(step);
     stepComputedData.value[step.id] = {};
