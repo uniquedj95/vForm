@@ -71,33 +71,20 @@
 
           <ion-card-content>
             <ion-accordion-group>
-              <ion-accordion value="all-data">
+              <ion-accordion value="combined-form-data">
                 <ion-item slot="header">
-                  <ion-label>All Form Data</ion-label>
+                  <ion-label>Form Data</ion-label>
                 </ion-item>
                 <div slot="content" class="accordion-content">
-                  <pre>{{ JSON.stringify(submittedData.allFormData, null, 2) }}</pre>
+                  <pre>{{ JSON.stringify(submittedData.formData, null, 2) }}</pre>
                 </div>
               </ion-accordion>
-
-              <ion-accordion value="all-computed">
+              <ion-accordion value="combined-computed-data">
                 <ion-item slot="header">
-                  <ion-label>All Computed Data</ion-label>
+                  <ion-label>Computed Data</ion-label>
                 </ion-item>
                 <div slot="content" class="accordion-content">
-                  <pre>{{ JSON.stringify(submittedData.allComputedData, null, 2) }}</pre>
-                </div>
-              </ion-accordion>
-
-              <ion-accordion value="step-data">
-                <ion-item slot="header">
-                  <ion-label>Data by Step</ion-label>
-                </ion-item>
-                <div slot="content" class="accordion-content">
-                  <div v-for="(stepData, stepId) in submittedData.steps" :key="stepId">
-                    <h4>{{ stepId }}</h4>
-                    <pre>{{ JSON.stringify(stepData, null, 2) }}</pre>
-                  </div>
+                  <pre>{{ JSON.stringify(submittedData.computedData, null, 2) }}</pre>
                 </div>
               </ion-accordion>
             </ion-accordion-group>
@@ -147,7 +134,7 @@ import {
 } from '@ionic/vue';
 import type { MultiStepConfig, MultiStepFormData, StepPosition } from '@uniquedj95/vform';
 
-const submittedData = ref<MultiStepFormData | null>(null);
+const submittedData = ref<any>(null);
 const currentStepInfo = ref<{ index: number; id: string; title: string } | null>(null);
 
 // Demo configuration

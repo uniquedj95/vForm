@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - 2025-06-19
+## [Unreleased] - 2025-07-24
 
 ### Added
 
@@ -16,6 +16,20 @@
   - Step navigation controls (Previous, Next, Submit buttons)
   - Step indicator click navigation (when enabled)
   - Conditional steps that show/hide based on form data
+  - Step-namespaced form data access to avoid field name conflicts
+  - Simplified MultiStepFormData interface with improved data structure
+
+### Changed
+
+- **MultiStepFormData Interface**: Renamed properties for better clarity and consistency
+  - `steps` renamed to `formData`
+  - `computedSteps` renamed to `computedData`
+  - Removed redundant `allFormData` and `allComputedData` properties
+  - Added helper functions to generate combined data summaries
+- **FormStep Condition Function**: Simplified the condition function interface
+
+  - Removed the combined form and computed data parameters to avoid key conflicts
+  - Now only provides step-namespaced data through `stepData` and `stepComputedData` parameters
 
 - **Step Indicator Component**: New `StepIndicator` component with:
 

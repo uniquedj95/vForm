@@ -149,11 +149,16 @@ export interface FormStep {
 
   /**
    * Optional condition function that determines if this step should be displayed.
-   * Takes the form data and computed data as arguments and returns a boolean.
-   * If the function returns true, the step will be displayed; if false, it will be hidden.
-   * Hidden steps are skipped during navigation.
+   *
+   * @param formData - The form data organized by step ID.
+   * @param computedData - The computed data organized by step ID.
+   *
+   * @returns {boolean} - If the function returns true, the step will be displayed. The step will be hidden otherwise.
    */
-  condition?: (formData: FormData, computedData: ComputedData) => boolean;
+  condition?: (
+    formData: Record<string, FormData>,
+    computedData: Record<string, ComputedData>
+  ) => boolean;
 
   /**
    * Custom validation function for the entire step.
@@ -204,23 +209,15 @@ export interface MultiStepConfig {
 export interface MultiStepFormData {
   /**
    * Form data for each step, mapped by step ID.
+   * Access specific step data using: formData['step-id']
    */
-  steps: Record<string, FormData>;
+  formData: Record<string, FormData>;
 
   /**
    * Computed data for each step, mapped by step ID.
+   * Access specific step computed data using: computedData['step-id']
    */
-  computedSteps: Record<string, ComputedData>;
-
-  /**
-   * Combined form data from all steps.
-   */
-  allFormData: FormData;
-
-  /**
-   * Combined computed data from all steps.
-   */
-  allComputedData: ComputedData;
+  computedData: Record<string, ComputedData>;
 }
 
 /**

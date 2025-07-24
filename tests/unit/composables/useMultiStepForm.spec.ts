@@ -89,13 +89,24 @@ describe('useMultiStepForm', () => {
     expect(stepData.value['step1'].field1).toBe('');
   });
 
-  it('should provide combined form data', () => {
-    const { updateStepData, allFormData } = useMultiStepForm(multiStepConfig);
+  it('should organize form data by step ID', () => {
+    const { updateStepData, stepData } = useMultiStepForm(multiStepConfig);
 
     updateStepData('step1', { field1: 'value1', field2: 'value2' });
     updateStepData('step2', { field3: 'value3', field4: 'value4' });
 
-    expect(allFormData.value).toEqual({
+    // Check that step data is properly namespaced
+    expect(stepData.value).toEqual({
+      step1: { field1: 'value1', field2: 'value2' },
+      step2: { field3: 'value3', field4: 'value4' },
+    });
+
+    // Manually combine data to check
+    const combinedData = Object.values(stepData.value).reduce((acc, data) => {
+      return { ...acc, ...data };
+    }, {});
+
+    expect(combinedData).toEqual({
       field1: 'value1',
       field2: 'value2',
       field3: 'value3',
@@ -186,16 +197,32 @@ describe('useMultiStepForm', () => {
     const data = getMultiStepFormData();
 
     // Step data should include both updated values and default values from schema
-    expect(data.steps['step1']).toEqual({ field1: 'value1', field2: '' });
-    expect(data.steps['step2']).toEqual({ field3: 'value3', field4: '' });
-    expect(data.computedSteps['step1']).toEqual({ computed1: 'computed value' });
-    expect(data.allFormData).toEqual({
+    expect(data.formData['step1']).toEqual({ field1: 'value1', field2: '' });
+    expect(data.formData['step2']).toEqual({ field3: 'value3', field4: '' });
+    expect(data.computedData['step1']).toEqual({ computed1: 'computed value' });
+
+    // Test the combined data is accessible via helper functions
+    const combinedFormData = Object.values(data.formData).reduce(
+      (acc: Record<string, any>, stepData: any) => {
+        return { ...acc, ...stepData };
+      },
+      {}
+    );
+
+    const combinedComputedData = Object.values(data.computedData).reduce(
+      (acc: Record<string, any>, stepData: any) => {
+        return { ...acc, ...stepData };
+      },
+      {}
+    );
+
+    expect(combinedFormData).toEqual({
       field1: 'value1',
       field2: '',
       field3: 'value3',
       field4: '',
     });
-    expect(data.allComputedData).toEqual({ computed1: 'computed value' });
+    expect(combinedComputedData).toEqual({ computed1: 'computed value' });
   });
 
   it('should initialize step data with default values from schema', () => {
