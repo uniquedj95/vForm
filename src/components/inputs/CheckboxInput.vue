@@ -8,6 +8,7 @@
     @ionFocus="onFocus"
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
+    style="width: 100%"
   >
     {{ labelTextWithAsterisk }}
   </ion-checkbox>

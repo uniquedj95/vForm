@@ -22,6 +22,7 @@
     @ionFocus="onFocus"
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
+    style="width: 100%"
   >
     <InputLabel :model="model" />
   </ion-textarea>

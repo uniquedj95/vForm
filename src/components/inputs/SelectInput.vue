@@ -12,9 +12,10 @@
       :placeholder="placeholder"
       :disabled="model.disabled"
       :counter="model.counter"
-      @ion-focus="onFocus"
       :debounce="300"
+      @ion-focus="onFocus"
       @click="openInterface"
+      style="width: 100%"
     >
       <InputLabel :model="model" />
       <ion-label v-if="model.multiple" style="width: fit-content" slot="start">

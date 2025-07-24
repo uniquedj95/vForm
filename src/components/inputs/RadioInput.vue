@@ -11,6 +11,7 @@
     @ionFocus="onFocus"
     @ionChange="onValueUpdate"
     @ionBlur="onValueUpdate"
+    style="width: 100%"
   >
     <ion-item
       v-for="option of options"
