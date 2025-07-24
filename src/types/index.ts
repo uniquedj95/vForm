@@ -150,8 +150,14 @@ export interface FormStep {
   /**
    * Optional condition function that determines if this step should be displayed.
    *
-   * @param formData - The form data organized by step ID.
-   * @param computedData - The computed data organized by step ID.
+   * When a step is hidden:
+   * - It won't appear in the step indicator
+   * - Navigation will skip over it automatically
+   * - Its data will be cleared to prevent submission of skipped information
+   * - If the step becomes visible again, it will start with empty or default values
+   *
+   * @param formData - The form data organized by step ID to avoid key conflicts.
+   * @param computedData - The computed data organized by step ID to avoid key conflicts.
    *
    * @returns {boolean} - If the function returns true, the step will be displayed. The step will be hidden otherwise.
    */

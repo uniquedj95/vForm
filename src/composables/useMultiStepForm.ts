@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData, FormStep } from '@/types';
 import { isFormField } from '@/utils';
 
@@ -31,12 +31,35 @@ export function useMultiStepForm(config: MultiStepConfig) {
     stepValidationErrors.value[step.id] = [];
   });
 
+  // Track the previously visible step IDs
+  const previousVisibleStepIds = ref<string[]>(config.steps.map(step => step.id));
+
   // Filter steps based on their condition property
   const visibleSteps = computed(() => {
-    return config.steps.filter(step => {
+    const visible = config.steps.filter(step => {
       if (!step.condition) return true;
       return step.condition(stepData.value, stepComputedData.value);
     });
+
+    return visible;
+  });
+
+  // Watch for changes in visible steps and clear data from newly hidden steps
+  watch(visibleSteps, (newVisibleSteps: FormStep[]) => {
+    const newVisibleStepIds = newVisibleSteps.map((step: FormStep) => step.id);
+
+    // Find steps that were visible before but are now hidden
+    const newlyHiddenStepIds = previousVisibleStepIds.value.filter(
+      id => !newVisibleStepIds.includes(id)
+    );
+
+    // Clear data from newly hidden steps
+    newlyHiddenStepIds.forEach(stepId => {
+      clearStepData(stepId);
+    });
+
+    // Update the record of visible step IDs
+    previousVisibleStepIds.value = newVisibleStepIds;
   });
 
   const currentStep = computed(() => {
