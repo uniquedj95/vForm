@@ -178,7 +178,7 @@ const multiStepConfig = reactive<MultiStepConfig>({
       },
       // Condition: Only show if accountType is 'educational'
       condition: formData =>
-        /educational/i.test((formData['basic-info']?.accountType as Option)?.label || ''),
+        (formData['basic-info']?.accountType as Option)?.value === 'educational',
     },
     // Step 4: Preferences
     {
