@@ -177,11 +177,7 @@ const multiStepConfig = reactive<MultiStepConfig>({
         },
       },
       // Condition: Only show if accountType is 'educational'
-      condition: formData => {
-        console.log('Checking condition for educational info:', formData.accountType);
-
-        return /educational/i.test((formData.accountType as Option).label);
-      },
+      condition: formData => /educational/i.test((formData.accountType as Option).label),
     },
 
     // Step 4: Preferences
