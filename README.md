@@ -568,7 +568,10 @@ const multiStepConfig = reactive<MultiStepConfig>({
         },
       },
       // Only show this step if accountType is 'business'
-      condition: formData => formData.accountType === 'business',
+      // Using stepData with step ID to avoid field name conflicts
+      condition: (stepData, stepComputedData) => {
+        return /business/i.test(stepData['account-type'].accountType.label);
+      },
     },
     {
       id: 'review',
@@ -582,7 +585,19 @@ const multiStepConfig = reactive<MultiStepConfig>({
 </script>
 ```
 
-The `condition` function receives the current form data and should return a boolean. When a step is hidden:
+The `condition` function receives two arguments:
+
+- `stepData`: Form data organized by step ID to avoid key conflicts
+- `stepComputedData`: Computed data organized by step ID
+
+```typescript
+condition: (stepData, stepComputedData) => {
+  const firstStepData = stepData['first-step-id'];
+  return firstStepData.someField === 'expectedValue';
+};
+```
+
+When a step is hidden:
 
 - It won't be visible in the step indicator
 - Navigation will skip over it automatically
@@ -803,19 +818,13 @@ The `submit` event provides both the combined data from all steps and the per-st
 ```typescript
 // multi-step data structure
 multiStepData: MultiStepFormData = {
-  steps: {
+  formData: {
     personal: { firstName: 'John', lastName: 'Doe' },
     contact: { email: 'john@example.com', phone: '...' },
     review: { comments: '...' },
   },
-  computedSteps: {
+  computedData: {
     /* computed values per step */
-  },
-  allFormData: {
-    /* all form Data raw values */
-  },
-  allComputedData: {
-    /* all form data computed values */
   },
 };
 ```

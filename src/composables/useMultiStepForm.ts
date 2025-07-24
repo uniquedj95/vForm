@@ -34,7 +34,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const visibleSteps = computed(() => {
     return config.steps.filter(step => {
       if (!step.condition) return true;
-      return step.condition(allFormData.value, allComputedData.value);
+      return step.condition(stepData.value, stepComputedData.value);
     });
   });
 
@@ -60,23 +60,6 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const progressPercentage = computed(() => {
     if (totalSteps.value === 0) return 0;
     return Math.round(((currentStepIndex.value + 1) / totalSteps.value) * 100);
-  });
-
-  // Combined data from all steps
-  const allFormData = computed(() => {
-    const combined: FormData = {};
-    Object.values(stepData.value).forEach(data => {
-      Object.assign(combined, data);
-    });
-    return combined;
-  });
-
-  const allComputedData = computed(() => {
-    const combined: ComputedData = {};
-    Object.values(stepComputedData.value).forEach(data => {
-      Object.assign(combined, data);
-    });
-    return combined;
   });
 
   function updateStepData(stepId: string, data: FormData) {
@@ -181,10 +164,8 @@ export function useMultiStepForm(config: MultiStepConfig) {
 
   function getMultiStepFormData(): MultiStepFormData {
     return {
-      steps: { ...stepData.value },
-      computedSteps: { ...stepComputedData.value },
-      allFormData: allFormData.value,
-      allComputedData: allComputedData.value,
+      formData: { ...stepData.value },
+      computedData: { ...stepComputedData.value },
     };
   }
 
@@ -204,8 +185,6 @@ export function useMultiStepForm(config: MultiStepConfig) {
     canGoPrevious,
     totalSteps,
     progressPercentage,
-    allFormData,
-    allComputedData,
 
     // Methods
     updateStepData,
