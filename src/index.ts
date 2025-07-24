@@ -43,4 +43,20 @@ export const VForm: Plugin = {
 
 export type VFormRef = typeof Form;
 
+// Export components for direct use
+export {
+  Form as FormBuilder,
+  TextInput,
+  DateInput,
+  NumberInput,
+  EmailInput,
+  PasswordInput,
+  SelectInput,
+  TextAreaInput,
+  RepeatInput,
+  CheckboxInput,
+  RadioInput,
+  FormSection,
+};
+
 export default VForm;
