@@ -1,3 +1,5 @@
+import { Component } from 'vue';
+
 /**
  * Represents a form section with title and optional subtitle.
  *
@@ -130,8 +132,20 @@ export interface FormStep {
 
   /**
    * The form schema for this step.
+   * Not required if customComponent is provided.
    */
-  schema: FormSchema;
+  schema?: FormSchema;
+
+  /**
+   * Optional custom component to use for this step instead of a form schema.
+   * This should be a Vue component reference.
+   */
+  component?: Component;
+
+  /**
+   * Optional props to pass to the custom component.
+   */
+  componentProps?: Record<string, any>;
 
   /**
    * Custom validation function for the entire step.
