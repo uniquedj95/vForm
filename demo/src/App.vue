@@ -65,6 +65,7 @@ import {
   layersOutline,
   listOutline,
   cubeOutline,
+  eyeOutline,
 } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -110,6 +111,11 @@ const pages = [
     title: 'Custom Components',
     url: '/custom-component',
     icon: cubeOutline,
+  },
+  {
+    title: 'Conditional Steps',
+    url: '/conditional-steps',
+    icon: eyeOutline,
   },
 ];
 

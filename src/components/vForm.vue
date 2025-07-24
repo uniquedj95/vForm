@@ -5,7 +5,7 @@
       <!-- Step Indicator -->
       <StepIndicator
         v-if="multiStepConfig && multiStepConfig.stepPosition === 'top'"
-        :steps="multiStepConfig.steps"
+        :steps="visibleSteps"
         :active-step-index="currentStepIndex"
         :position="multiStepConfig.stepPosition || 'top'"
         :show-progress="multiStepConfig.showProgress"
@@ -20,7 +20,7 @@
         <!-- Left Step Indicator -->
         <StepIndicator
           v-if="multiStepConfig && multiStepConfig.stepPosition === 'left'"
-          :steps="multiStepConfig.steps"
+          :steps="visibleSteps"
           :active-step-index="currentStepIndex"
           :position="multiStepConfig.stepPosition ?? 'top'"
           :show-progress="multiStepConfig.showProgress"
@@ -111,7 +111,7 @@
               <div class="step-progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
             </div>
             <div class="step-progress-text">
-              Step {{ currentStepIndex + 1 }} of {{ multiStepConfig.steps.length }}
+              Step {{ currentStepIndex + 1 }} of {{ visibleSteps.length }}
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@
         <!-- Right Step Indicator -->
         <StepIndicator
           v-if="multiStepConfig && multiStepConfig.stepPosition === 'right'"
-          :steps="multiStepConfig.steps"
+          :steps="visibleSteps"
           :active-step-index="currentStepIndex"
           :position="multiStepConfig.stepPosition"
           :show-progress="multiStepConfig.showProgress"
@@ -132,7 +132,7 @@
       <!-- Bottom Step Indicator -->
       <StepIndicator
         v-if="multiStepConfig && multiStepConfig.stepPosition === 'bottom'"
-        :steps="multiStepConfig.steps"
+        :steps="visibleSteps"
         :active-step-index="currentStepIndex"
         :position="multiStepConfig.stepPosition"
         :show-progress="multiStepConfig.showProgress"
@@ -255,6 +255,7 @@ const customComponentRef = ref<any>(null);
 // Multi-step computed properties
 const currentStepIndex = computed(() => multiStepForm?.currentStepIndex.value ?? 0);
 const currentStep = computed(() => multiStepForm?.currentStep.value);
+const visibleSteps = computed(() => multiStepForm?.visibleSteps.value ?? []);
 const isLastStep = computed(() => multiStepForm?.isLastStep.value ?? true);
 const canGoNext = computed(() => multiStepForm?.canGoNext.value ?? false);
 const canGoPrevious = computed(() => multiStepForm?.canGoPrevious.value ?? false);

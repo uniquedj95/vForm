@@ -30,13 +30,33 @@ export function useMultiStepForm(config: MultiStepConfig) {
     stepValidationErrors.value[step.id] = [];
   });
 
-  const currentStep = computed(() => config.steps[currentStepIndex.value]);
+  // Filter steps based on their condition property
+  const visibleSteps = computed(() => {
+    return config.steps.filter(step => {
+      if (!step.condition) return true;
+      return step.condition(allFormData.value, allComputedData.value);
+    });
+  });
+
+  const currentStep = computed(() => {
+    // If we have visible steps, return the current one
+    if (visibleSteps.value.length > 0) {
+      // Make sure the currentStepIndex is within bounds of visible steps
+      if (currentStepIndex.value >= visibleSteps.value.length) {
+        return visibleSteps.value[visibleSteps.value.length - 1];
+      }
+      return visibleSteps.value[currentStepIndex.value];
+    }
+    // Fallback to the original step if no visible steps (should never happen)
+    return config.steps[currentStepIndex.value];
+  });
+
   const isFirstStep = computed(() => currentStepIndex.value === 0);
-  const isLastStep = computed(() => currentStepIndex.value === config.steps.length - 1);
+  const isLastStep = computed(() => currentStepIndex.value === visibleSteps.value.length - 1);
   const canGoNext = computed(() => !isLastStep.value);
   const canGoPrevious = computed(() => !isFirstStep.value);
 
-  const totalSteps = computed(() => config.steps.length);
+  const totalSteps = computed(() => visibleSteps.value.length);
   const progressPercentage = computed(() => {
     if (totalSteps.value === 0) return 0;
     return Math.round(((currentStepIndex.value + 1) / totalSteps.value) * 100);
@@ -98,7 +118,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
   }
 
   async function goToStep(stepIndex: number): Promise<boolean> {
-    if (stepIndex < 0 || stepIndex >= config.steps.length) {
+    if (stepIndex < 0 || stepIndex >= visibleSteps.value.length) {
       return false;
     }
 
@@ -116,6 +136,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
 
   async function nextStep(): Promise<boolean> {
     if (canGoNext.value) {
+      // Find the next visible step
       return goToStep(currentStepIndex.value + 1);
     }
     return false;
@@ -123,6 +144,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
 
   async function previousStep(): Promise<boolean> {
     if (canGoPrevious.value) {
+      // Find the previous visible step
       return goToStep(currentStepIndex.value - 1);
     }
     return false;
@@ -175,6 +197,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
     stepValidationErrors,
 
     // Computed
+    visibleSteps,
     isFirstStep,
     isLastStep,
     canGoNext,
