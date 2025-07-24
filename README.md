@@ -31,6 +31,7 @@ A dynamic form builder for Vue.js with Ionic components
   - [Basic Multi-Step Setup](#basic-multi-step-setup)
   - [Step Configuration](#step-configuration)
   - [Step Indicator Positioning](#step-indicator-positioning)
+  - [Custom Components in Steps](#custom-components-in-steps)
   - [Step Validation](#step-validation)
 - [Form Sections](#form-sections)
   - [Basic Section Usage](#basic-section-usage)
@@ -446,6 +447,67 @@ Each step in the multi-step configuration supports the following properties:
 | `validation`     | `function`   | Custom validation function for the step            | No       |
 
 \*Either `schema` or `component` must be provided.
+
+### Custom Components in Steps
+
+vForm allows you to use custom Vue components in multi-step forms instead of schema-defined fields. This is useful for complex steps that require custom layouts, visualizations, or integration with other components.
+
+```vue
+<template>
+  <v-form :multi-step-config="multiStepConfig" @multi-step-submit="handleSubmit" />
+</template>
+
+<script setup lang="ts">
+import { MultiStepConfig } from '@uniquedj95/vform';
+import PreviousResultsTable from './components/PreviousResultsTable.vue';
+
+const multiStepConfig: MultiStepConfig = {
+  steps: [
+    {
+      id: 'patient-info',
+      title: 'Patient Information',
+      schema: {
+        // Regular form schema for step 1
+        patientId: {
+          type: 'TextInput',
+          label: 'Patient ID',
+          required: true,
+        },
+      },
+    },
+    {
+      id: 'previous-results',
+      title: 'Previous ANC Results',
+      // Use a custom component instead of a schema
+      component: PreviousResultsTable,
+      componentProps: {
+        // Props to pass to your component
+        clinicId: 123,
+        showDetails: true,
+      },
+    },
+    {
+      id: 'new-visit',
+      title: 'New ANC Visit',
+      schema: {
+        // Back to regular schema for step 3
+        visitDate: {
+          type: 'DateInput',
+          label: 'Visit Date',
+          required: true,
+        },
+      },
+    },
+  ],
+};
+</script>
+```
+
+Custom components need to implement a `validate()` method that returns a boolean to integrate with the form validation workflow, and emit an `update:data` event to pass data back to the form.
+
+For detailed implementation examples and best practices, see the [Custom Components Guide](./docs/CUSTOM_COMPONENTS.md).
+
+A complete working example is available in the demo app under `demo/src/examples/CustomComponentExample.vue` that demonstrates a real-world ANC (Antenatal Care) workflow using a custom component to display previous visit history.
 
 ### Step Indicator Positioning
 
