@@ -19,6 +19,7 @@
               :schema="child"
               :ref-key="`${index}-${formId}`"
               ref="dynamicRefs"
+              style="width: 100%"
             />
           </IonCol>
         </template>
