@@ -15,6 +15,7 @@ import ValidationDemo from './components/ValidationDemo.vue';
 import DependentFieldsDemo from './components/DependentFieldsDemo.vue';
 import CustomStylesDemo from './components/CustomStylesDemo.vue';
 import CustomComponentExample from './components/CustomComponentDemo.vue';
+import ConditionalStepsDemo from './components/ConditionalStepsDemo.vue';
 
 const routes = [
   { path: '/', redirect: '/basic' },
@@ -29,6 +30,11 @@ const routes = [
     path: '/custom-component',
     component: CustomComponentExample,
     meta: { title: 'Custom Component Demo' },
+  },
+  {
+    path: '/conditional-steps',
+    component: ConditionalStepsDemo,
+    meta: { title: 'Conditional Steps Demo' },
   },
 ];
 

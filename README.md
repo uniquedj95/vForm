@@ -436,15 +436,16 @@ function handleStepChange(stepIndex: number, stepId: string) {
 
 Each step in the multi-step configuration supports the following properties:
 
-| Property         | Type         | Description                                        | Required |
-| ---------------- | ------------ | -------------------------------------------------- | -------- |
-| `id`             | `string`     | Unique identifier for the step                     | Yes      |
-| `title`          | `string`     | Display title for the step                         | Yes      |
-| `subtitle`       | `string`     | Optional subtitle/description for the step         | No       |
-| `schema`         | `FormSchema` | Schema object containing fields for this step      | No       |
-| `component`      | `Component`  | Custom Vue component to render instead of a schema | No       |
-| `componentProps` | `Object`     | Props to pass to the custom component              | No       |
-| `validation`     | `function`   | Custom validation function for the step            | No       |
+| Property         | Type         | Description                                                              | Required |
+| ---------------- | ------------ | ------------------------------------------------------------------------ | -------- |
+| `id`             | `string`     | Unique identifier for the step                                           | Yes      |
+| `title`          | `string`     | Display title for the step                                               | Yes      |
+| `subtitle`       | `string`     | Optional subtitle/description for the step                               | No       |
+| `schema`         | `FormSchema` | Schema object containing fields for this step                            | No       |
+| `component`      | `Component`  | Custom Vue component to render instead of a schema                       | No       |
+| `componentProps` | `Object`     | Props to pass to the custom component                                    | No       |
+| `condition`      | `function`   | Function that determines if the step should be shown, based on form data | No       |
+| `validation`     | `function`   | Custom validation function for the step                                  | No       |
 
 \*Either `schema` or `component` must be provided.
 
@@ -528,6 +529,64 @@ const multiStepConfig: MultiStepConfig = {
 - **Top/Bottom**: Step indicators display horizontally with connecting lines
 - **Left**: Step indicators display vertically with titles to the right of numbered markers
 - **Right**: Step indicators display vertically with titles to the left of numbered markers
+
+### Conditional Steps
+
+vForm allows you to conditionally show or hide steps based on the values entered in previous steps. This is useful for creating dynamic workflows that adapt to user input.
+
+```vue
+<script setup lang="ts">
+import { reactive } from 'vue';
+import { MultiStepConfig } from '@uniquedj95/vform';
+
+const multiStepConfig = reactive<MultiStepConfig>({
+  steps: [
+    {
+      id: 'account-type',
+      title: 'Account Type',
+      schema: {
+        accountType: {
+          type: 'SelectInput',
+          label: 'Account Type',
+          options: [
+            { label: 'Personal', value: 'personal' },
+            { label: 'Business', value: 'business' },
+          ],
+          value: 'personal',
+          required: true,
+        },
+      },
+    },
+    {
+      id: 'business-details',
+      title: 'Business Details',
+      schema: {
+        businessName: {
+          type: 'TextInput',
+          label: 'Business Name',
+          required: true,
+        },
+      },
+      // Only show this step if accountType is 'business'
+      condition: formData => formData.accountType === 'business',
+    },
+    {
+      id: 'review',
+      title: 'Review',
+      schema: {
+        // Review fields
+      },
+    },
+  ],
+});
+</script>
+```
+
+The `condition` function receives the current form data and should return a boolean. When a step is hidden:
+
+- It won't be visible in the step indicator
+- Navigation will skip over it automatically
+- The step count and progress indicators will update accordingly
 
 ### Custom Components in Steps
 

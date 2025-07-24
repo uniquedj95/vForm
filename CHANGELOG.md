@@ -15,6 +15,7 @@
   - Custom step validation functions
   - Step navigation controls (Previous, Next, Submit buttons)
   - Step indicator click navigation (when enabled)
+  - Conditional steps that show/hide based on form data
 
 - **Step Indicator Component**: New `StepIndicator` component with:
 

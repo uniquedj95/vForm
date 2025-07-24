@@ -148,6 +148,14 @@ export interface FormStep {
   componentProps?: Record<string, any>;
 
   /**
+   * Optional condition function that determines if this step should be displayed.
+   * Takes the form data and computed data as arguments and returns a boolean.
+   * If the function returns true, the step will be displayed; if false, it will be hidden.
+   * Hidden steps are skipped during navigation.
+   */
+  condition?: (formData: FormData, computedData: ComputedData) => boolean;
+
+  /**
    * Custom validation function for the entire step.
    */
   validation?: (
