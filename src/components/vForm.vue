@@ -35,7 +35,7 @@
           <component
             v-if="currentStep?.component"
             :is="currentStep.component"
-            v-bind="currentStep.customComponentProps || {}"
+            v-bind="currentStep.componentProps || {}"
             @update:data="handleCustomComponentDataUpdate"
             ref="customComponentRef"
           />
