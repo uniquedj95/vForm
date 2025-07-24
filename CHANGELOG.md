@@ -30,6 +30,8 @@
 
   - Removed the combined form and computed data parameters to avoid key conflicts
   - Now only provides step-namespaced data through `stepData` and `stepComputedData` parameters
+  - Modified behavior to automatically clear data from hidden steps
+  - Hidden steps now start fresh with default values if they become visible again
 
 - **Step Indicator Component**: New `StepIndicator` component with:
 

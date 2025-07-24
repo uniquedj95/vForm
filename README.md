@@ -602,6 +602,22 @@ When a step is hidden:
 - It won't be visible in the step indicator
 - Navigation will skip over it automatically
 - The step count and progress indicators will update accordingly
+- **Data behavior**: Form data from hidden steps is automatically cleared
+  - Hidden step data is not included in the final submission
+  - If a step becomes visible again, it starts with empty/default values
+  - This prevents processing of data that was meant to be skipped
+
+> **Note:** The data clearing happens whenever the visibility of steps changes. If you need
+> to preserve data from conditionally hidden steps for some specific use case, you can
+> store a backup of the data separately before the condition changes:
+>
+> ```typescript
+> // Save data before hiding a step
+> const backupData = { ...stepData.value['step-to-be-hidden'] };
+>
+> // Later, if you need to restore the data when the step becomes visible again
+> updateStepData('step-to-be-hidden', backupData);
+> ```
 
 ### Custom Components in Steps
 
