@@ -11,14 +11,17 @@ export function useMultiStepForm(config: MultiStepConfig) {
   // Helper function to get default values from step schema
   function getStepDefaults(step: FormStep): FormData {
     const defaults: FormData = {};
-    Object.entries(step.schema).forEach(
-      ([fieldId, field]: [string, FormStep['schema'][string]]) => {
-        // Only process FormField items, not FormSection items
-        if (isFormField(field)) {
-          defaults[fieldId] = field.value;
-        }
+    // If using a custom component, return empty defaults
+    if (step.component || !step.schema) {
+      return defaults;
+    }
+
+    Object.entries(step.schema).forEach(([fieldId, field]) => {
+      // Only process FormField items, not FormSection items
+      if (isFormField(field)) {
+        defaults[fieldId] = field.value;
       }
-    );
+    });
     return defaults;
   }
 
@@ -140,6 +143,7 @@ export function useMultiStepForm(config: MultiStepConfig) {
     let allValid = true;
 
     for (const step of config.steps) {
+      // Standard step validation
       if (step.validation) {
         const errors = await step.validation(
           stepData.value[step.id],

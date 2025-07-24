@@ -71,6 +71,7 @@ The demo showcases:
 - **Basic Forms**: All input types and basic functionality
 - **Form Sections**: Organized forms with section headers and titles
 - **Multi-Step Forms**: Step indicators, validation, and smart navigation
+- **Custom Components**: Integration of custom Vue components within multi-step workflows
 - **Advanced Features**: Masking, computed fields, custom buttons
 - **Validation Examples**: Custom validators and error handling
 - **Dependent Fields**: Dynamic field behavior and cascading options
@@ -90,6 +91,7 @@ npm run demo:update
 ## Features
 
 - **Multi-Step Forms**: Create guided, step-by-step forms with configurable step indicators, validation, and smart navigation.
+- **Custom Components**: Integrate custom Vue components directly into multi-step forms for advanced visualizations and workflows.
 - **Form Sections**: Organize forms into logical sections with titles and subtitles for better user experience.
 - **Dynamic Form Generation**: Create forms dynamically based on a schema definition.
 - **Conditional Field Rendering**: Fields can be shown or hidden based on other form values.
@@ -433,13 +435,17 @@ function handleStepChange(stepIndex: number, stepId: string) {
 
 Each step in the multi-step configuration supports the following properties:
 
-| Property     | Type         | Description                                   | Required |
-| ------------ | ------------ | --------------------------------------------- | -------- |
-| `id`         | `string`     | Unique identifier for the step                | Yes      |
-| `title`      | `string`     | Display title for the step                    | Yes      |
-| `subtitle`   | `string`     | Optional subtitle/description for the step    | No       |
-| `schema`     | `FormSchema` | Schema object containing fields for this step | Yes      |
-| `validation` | `function`   | Custom validation function for the step       | No       |
+| Property         | Type         | Description                                        | Required |
+| ---------------- | ------------ | -------------------------------------------------- | -------- |
+| `id`             | `string`     | Unique identifier for the step                     | Yes      |
+| `title`          | `string`     | Display title for the step                         | Yes      |
+| `subtitle`       | `string`     | Optional subtitle/description for the step         | No       |
+| `schema`         | `FormSchema` | Schema object containing fields for this step      | No       |
+| `component`      | `Component`  | Custom Vue component to render instead of a schema | No       |
+| `componentProps` | `Object`     | Props to pass to the custom component              | No       |
+| `validation`     | `function`   | Custom validation function for the step            | No       |
+
+\*Either `schema` or `component` must be provided.
 
 ### Step Indicator Positioning
 
@@ -460,6 +466,165 @@ const multiStepConfig: MultiStepConfig = {
 - **Top/Bottom**: Step indicators display horizontally with connecting lines
 - **Left**: Step indicators display vertically with titles to the right of numbered markers
 - **Right**: Step indicators display vertically with titles to the left of numbered markers
+
+### Custom Components in Steps
+
+vForm allows you to use custom Vue components in multi-step forms instead of schema-defined fields. This is useful for complex steps that require custom layouts, visualizations, or integration with other components.
+
+```vue
+<template>
+  <v-form
+    :multi-step-config="multiStepConfig"
+    @multi-step-submit="handleSubmit"
+    @step-change="handleStepChange"
+  />
+</template>
+
+<script setup lang="ts">
+import { defineComponent, ref } from 'vue';
+import { MultiStepConfig } from '@uniquedj95/vform';
+import PreviousResultsTable from './PreviousResultsTable.vue';
+
+// Define your custom component
+const PreviousResultsTable = defineComponent({
+  props: {
+    data: Object,
+  },
+  setup(props, { emit }) {
+    // Implement your component logic
+    const tableData = ref([
+      /* your data */
+    ]);
+
+    // Custom validation function - will be called when clicking "Next"
+    function validate() {
+      // Add your validation logic here
+      return true; // Return true if valid, false if not
+    }
+
+    // Function to update data in the parent form
+    function updateData() {
+      emit('update:data', {
+        /* your component data */
+      });
+    }
+
+    return { tableData, validate, updateData };
+  },
+});
+
+const multiStepConfig: MultiStepConfig = {
+  steps: [
+    {
+      id: 'patient-info',
+      title: 'Patient Information',
+      schema: {
+        // Standard form schema
+        patientId: {
+          type: 'TextInput',
+          label: 'Patient ID',
+          required: true,
+        },
+        // More fields...
+      },
+    },
+    {
+      id: 'previous-results',
+      title: 'Previous ANC Results',
+      // Use a custom component instead of a schema
+      component: PreviousResultsTable,
+      componentProps: {
+        // Props to pass to your component
+        clinicId: 123,
+        showDetails: true,
+      },
+    },
+    {
+      id: 'new-visit',
+      title: 'New ANC Visit',
+      schema: {
+        // Back to standard form schema
+        visitDate: {
+          type: 'DateInput',
+          label: 'Visit Date',
+          required: true,
+        },
+        // More fields...
+      },
+    },
+  ],
+  stepPosition: 'top',
+  showProgress: true,
+  allowStepNavigation: true,
+};
+</script>
+```
+
+#### Custom Component Requirements
+
+To work properly with the multi-step form, your custom component should:
+
+1. **Accept Props**: Receive data and configuration through props
+2. **Emit Data Updates**: Use `emit('update:data', yourData)` to send data back to the form
+3. **Implement Validation**: Expose a `validate()` method that returns a boolean or promise resolving to boolean
+
+#### Component Interface Example
+
+```vue
+<template>
+  <div class="custom-step-component">
+    <!-- Your custom UI here -->
+    <data-table :data="tableData" @row-click="selectRow" />
+
+    <!-- You can still use Ionic components -->
+    <ion-button @click="handleSave">Save Selection</ion-button>
+  </div>
+</template>
+
+<script setup>
+import { ref, defineEmits, defineProps, defineExpose } from 'vue';
+
+const props = defineProps({
+  // Your props here
+  initialData: Object,
+});
+
+const emits = defineEmits(['update:data']);
+
+const tableData = ref([]);
+const selectedRow = ref(null);
+
+function selectRow(row) {
+  selectedRow.value = row;
+  emitData();
+}
+
+function handleSave() {
+  // Your save logic
+  emitData();
+}
+
+function emitData() {
+  // Send data back to parent form
+  emits('update:data', {
+    selected: selectedRow.value,
+    // other data...
+  });
+}
+
+// This method will be called for validation
+function validate() {
+  // Return false if validation fails
+  if (!selectedRow.value) {
+    return false;
+  }
+  return true;
+}
+
+// Expose the validate method to the parent
+defineExpose({ validate });
+</script>
+```
 
 ### Step Validation
 

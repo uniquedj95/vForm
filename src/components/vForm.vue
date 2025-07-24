@@ -31,7 +31,16 @@
 
         <!-- Form Content -->
         <div class="multi-step-form-content">
-          <IonGrid>
+          <!-- Custom Component if provided -->
+          <component
+            v-if="currentStep?.component"
+            :is="currentStep.component"
+            v-bind="currentStep.customComponentProps || {}"
+            @update:data="handleCustomComponentDataUpdate"
+            ref="customComponentRef"
+          />
+          <!-- Regular schema-based form -->
+          <IonGrid v-else>
             <IonRow>
               <template v-for="formId of Object.keys(activeSchema)" :key="formId">
                 <IonCol
@@ -132,7 +141,7 @@
       />
     </div>
 
-    <!-- Single-step form (original behavior) -->
+    <!-- Single-step form -->
     <IonGrid v-else>
       <IonRow>
         <template v-for="formId of Object.keys(activeSchema)" :key="formId">
@@ -240,6 +249,8 @@ const multiStepForm = props.multiStepConfig ? useMultiStepForm(props.multiStepCo
 // Single-step form logic
 const { dynamicRefs, isFormValid, resetForm } = useFormValidation();
 const { formData: data, computedData } = useDataTransformation(activeSchema);
+// Use any type for the custom component ref since we don't know its structure
+const customComponentRef = ref<any>(null);
 
 // Multi-step computed properties
 const currentStepIndex = computed(() => multiStepForm?.currentStepIndex.value ?? 0);
@@ -259,7 +270,7 @@ watch(
   () => currentStep.value,
   newStep => {
     if (newStep && isMultiStep.value) {
-      activeSchema.value = newStep.schema;
+      activeSchema.value = newStep.schema || {};
     }
   },
   { immediate: true }
@@ -297,6 +308,16 @@ watch(
 async function submitForm() {
   if (isMultiStep.value && multiStepForm) {
     // Multi-step form submission
+
+    // Handle validation for the current step if it has a custom component
+    if (currentStep.value?.component && customComponentRef.value) {
+      if (typeof customComponentRef.value.validate === 'function') {
+        const isValid = await customComponentRef.value.validate();
+        if (!isValid) return;
+      }
+    }
+
+    // Validate all steps
     const isValid = await multiStepForm.validateAllSteps();
     if (!isValid) return;
 
@@ -336,7 +357,17 @@ function handleCancelAction() {
 async function handleNextStep() {
   if (multiStepForm) {
     // First validate the current step's form inputs
-    const isCurrentStepValid = await isFormValid();
+    let isCurrentStepValid = true;
+
+    if (currentStep.value?.component && customComponentRef.value) {
+      // If custom component has a validate method, use it
+      if (typeof customComponentRef.value.validate === 'function') {
+        isCurrentStepValid = await customComponentRef.value.validate();
+      }
+    } else {
+      // Otherwise use regular form validation
+      isCurrentStepValid = await isFormValid();
+    }
 
     if (!isCurrentStepValid) {
       // Show validation errors - they're already displayed by the form inputs
@@ -363,7 +394,17 @@ async function handleStepClick(stepIndex: number) {
   if (multiStepForm) {
     // If moving forward, validate current step first
     if (stepIndex > currentStepIndex.value) {
-      const isCurrentStepValid = await isFormValid();
+      let isCurrentStepValid = true;
+
+      if (currentStep.value?.component && customComponentRef.value) {
+        // If custom component has a validate method, use it
+        if (typeof customComponentRef.value.validate === 'function') {
+          isCurrentStepValid = await customComponentRef.value.validate();
+        }
+      } else {
+        // Otherwise use regular form validation
+        isCurrentStepValid = await isFormValid();
+      }
 
       if (!isCurrentStepValid) {
         // Show validation errors - they're already displayed by the form inputs
@@ -387,7 +428,9 @@ watch(
       if (isFormField(f) && !canRenderField(f as any, data.value, computedData.value)) {
         // Reset the value of the field if it's not rendered
         const originalSchema =
-          isMultiStep.value && currentStep.value ? currentStep.value.schema[k] : props.schema?.[k];
+          isMultiStep.value && currentStep.value && currentStep.value.schema
+            ? currentStep.value.schema[k]
+            : props.schema?.[k];
         if (originalSchema && isFormField(originalSchema) && 'value' in originalSchema) {
           (f as any).value = originalSchema.value;
         }
@@ -399,6 +442,13 @@ watch(
     immediate: true,
   }
 );
+
+// Handle data updates from custom components
+function handleCustomComponentDataUpdate(data: any) {
+  if (isMultiStep.value && multiStepForm && currentStep.value) {
+    multiStepForm.updateStepData(currentStep.value.id, data);
+  }
+}
 
 // Helper function to determine if an item (field or section) should be rendered
 function shouldRenderItem(item: any, formData: any, computedFormData: any): boolean {
