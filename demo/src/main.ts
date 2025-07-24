@@ -14,6 +14,7 @@ import AdvancedDemo from './components/AdvancedDemo.vue';
 import ValidationDemo from './components/ValidationDemo.vue';
 import DependentFieldsDemo from './components/DependentFieldsDemo.vue';
 import CustomStylesDemo from './components/CustomStylesDemo.vue';
+import CustomComponentExample from './components/CustomComponentDemo.vue';
 
 const routes = [
   { path: '/', redirect: '/basic' },
@@ -24,6 +25,11 @@ const routes = [
   { path: '/validation', component: ValidationDemo, meta: { title: 'Validation Examples' } },
   { path: '/dependent', component: DependentFieldsDemo, meta: { title: 'Dependent Fields' } },
   { path: '/styles', component: CustomStylesDemo, meta: { title: 'Custom Styles' } },
+  {
+    path: '/custom-component',
+    component: CustomComponentExample,
+    meta: { title: 'Custom Component Demo' },
+  },
 ];
 
 const router = createRouter({

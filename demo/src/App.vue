@@ -64,6 +64,7 @@ import {
   colorPaletteOutline,
   layersOutline,
   listOutline,
+  cubeOutline,
 } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -104,6 +105,11 @@ const pages = [
     title: 'Custom Styles',
     url: '/styles',
     icon: colorPaletteOutline,
+  },
+  {
+    title: 'Custom Components',
+    url: '/custom-component',
+    icon: cubeOutline,
   },
 ];
 
