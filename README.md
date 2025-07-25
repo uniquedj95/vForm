@@ -734,7 +734,7 @@ To work properly with the multi-step form, your custom component should:
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, defineExpose } from 'vue';
+import { ref, defineEmits, defineExpose } from 'vue';
 
 const props = defineProps({
   // Your props here

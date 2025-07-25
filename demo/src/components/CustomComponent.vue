@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineProps, defineEmits, defineExpose } from 'vue';
+import { ref, onMounted, defineEmits, defineExpose } from 'vue';
 import {
   IonCard,
   IonCardHeader,
