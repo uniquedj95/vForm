@@ -2,6 +2,7 @@
   <ion-radio-group
     v-model="input"
     ref="inputRef"
+    :class="model.className"
     :required="model.required"
     :helper-text="helpText"
     :error-text="model.error"

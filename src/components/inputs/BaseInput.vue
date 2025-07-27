@@ -3,6 +3,7 @@
     ref="inputRef"
     v-model="input"
     v-maskito="maskitoOptions"
+    :class="model.className"
     :clear-input="true"
     :fill="model.fill ?? 'solid'"
     :label-placement="model.labelPlacement ?? 'stacked'"

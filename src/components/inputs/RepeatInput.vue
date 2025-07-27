@@ -1,5 +1,10 @@
 <template>
-  <div v-for="(child, index) of childrens" class="repeat-input-wrapper" :key="index">
+  <div
+    v-for="(child, index) of childrens"
+    class="repeat-input-wrapper"
+    :class="model.className"
+    :key="index"
+  >
     <div class="ion-margin-end" style="flex-grow: 1">
       <ion-row>
         <template v-for="formId of Object.keys(child)">
