@@ -103,7 +103,7 @@ npm run demo:update
 - **Repeatable Field Groups**: Create dynamic, repeatable sets of form fields.
 - **Advanced Validation**: Built-in validation with support for custom validation functions and step-by-step validation.
 - **Computed Values**: Generate and transform values based on other form fields.
-- **Customizable Styling**: Control appearance with flexible styling options.
+- **Customizable Styling**: Complete control over appearance with `className` property support across all input components and sections.
 - **Form Actions**: Customizable buttons with support for additional custom actions.
 - **Rich Text Areas**: Textarea inputs with auto-grow capability and character counting.
 - **Form Field Dependencies**: Create relationships between fields that react to changes.
@@ -258,18 +258,18 @@ const formSchema: FormSchema = {
 
 The following input types are supported:
 
-| Type            | Description                                  |
-| --------------- | -------------------------------------------- |
-| `TextInput`     | Standard text input field                    |
-| `DateInput`     | Date picker with customizable format         |
-| `NumberInput`   | Numeric input field                          |
-| `EmailInput`    | Input field with email validation            |
-| `PasswordInput` | Secure password input with toggle visibility |
-| `TextAreaInput` | Multi-line text input                        |
-| `SelectInput`   | Dropdown selection                           |
-| `CheckboxInput` | Toggle on/off input                          |
-| `RepeatInput`   | Repeatable group of fields                   |
-| `FormSection`   | Section header with title and subtitle       |
+| Type            | Description                                                     |
+| --------------- | --------------------------------------------------------------- |
+| `TextInput`     | Standard text input field                                       |
+| `DateInput`     | Date picker with customizable format                            |
+| `NumberInput`   | Numeric input field                                             |
+| `EmailInput`    | Input field with email validation                               |
+| `PasswordInput` | Secure password input with toggle visibility                    |
+| `TextAreaInput` | Multi-line text input                                           |
+| `SelectInput`   | Dropdown selection                                              |
+| `CheckboxInput` | Toggle on/off input                                             |
+| `RepeatInput`   | Repeatable group of fields                                      |
+| `FormSection`   | Section header with title and subtitle (unified with FormField) |
 
 #### Common Properties
 
@@ -287,12 +287,13 @@ The following input types are supported:
 
 #### Layout Properties
 
-| Property | Type       | Description                                                   |
-| -------- | ---------- | ------------------------------------------------------------- |
-| `grid`   | `GridSize` | Specifies responsive grid sizes: `xs`, `sm`, `md`, `lg`, `xl` |
-| `icon`   | `string`   | Icon to display within the input field                        |
-| `prefix` | `string`   | Text to display before the input value                        |
-| `suffix` | `string`   | Text to display after the input value                         |
+| Property    | Type       | Description                                                   |
+| ----------- | ---------- | ------------------------------------------------------------- |
+| `grid`      | `GridSize` | Specifies responsive grid sizes: `xs`, `sm`, `md`, `lg`, `xl` |
+| `className` | `string`   | Custom CSS class for styling input fields and sections        |
+| `icon`      | `string`   | Icon to display within the input field                        |
+| `prefix`    | `string`   | Text to display before the input value                        |
+| `suffix`    | `string`   | Text to display after the input value                         |
 
 #### Validation and Dynamic Behavior
 
@@ -348,6 +349,84 @@ The following input types are supported:
 | Property   | Type         | Description                           |
 | ---------- | ------------ | ------------------------------------- |
 | `children` | `FormSchema` | Schema for the repeatable field group |
+
+### Custom Styling with className
+
+All form input components now support the `className` property for custom styling. This allows you to apply CSS classes to individual input fields and form sections for complete visual customization.
+
+#### Usage Examples
+
+```typescript
+const formSchema: FormSchema = {
+  // Custom styled text input
+  customInput: {
+    type: 'TextInput',
+    label: 'Styled Input',
+    className: 'my-custom-input',
+    placeholder: 'Enter text here',
+  },
+
+  // Custom styled section
+  styledSection: {
+    type: 'FormSection',
+    title: 'Custom Section',
+    subtitle: 'This section has custom styling',
+    className: 'my-custom-section',
+  },
+
+  // Custom styled select input
+  styledSelect: {
+    type: 'SelectInput',
+    label: 'Styled Select',
+    className: 'my-custom-select',
+    options: [
+      { label: 'Option 1', value: '1' },
+      { label: 'Option 2', value: '2' },
+    ],
+  },
+};
+```
+
+#### CSS Implementation
+
+```css
+/* Custom input styling */
+.my-custom-input {
+  --background: #f8f9fa;
+  --border-color: #007bff;
+  --color: #333;
+}
+
+/* Custom section styling */
+.my-custom-section .form-section-title {
+  color: #007bff;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.my-custom-section .form-section-subtitle {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Custom select styling */
+.my-custom-select {
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color: white;
+}
+```
+
+#### Component Support
+
+The `className` property is supported across all input components:
+
+- **BaseInput**: Applied to `ion-input` element (covers TextInput, EmailInput, NumberInput, PasswordInput, DateInput)
+- **TextAreaInput**: Applied to `ion-textarea` element
+- **SelectInput**: Applied to the wrapper container
+- **CheckboxInput**: Applied to `ion-checkbox` element
+- **RadioInput**: Applied to `ion-radio-group` element
+- **RepeatInput**: Applied to each repeat group wrapper
+- **FormSection**: Applied to the section container
 
 ## Multi-Step Forms
 
@@ -847,11 +926,11 @@ multiStepData: MultiStepFormData = {
 
 ## Form Sections
 
-Form sections allow you to organize your forms into logical groups with titles and subtitles, making complex forms more readable and user-friendly. Sections are rendered as separate components within your form schema.
+Form sections allow you to organize your forms into logical groups with titles and subtitles, making complex forms more readable and user-friendly. Sections are now fully integrated into the FormField interface, providing a unified approach to form building.
 
 ### Basic Section Usage
 
-To create sections in your form, add `FormSection` items to your schema alongside regular form fields:
+To create sections in your form, add FormField items with `type: 'FormSection'` to your schema alongside regular form fields:
 
 ```vue
 <template>
@@ -932,7 +1011,7 @@ function handleSubmit(formData: FormData, computedData: ComputedData) {
 
 ### Section Configuration
 
-Form sections support the following configuration options:
+Form sections are FormField objects with `type: 'FormSection'` and support the following configuration options:
 
 | Property    | Type            | Description                                | Required |
 | ----------- | --------------- | ------------------------------------------ | -------- |
@@ -941,6 +1020,9 @@ Form sections support the following configuration options:
 | `subtitle`  | `string`        | Optional subtitle for additional context   |          |
 | `className` | `string`        | Optional CSS class for custom styling      |          |
 | `grid`      | `GridSize`      | Grid layout configuration for the section  |          |
+| `label`     | `string`        | Alternative to `title` for section header  |          |
+
+> **Note**: For sections, you can use either `title` or `label` for the section header. The `title` property is recommended for clarity, but `label` is supported for consistency with other form fields.
 
 #### Grid Configuration
 
@@ -987,11 +1069,13 @@ You can customize section appearance using the `className` property and your own
 
 #### Important Notes
 
+- **Unified Interface**: Form sections are now part of the FormField interface, providing a consistent API for all form elements
 - **Data Handling**: Form sections are display-only components and do not contribute to form data
 - **Validation**: Sections cannot have validation rules as they don't hold values
 - **Order**: Sections will appear in the form in the order they're defined in your schema
 - **Multi-Step Compatibility**: Sections work seamlessly within multi-step forms
 - **Responsive**: Sections automatically adapt to different screen sizes using Ionic's grid system
+- **Custom Styling**: Use the `className` property to apply custom CSS classes to sections
 
 ## Form Events
 
