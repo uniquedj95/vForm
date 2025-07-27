@@ -66,6 +66,7 @@ import {
   listOutline,
   cubeOutline,
   eyeOutline,
+  copyOutline,
 } from 'ionicons/icons';
 
 const selectedIndex = ref(0);
@@ -116,6 +117,11 @@ const pages = [
     title: 'Conditional Steps',
     url: '/conditional-steps',
     icon: eyeOutline,
+  },
+  {
+    title: 'Repeat Input Fields',
+    url: '/repeat-input',
+    icon: copyOutline,
   },
 ];
 

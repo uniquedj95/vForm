@@ -16,6 +16,7 @@ import DependentFieldsDemo from './components/DependentFieldsDemo.vue';
 import CustomStylesDemo from './components/CustomStylesDemo.vue';
 import CustomComponentExample from './components/CustomComponentDemo.vue';
 import ConditionalStepsDemo from './components/ConditionalStepsDemo.vue';
+import RepeatInputDemo from './components/RepeatInputDemo.vue';
 
 const routes = [
   { path: '/', redirect: '/basic' },
@@ -35,6 +36,11 @@ const routes = [
     path: '/conditional-steps',
     component: ConditionalStepsDemo,
     meta: { title: 'Conditional Steps Demo' },
+  },
+  {
+    path: '/repeat-input',
+    component: RepeatInputDemo,
+    meta: { title: 'Repeat Input Demo' },
   },
 ];
 
