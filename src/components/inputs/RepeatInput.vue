@@ -5,39 +5,53 @@
     :class="model.className"
     :key="index"
   >
-    <div class="ion-margin-end" style="flex-grow: 1">
-      <ion-row>
-        <template v-for="formId of Object.keys(child)">
-          <IonCol
-            :key="`${index}-${formId}`"
-            :size="child[formId].grid?.xs ?? '12'"
-            :size-sm="child[formId].grid?.sm"
-            :size-md="child[formId].grid?.md"
-            :size-lg="child[formId].grid?.lg"
-            :size-xl="child[formId].grid?.xl"
-            class="ion-margin-bottom"
-            v-if="canRenderField(child[formId], data, computedData)"
+    <ion-row class="repeat-row">
+      <ion-col size="11" class="form-fields-column">
+        <ion-row class="fields-row">
+          <template v-for="formId of Object.keys(child)">
+            <IonCol
+              :key="`${index}-${formId}`"
+              :size="child[formId].grid?.xs ?? '12'"
+              :size-sm="child[formId].grid?.sm"
+              :size-md="child[formId].grid?.md"
+              :size-lg="child[formId].grid?.lg"
+              :size-xl="child[formId].grid?.xl"
+              class="ion-margin-bottom"
+              v-if="canRenderField(child[formId], data, computedData)"
+            >
+              <component
+                :is="child[formId].type"
+                v-model="child[formId]"
+                :schema="child"
+                :ref-key="`${index}-${formId}`"
+                ref="dynamicRefs"
+                style="width: 100%"
+              />
+            </IonCol>
+          </template>
+        </ion-row>
+      </ion-col>
+      <ion-col size="1" class="button-column">
+        <div class="button-container">
+          <ion-button
+            @click="addSet"
+            color="primary"
+            size="small"
+            v-if="index === childrens.length - 1"
           >
-            <component
-              :is="child[formId].type"
-              v-model="child[formId]"
-              :schema="child"
-              :ref-key="`${index}-${formId}`"
-              ref="dynamicRefs"
-              style="width: 100%"
-            />
-          </IonCol>
-        </template>
-      </ion-row>
-    </div>
-    <div style="display: flex; justify-content: flex-end">
-      <ion-button @click="addSet" color="primary" v-if="index === childrens.length - 1">
-        <ion-icon slot="icon-only" :icon="add"></ion-icon>
-      </ion-button>
-      <ion-button @click="removeSet(index)" color="warning" v-if="childrens.length > 1">
-        <ion-icon slot="icon-only" :icon="remove"></ion-icon>
-      </ion-button>
-    </div>
+            <ion-icon slot="icon-only" :icon="add"></ion-icon>
+          </ion-button>
+          <ion-button
+            @click="removeSet(index)"
+            color="warning"
+            size="small"
+            v-if="childrens.length > 1"
+          >
+            <ion-icon slot="icon-only" :icon="remove"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
   </div>
 </template>
 
@@ -120,8 +134,37 @@ defineExpose({
 
 <style scoped>
 .repeat-input-wrapper {
+  margin-bottom: 10px;
+}
+
+.repeat-row {
+  width: 100%;
+  margin: 0;
+  align-items: center; /* Aligns children vertically center */
+}
+
+.form-fields-column {
+  padding-right: 0;
+  display: flex; /* Enable flexbox */
+  align-items: center; /* Center vertically */
+}
+
+.fields-row {
+  width: 100%;
+  margin-top: 0;
+}
+
+.button-column {
+  padding: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  align-items: center; /* Changed from flex-start to center for better vertical alignment */
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  padding-top: 10px; /* Added padding to align with form content */
 }
 </style>
