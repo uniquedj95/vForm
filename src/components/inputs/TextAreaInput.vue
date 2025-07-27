@@ -2,6 +2,7 @@
   <ion-textarea
     ref="inputRef"
     v-model="input"
+    :class="model.className"
     :clear-input="true"
     :fill="model.fill ?? 'solid'"
     :label-placement="model.labelPlacement ?? 'stacked'"

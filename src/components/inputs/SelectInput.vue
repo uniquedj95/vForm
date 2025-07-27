@@ -1,5 +1,10 @@
 <template>
-  <div class="autocomplete-container" @focusout="onValueUpdate" ref="containerRef">
+  <div
+    class="autocomplete-container"
+    :class="model.className"
+    @focusout="onValueUpdate"
+    ref="containerRef"
+  >
     <ion-input
       ref="inputRef"
       v-model="filter"
