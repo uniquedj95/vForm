@@ -1,38 +1,6 @@
 import { Component } from 'vue';
 
 /**
- * Represents a form section with title and optional subtitle.
- *
- * @interface FormSection
- */
-export interface FormSection {
-  /**
-   * Identifies this as a form section (not a form field).
-   */
-  type: 'FormSection';
-
-  /**
-   * The section title.
-   */
-  title: string;
-
-  /**
-   * Optional subtitle for the section.
-   */
-  subtitle?: string;
-
-  /**
-   * Optional styling class for the section.
-   */
-  className?: string;
-
-  /**
-   * Grid configuration for the section container.
-   */
-  grid?: GridSize;
-}
-
-/**
  * Represents the possible value types that can be stored in a form field.
  *
  * @type FormValue
@@ -89,11 +57,11 @@ export type FormData = Record<string, FormValue | undefined>;
 export type ComputedData = Record<string, any>;
 
 /**
- * Represents the structure of a form, with field IDs as keys and FormField or FormSection objects as values.
+ * Represents the structure of a form, with field IDs as keys and FormField objects as values.
  *
  * @type FormSchema
  */
-export type FormSchema = Record<string, FormField | FormSection>;
+export type FormSchema = Record<string, FormField>;
 
 /**
  * Represents the position of step indicators in a multi-step form.
@@ -255,11 +223,18 @@ export interface GridSize {
 }
 
 /**
- * Represents a form field with various properties to define its behavior and appearance.
+ * Represents a form input field or form section divider with various properties to define its behavior and appearance.
  *
  * @interface FormField
  */
 export interface FormField {
+  /**
+   * The type of input for the form input field, or form section for section headers.
+   *
+   * @type InputType
+   */
+  type: InputType;
+
   /**
    * The current value of the form input field.
    *
@@ -268,18 +243,32 @@ export interface FormField {
   value?: FormValue;
 
   /**
-   * The type of input for the form input field.
-   *
-   * @type InputType
-   */
-  type: InputType;
-
-  /**
    * The label for the form input field.
    *
    * @type string
    */
   label?: string;
+
+  /**
+   * The optional section title when type is 'FormSection'.
+   *
+   * @type string
+   */
+  title?: string;
+
+  /**
+   * Optional subtitle for the section when type is 'FormSection'.
+   *
+   * @type string
+   */
+  subtitle?: string;
+
+  /**
+   * Optional styling class for the section or input field.
+   *
+   * @type string
+   */
+  className?: string;
 
   /**
    * Indicates if the form input field is required.
