@@ -1,23 +1,61 @@
 <template>
-  <div class="container">
-    <h1>Custom Component in Multi-Step Form</h1>
-    <p>
-      This example demonstrates how to use custom components in a multi-step form for an ANC
-      workflow.
-    </p>
+  <ion-page>
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button color="primary"></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Custom Component Demo</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
-    <v-form
-      :multi-step-config="multiStepConfig"
-      @multi-step-submit="handleSubmit"
-      @step-change="handleStepChange"
-    />
-  </div>
+    <ion-content :fullscreen="true">
+      <ion-header collapse="condense">
+        <ion-toolbar>
+          <ion-title size="large">Custom Component Demo</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <div class="demo-container">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Custom Component in Multi-Step Form</ion-card-title>
+            <ion-card-subtitle
+              >Using custom components in a multi-step form for an ANC workflow</ion-card-subtitle
+            >
+          </ion-card-header>
+
+          <ion-card-content>
+            <v-form
+              :multi-step-config="multiStepConfig"
+              @multi-step-submit="handleSubmit"
+              @step-change="handleStepChange"
+            />
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { MultiStepConfig } from '@uniquedj95/vform';
 import ANCHistoryComponent from './CustomComponent.vue';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonMenuButton,
+  IonTitle,
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonCardContent,
+} from '@ionic/vue';
 
 const patientId = ref('P12345');
 const patientName = ref('Jane Doe');
@@ -117,9 +155,13 @@ function handleSubmit(allData: any) {
 </script>
 
 <style scoped>
-.container {
-  max-width: 800px;
-  margin: 0 auto;
+.demo-container {
   padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+ion-card {
+  margin-bottom: 20px;
 }
 </style>
