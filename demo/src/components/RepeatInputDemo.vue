@@ -229,13 +229,24 @@ const handleSubmit = (data: FormData, computedData: ComputedData) => {
   submittedData.value = data;
   computedDataValue.value = computedData;
 
+  // Define inventory item type
+  interface InventoryItemData {
+    quantity: string | number;
+    unitPrice: string | number;
+    itemName?: string;
+  }
+
   // Calculate total value
   let totalValue = 0;
   if (data.inventoryItems && Array.isArray(data.inventoryItems)) {
-    data.inventoryItems.forEach((item: any) => {
-      const quantity = Number(item.quantity) || 0;
-      const price = Number(item.unitPrice) || 0;
-      totalValue += quantity * price;
+    data.inventoryItems.forEach(item => {
+      // RepeatInput stores data in the 'other' property of each Option
+      const itemData = item.other as InventoryItemData;
+      if (itemData) {
+        const quantity = Number(itemData.quantity) || 0;
+        const price = Number(itemData.unitPrice) || 0;
+        totalValue += quantity * price;
+      }
     });
   }
 

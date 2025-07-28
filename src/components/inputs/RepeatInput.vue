@@ -134,7 +134,7 @@ defineExpose({
 
 <style scoped>
 .repeat-input-wrapper {
-  margin-bottom: 10px;
+  margin-bottom: var(--form-margin-bottom, 10px);
 }
 
 .repeat-row {
@@ -155,9 +155,13 @@ defineExpose({
 }
 
 .button-column {
-  padding: 0;
+  padding: 0 var(--form-button-padding, 10px);
   display: flex;
   align-items: center; /* Changed from flex-start to center for better vertical alignment */
+}
+
+.action-button {
+  margin: 0;
 }
 
 .button-container {
