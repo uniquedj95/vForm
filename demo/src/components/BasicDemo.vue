@@ -114,7 +114,15 @@ const formSchema: FormSchema = {
   birthDate: {
     type: 'DateInput',
     label: 'Date of Birth',
-    value: '',
+    value: new Date().toISOString().split('T')[0],
+    required: true,
+    grid: { xs: '12', md: '6' },
+  },
+  appointmentDateTime: {
+    type: 'DateInput',
+    label: 'Appointment Date & Time',
+    value: new Date().toISOString().substring(0, 16), // Format: YYYY-MM-DDTHH:MM
+    enableTime: true,
     required: true,
     grid: { xs: '12', md: '6' },
   },

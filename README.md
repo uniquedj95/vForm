@@ -813,7 +813,7 @@ To work properly with the multi-step form, your custom component should:
 </template>
 
 <script setup>
-import { ref, defineEmits, defineExpose } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
   // Your props here
@@ -1244,6 +1244,35 @@ You can reset multiple dependent fields at once using onChange:
 **Note:** Use the onChange approach as a workaround when the automatic reset doesn't work properly, or when you need to reset multiple fields or perform additional logic when dependencies change.
 
 ### Advanced Components
+
+#### DateInput
+
+The DateInput component supports both date-only and date-time inputs, with different format requirements for setting default values:
+
+- **Date Only Format**: When using DateInput without time selection.
+
+  ```js
+  {
+    type: 'DateInput',
+    label: 'Date of Birth',
+    value: '', // Format: YYYY-MM-DD
+    required: true
+  }
+  ```
+
+- **Date Time Format**: When using DateInput with time selection enabled.
+
+  ```js
+  {
+    type: 'DateInput',
+    label: 'Appointment Date & Time',
+    value: '', // Format: YYYY-MM-DDTHH:MM:SS
+    enableTime: true,
+    required: true
+  }
+  ```
+
+Setting the `enableTime` property to `true` will render a datetime-local input that allows users to select both date and time.
 
 #### SelectInput
 
