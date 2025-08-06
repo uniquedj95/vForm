@@ -17,11 +17,11 @@
 
 <script lang="ts" setup>
 import { IonCol } from '@ionic/vue';
-import type { FormSection, FormSchema } from '@/types';
+import type { FormField, FormSchema } from '@/types';
 
 interface SectionTitleProps {
   // Standard form component props (even though we don't use modelValue)
-  modelValue?: FormSection;
+  modelValue?: FormField;
   schema?: FormSchema;
   formId?: string;
   refKey?: string;
