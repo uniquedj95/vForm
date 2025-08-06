@@ -2,6 +2,7 @@
   <ion-checkbox
     v-model="input"
     ref="inputRef"
+    justify="start"
     :class="model.className"
     :required="model.required"
     :error-text="model.error"
