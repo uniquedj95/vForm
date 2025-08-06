@@ -166,7 +166,7 @@ const formSchema: FormSchema = {
   priority: {
     type: 'RadioInput',
     label: 'Priority Level',
-    value: 'normal',
+    value: { label: 'Normal', value: 'normal' },
     options: [
       { label: 'Low', value: 'low' },
       { label: 'Normal', value: 'normal' },
