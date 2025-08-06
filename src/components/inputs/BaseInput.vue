@@ -24,7 +24,7 @@
     @ionChange="onValueUpdate"
     @ion-blur="onValueUpdate"
   >
-    <InputLabel :model="model" />
+    <InputLabel :model="model" slot-name="label" />
     <ion-label v-if="model.prefix" slot="start">{{ model.prefix }}</ion-label>
     <ion-label v-if="model.suffix" slot="end">{{ model.suffix }} </ion-label>
     <ion-input-password-toggle slot="end" v-if="type === 'password'" />

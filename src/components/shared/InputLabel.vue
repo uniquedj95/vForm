@@ -1,5 +1,5 @@
 <template>
-  <ion-label slot="label" v-if="showLabel" class="input-label">
+  <ion-label :slot="slotName" v-if="showLabel" class="input-label">
     {{ labelText }}
     <ion-text color="danger" v-if="showRequired">*</ion-text>
   </ion-label>
@@ -13,6 +13,7 @@ import { toRef } from 'vue';
 
 const props = defineProps<{
   model: FormField;
+  slotName?: string;
 }>();
 
 const { showLabel, showRequired, labelText } = useLabelTemplate(toRef(props, 'model'));

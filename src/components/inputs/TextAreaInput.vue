@@ -25,7 +25,7 @@
     @ion-blur="onValueUpdate"
     style="width: 100%"
   >
-    <InputLabel :model="model" />
+    <InputLabel :model="model" slot-name="label" />
   </ion-textarea>
 </template>
 
