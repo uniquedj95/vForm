@@ -22,7 +22,7 @@
       @click="openInterface"
       style="width: 100%"
     >
-      <InputLabel :model="model" />
+      <InputLabel :model="model" slot-name="label" />
       <ion-label v-if="model.multiple" style="width: fit-content" slot="start">
         <ion-chip v-for="(tag, index) of tags" :key="index">
           <ion-label>{{ tag.label }}</ion-label>
