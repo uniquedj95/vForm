@@ -199,7 +199,7 @@ import type {
   MultiStepConfig,
   MultiStepFormData,
 } from '@/types';
-import { canRenderField, isFormField, isFormSection } from '@/utils';
+import { canRenderField, isFormField } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
@@ -426,8 +426,7 @@ watch(
   data,
   async () => {
     for (const [k, f] of Object.entries(activeSchema.value)) {
-      // Only process FormField items, not FormSection items
-      if (isFormField(f) && !canRenderField(f as any, data.value, computedData.value)) {
+      if (!canRenderField(f as any, data.value, computedData.value)) {
         // Reset the value of the field if it's not rendered
         const originalSchema =
           isMultiStep.value && currentStep.value && currentStep.value.schema
@@ -454,8 +453,6 @@ function handleCustomComponentDataUpdate(data: any) {
 
 // Helper function to determine if an item (field or section) should be rendered
 function shouldRenderItem(item: any, formData: any, computedFormData: any): boolean {
-  // Always render FormSection items
-  if (isFormSection(item)) return true;
   // For FormField items, use the existing canRenderField logic
   return canRenderField(item, formData, computedFormData);
 }
