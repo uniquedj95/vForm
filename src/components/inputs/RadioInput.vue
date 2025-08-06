@@ -1,37 +1,38 @@
 <template>
-  <ion-radio-group
-    v-model="input"
-    ref="inputRef"
-    :class="model.className"
-    :required="model.required"
-    :helper-text="helpText"
-    :error-text="model.error"
-    :disabled="model.disabled"
-    :compareWith="compareWith"
-    :allow-empty-selection="!model.required"
-    @ionFocus="onFocus"
-    @ionChange="onValueUpdate"
-    @ionBlur="onValueUpdate"
-    style="width: 100%"
-  >
-    <ion-item
-      v-for="option of options"
-      :key="option.value"
-      :lines="model.showOptionsSeparator ? 'none' : 'full'"
+  <input-label :model="model" /><br />
+  <ion-note color="danger" v-if="model.error">{{ model.error }}</ion-note>
+  <ion-item>
+    <ion-radio-group
+      v-model="input"
+      :class="model.className"
+      :required="model.required"
+      :disabled="model.disabled"
+      :compareWith="compareWith"
+      :allow-empty-selection="!model.required"
+      @ionFocus="onFocus"
+      @ionChange="onValueUpdate"
+      @ionBlur="onValueUpdate"
+      style="width: 100%"
     >
-      <ion-radio :value="option" :disabled="model.disabled" label-placement="end" justify="start">
-        {{ option.label }}
-      </ion-radio>
-    </ion-item>
-  </ion-radio-group>
+      <ion-item
+        v-for="option of options"
+        :key="option.value"
+        :lines="model.showOptionsSeparator ? 'none' : 'full'"
+      >
+        <ion-radio :value="option" :disabled="model.disabled" label-placement="end" justify="start">
+          {{ option.label }}
+        </ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-item>
 </template>
 
 <script lang="ts" setup>
-import { IonRadioGroup, IonRadio, IonItem } from '@ionic/vue';
+import { IonRadioGroup, IonRadio, IonItem, IonNote } from '@ionic/vue';
 import { FormField, FormSchema, Option } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed, onMounted } from 'vue';
 import { useInputValidation } from '@/composables/useInputValidation';
-import { getLabelText } from '@/utils';
+import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
@@ -40,10 +41,13 @@ const input = ref(model.value.value as Option | undefined);
 const schema = computed(() => props.schema);
 const options = ref<Option[]>([]);
 
-const helpText = computed(() => getLabelText(model.value));
-
 // Use the input validation helpers
-const { onValueUpdate, onFocus, getErrors } = useInputValidation(inputRef, model, input, schema);
+const { onValueUpdate, onFocus, getErrors, isValid } = useInputValidation(
+  inputRef,
+  model,
+  input,
+  schema
+);
 
 // Custom onReset for radio group (default to null)
 function onReset() {
@@ -74,6 +78,7 @@ defineExpose({
   onValueUpdate,
   onReset,
   getErrors,
+  isValid,
 });
 
 onMounted(initializeOptions);
