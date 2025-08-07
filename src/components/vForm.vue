@@ -50,7 +50,7 @@
                   :size-lg="activeSchema[formId].grid?.lg"
                   :size-xl="activeSchema[formId].grid?.xl"
                   class="ion-margin-vertical"
-                  v-if="shouldRenderItem(activeSchema[formId], data, computedData)"
+                  v-if="canRenderField(activeSchema[formId], data, computedData)"
                 >
                   <component
                     :is="activeSchema[formId].type"
@@ -152,7 +152,7 @@
             :size-lg="activeSchema[formId].grid?.lg"
             :size-xl="activeSchema[formId].grid?.xl"
             class="ion-margin-vertical"
-            v-if="shouldRenderItem(activeSchema[formId], data, computedData)"
+            v-if="canRenderField(activeSchema[formId], data, computedData)"
           >
             <component
               :is="activeSchema[formId].type"
@@ -357,7 +357,7 @@ function handleCancelAction() {
 }
 
 async function handleNextStep() {
-  if (multiStepForm) {
+  if (isMultiStep.value && multiStepForm) {
     // First validate the current step's form inputs
     let isCurrentStepValid = true;
 
@@ -449,12 +449,6 @@ function handleCustomComponentDataUpdate(data: any) {
   if (isMultiStep.value && multiStepForm && currentStep.value) {
     multiStepForm.updateStepData(currentStep.value.id, data);
   }
-}
-
-// Helper function to determine if an item (field or section) should be rendered
-function shouldRenderItem(item: any, formData: any, computedFormData: any): boolean {
-  // For FormField items, use the existing canRenderField logic
-  return canRenderField(item, formData, computedFormData);
 }
 
 defineExpose({
