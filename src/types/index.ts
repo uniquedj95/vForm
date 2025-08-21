@@ -715,6 +715,20 @@ export interface FormProps {
   cancelButtonText?: string;
 
   /**
+   * Custom text for the next button. If not provided, defaults to 'Next'.
+   *
+   * @default 'Next'
+   */
+  nextButtonText?: string;
+
+  /**
+   * Custom text for the previous button. If not provided, defaults to 'Previous'.
+   *
+   * @default 'Previous'
+   */
+  previousButtonText?: string;
+
+  /**
    * Whether to hide all default form buttons (submit, clear, cancel).
    * When true, only custom buttons will be displayed if provided.
    *

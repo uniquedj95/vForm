@@ -60,6 +60,9 @@
               @cancel="handleCancel"
               :show-labels="true"
               submit-button-text="Complete Registration"
+              previous-button-text="Back"
+              next-button-text="Continue"
+              button-placement="end"
             />
           </ion-card-content>
         </ion-card>

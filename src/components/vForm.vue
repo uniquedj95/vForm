@@ -66,34 +66,28 @@
           </IonGrid>
 
           <!-- Multi-step buttons -->
-          <IonRow v-if="!hideButtons" class="multi-step-buttons">
-            <IonCol size="12" class="button-container">
-              <div class="step-nav-buttons">
-                <IonButton @click="handlePreviousStep" v-if="canGoPrevious" fill="outline">
-                  Previous
+          <IonRow v-if="!hideButtons">
+            <IonCol size="12" style="display: flex" :style="{ justifyContent: buttonPlacement }">
+              <IonButton @click="handlePreviousStep" v-if="canGoPrevious">
+                {{ previousButtonText ?? 'Previous' }}
+              </IonButton>
+              <IonButton @click="handleCancelAction" v-if="showCancelButton">
+                {{ cancelButtonText ?? 'Cancel' }}
+              </IonButton>
+              <IonButton @click="handleClearCurrentStep" v-if="showClearButton">
+                {{ clearButtonText ?? 'Reset' }}
+              </IonButton>
+              <template v-for="button of customButtons" :key="button.label">
+                <IonButton @click="button.action" :color="button.color ?? 'primary'">
+                  {{ button.label }}
                 </IonButton>
-              </div>
-
-              <div class="step-action-buttons">
-                <IonButton @click="handleCancelAction" v-if="showCancelButton" fill="outline">
-                  {{ cancelButtonText ?? 'Cancel' }}
-                </IonButton>
-                <IonButton @click="handleClearCurrentStep" v-if="showClearButton" fill="outline">
-                  {{ clearButtonText ?? 'Reset' }}
-                </IonButton>
-                <template v-for="button of customButtons" :key="button.label">
-                  <IonButton @click="button.action" :color="button.color ?? 'primary'">
-                    {{ button.label }}
-                  </IonButton>
-                </template>
-              </div>
-
-              <div class="step-nav-buttons">
-                <IonButton @click="handleNextStep" v-if="canGoNext"> Next </IonButton>
-                <IonButton @click="submitForm" v-if="isLastStep">
-                  {{ submitButtonText ?? 'Submit' }}
-                </IonButton>
-              </div>
+              </template>
+              <IonButton @click="handleNextStep" v-if="canGoNext">
+                {{ nextButtonText ?? 'Next' }}
+              </IonButton>
+              <IonButton @click="submitForm" v-if="isLastStep">
+                {{ submitButtonText ?? 'Submit' }}
+              </IonButton>
             </IonCol>
           </IonRow>
 
