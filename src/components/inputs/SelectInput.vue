@@ -52,8 +52,15 @@
         :key="option.label"
         @click="onSelect(option)"
         :lines="model.showOptionsSeparator ? 'none' : 'full'"
+        :disabled="option.disabled"
+        :class="{ 'ion-item-disabled': option.disabled }"
       >
-        <ion-checkbox slot="start" :checked="option.isChecked" v-if="model.multiple" />
+        <ion-checkbox
+          slot="start"
+          :checked="option.isChecked"
+          :disabled="option.disabled"
+          v-if="model.multiple"
+        />
         <div class="option-content">
           <ion-label>{{ option.label }}</ion-label>
           <ion-text
@@ -171,6 +178,9 @@ function onReset() {
 }
 
 function onSelect(item: Option) {
+  // Don't allow selection of disabled options
+  if (item.disabled) return;
+
   const index = options.value.findIndex(option => option.value === item.value && option.isChecked);
   if (index >= 0) {
     // Deselect the item
@@ -215,14 +225,21 @@ async function openActionSheet() {
   const actionSheet = await actionSheetController.create({
     header: model.value.label || 'Select an option',
     buttons: [
-      ...options.value.map(option => ({
-        text: option.label,
-        cssClass: option.isChecked ? 'selected-option' : '',
-        handler: () => {
-          onSelect(option);
-          return false;
-        },
-      })),
+      ...options.value.map(option => {
+        let cssClass = '';
+        if (option.isChecked) cssClass = 'selected-option';
+        else if (option.disabled) cssClass = 'disabled-option';
+
+        return {
+          text: option.label,
+          cssClass,
+          handler: () => {
+            onSelect(option);
+            return false;
+          },
+          disabled: option.disabled,
+        };
+      }),
       {
         text: 'Cancel',
         role: 'cancel',
@@ -241,6 +258,7 @@ async function openAlert() {
     type: model.value.multiple ? 'checkbox' : 'radio',
     value: option,
     checked: option.isChecked,
+    disabled: option.disabled,
   }));
 
   const alert = await alertController.create({
@@ -490,6 +508,17 @@ ion-item:hover {
 :deep(.selected-option) {
   font-weight: bold;
   color: var(--ion-color-primary);
+}
+
+:deep(.disabled-option) {
+  opacity: 0.5;
+  color: var(--ion-color-medium);
+}
+
+/* Disabled option styling */
+.ion-item-disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .option-content {

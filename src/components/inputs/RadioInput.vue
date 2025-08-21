@@ -19,7 +19,12 @@
         :key="option.value"
         :lines="model.showOptionsSeparator ? 'none' : 'full'"
       >
-        <ion-radio :value="option" :disabled="model.disabled" label-placement="end" justify="start">
+        <ion-radio
+          :value="option"
+          :disabled="model.disabled || option.disabled"
+          label-placement="end"
+          justify="start"
+        >
           <div class="radio-content">
             <div class="radio-label">{{ option.label }}</div>
             <ion-text
@@ -108,5 +113,11 @@ onMounted(initializeOptions);
 .radio-description {
   font-size: 0.875rem;
   line-height: 1.2;
+}
+
+ion-radio[disabled] + .radio-content,
+ion-radio[disabled] + .radio-content .radio-label,
+ion-radio[disabled] + .radio-content .radio-description {
+  opacity: 0.5;
 }
 </style>
