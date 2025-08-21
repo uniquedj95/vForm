@@ -523,18 +523,10 @@ export interface OptionDescription {
   color: 'primary' | 'warning' | 'danger' | 'secondary' | 'light';
 
   /**
-   * When to show the description.
-   * - 'onChecked': Only display when the option is selected.
-   * - 'always': Always display the description.
-   */
-  show?: 'onChecked' | 'always';
-
-  /**
    * The description text to display.
    */
   text: string;
 }
-
 /**
  * Represents a selectable option in inputs like Select, Checkbox, etc.
  *

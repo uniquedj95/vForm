@@ -161,6 +161,16 @@ export function uncheckAllOptions(options: Array<Option>) {
 }
 
 /**
+ * Determines if an option's description should be shown.
+ *
+ * @param {Option} option - The option to check for description visibility.
+ * @returns {boolean} `true` if the option has a description that should be displayed, `false` otherwise.
+ */
+export function shouldShowDescription(option: Option): boolean {
+  return !!option.description;
+}
+
+/**
  * Filters an array of options based on a provided filter string.
  *
  * @param {Array<Option>} options - The array of options to filter.
@@ -216,9 +226,7 @@ export function deepEqual(obj1: any, obj2: any): boolean {
 
   if (keys1.length !== keys2.length) return false;
 
-  return keys1.every(
-    key => Object.prototype.hasOwnProperty.call(obj2, key) && deepEqual(obj1[key], obj2[key])
-  );
+  return keys1.every(key => Object.hasOwn(obj2, key) && deepEqual(obj1[key], obj2[key]));
 }
 
 /**

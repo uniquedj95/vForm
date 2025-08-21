@@ -20,7 +20,16 @@
         :lines="model.showOptionsSeparator ? 'none' : 'full'"
       >
         <ion-radio :value="option" :disabled="model.disabled" label-placement="end" justify="start">
-          {{ option.label }}
+          <div class="radio-content">
+            <div class="radio-label">{{ option.label }}</div>
+            <ion-text
+              v-if="shouldShowDescription(option)"
+              :color="option.description?.color"
+              class="radio-description"
+            >
+              {{ option.description?.text }}
+            </ion-text>
+          </div>
         </ion-radio>
       </ion-item>
     </ion-radio-group>
@@ -28,10 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-import { IonRadioGroup, IonRadio, IonItem, IonNote } from '@ionic/vue';
+import { IonRadioGroup, IonRadio, IonItem, IonNote, IonText } from '@ionic/vue';
 import { FormField, FormSchema, Option } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed, onMounted } from 'vue';
 import { useInputValidation } from '@/composables/useInputValidation';
+import { shouldShowDescription } from '@/utils';
 import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema }>();
@@ -83,3 +93,20 @@ defineExpose({
 
 onMounted(initializeOptions);
 </script>
+
+<style scoped>
+.radio-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radio-label {
+  font-weight: normal;
+}
+
+.radio-description {
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+</style>
