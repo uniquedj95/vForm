@@ -1,7 +1,6 @@
-import { Ref } from 'vue';
+import { Ref, ComponentPublicInstance } from 'vue';
 import { FormField, FormSchema } from '@/types';
 import { useValidationStyles } from './useValidationStyles';
-import { ComponentPublicInstance } from 'vue';
 
 /**
  * Composable for common input validation logic
@@ -41,7 +40,7 @@ export function useInputValidation(
     // Run field-specific validation function
     if (model.value.validation) {
       const errors = await model.value.validation(inputValue.value, schema?.value);
-      if (errors && errors.length) {
+      if (errors?.length) {
         model.value.error = errors.join();
         return false;
       }
