@@ -191,33 +191,12 @@
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue';
 import { IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue';
-import type {
-  FormData,
-  ComputedData,
-  FormSchema,
-  CustomButton,
-  MultiStepConfig,
-  MultiStepFormData,
-} from '@/types';
+import type { FormData, ComputedData, MultiStepFormData, FormProps } from '@/types';
 import { canRenderField, isFormField } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
 import StepIndicator from '@/components/shared/StepIndicator.vue';
-
-interface FormProps {
-  schema?: FormSchema;
-  multiStepConfig?: MultiStepConfig;
-  showLabels?: boolean;
-  showClearButton?: boolean;
-  showCancelButton?: boolean;
-  buttonPlacement?: 'start' | 'middle' | 'end';
-  submitButtonText?: string;
-  clearButtonText?: string;
-  cancelButtonText?: string;
-  hideButtons?: boolean;
-  customButtons?: Array<CustomButton>;
-}
 
 interface FormEmits {
   (e: 'submit', formData: FormData, computedFormData: ComputedData): void;
