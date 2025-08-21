@@ -49,7 +49,7 @@ const { onValueUpdate, onFocus, getErrors, isValid } = useInputValidation(
   schema
 );
 
-// Custom onReset for radio group (default to null)
+// Custom onReset for radio group
 function onReset() {
   model.value.error = '';
   input.value = undefined;
@@ -58,7 +58,7 @@ function onReset() {
 
 // Custom compare function for radio group
 function compareWith(a: Option, b: Option): boolean {
-  return a.value === b.value;
+  return a?.value === b?.value;
 }
 
 async function initializeOptions() {
