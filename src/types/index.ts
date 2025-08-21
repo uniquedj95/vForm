@@ -632,3 +632,102 @@ export interface CustomButton {
    */
   action: () => void;
 }
+
+/**
+ * Configuration interface for the vForm component properties.
+ *
+ * This interface defines all the props that can be passed to configure
+ * the form's appearance, behavior, and functionality. It supports both
+ * single-step and multi-step forms with extensive customization options.
+ *
+ * @interface FormProps
+ */
+export interface FormProps {
+  /**
+   * The form schema defining the structure and fields of a single-step form.
+   * This property is used for regular forms. For multi-step forms, use `multiStepConfig`.
+   *
+   * @type FormSchema
+   */
+  schema?: FormSchema;
+
+  /**
+   * Configuration for multi-step forms including steps, navigation, and display options.
+   * When provided, the form will operate in multi-step mode and `schema` will be ignored.
+   *
+   * @type MultiStepConfig
+   */
+  multiStepConfig?: MultiStepConfig;
+
+  /**
+   * Whether to display field labels. When set to false, labels will be hidden
+   * but placeholders and other field identifiers may still be visible.
+   *
+   * @default true
+   */
+  showLabels?: boolean;
+
+  /**
+   * Whether to display a clear/reset button that allows users to reset
+   * the form to its initial state.
+   *
+   * @default true
+   */
+  showClearButton?: boolean;
+
+  /**
+   * Whether to display a cancel button that allows users to cancel
+   * the current form operation.
+   *
+   * @default true
+   */
+  showCancelButton?: boolean;
+
+  /**
+   * Controls the horizontal alignment of form buttons.
+   * - 'start': Buttons aligned to the left
+   * - 'middle': Buttons centered
+   * - 'end': Buttons aligned to the right
+   *
+   * @default 'start'
+   */
+  buttonPlacement?: 'start' | 'middle' | 'end';
+
+  /**
+   * Custom text for the submit button. If not provided, defaults to 'Submit'.
+   *
+   * @default 'Submit'
+   */
+  submitButtonText?: string;
+
+  /**
+   * Custom text for the clear/reset button. If not provided, defaults to 'Reset'.
+   *
+   * @default 'Reset'
+   */
+  clearButtonText?: string;
+
+  /**
+   * Custom text for the cancel button. If not provided, defaults to 'Cancel'.
+   *
+   * @default 'Cancel'
+   */
+  cancelButtonText?: string;
+
+  /**
+   * Whether to hide all default form buttons (submit, clear, cancel).
+   * When true, only custom buttons will be displayed if provided.
+   *
+   * @default false
+   */
+  hideButtons?: boolean;
+
+  /**
+   * Array of custom buttons to add to the form. These buttons will appear
+   * alongside or instead of the default buttons depending on configuration.
+   * Each button can have custom styling, icons, and click handlers.
+   *
+   * @type Array<CustomButton>
+   */
+  customButtons?: Array<CustomButton>;
+}
