@@ -135,17 +135,30 @@ const formSchema: FormSchema = {
     label: 'Category',
     value: '',
     options: [
-      { label: 'Electronics', value: 'electronics' },
-      { label: 'Clothing', value: 'clothing' },
-      { label: 'Books', value: 'books' },
-      { label: 'Home & Garden', value: 'home_garden' },
+      {
+        label: 'Electronics',
+        value: 'electronics',
+      },
+      {
+        label: 'Clothing',
+        value: 'clothing',
+      },
+      {
+        label: 'Books',
+        value: 'books',
+      },
+      {
+        label: 'Home & Garden',
+        value: 'home_garden',
+        disabled: true,
+        description: {
+          color: 'danger',
+          text: 'Furniture, decor, gardening tools, and household items (Currently unavailable)',
+        },
+      },
       {
         label: 'Sports',
         value: 'sports',
-        description: {
-          color: 'danger',
-          text: 'Athletic equipment, outdoor gear, and fitness accessories',
-        },
       },
     ],
     required: true,
@@ -204,9 +217,10 @@ const formSchema: FormSchema = {
       {
         label: 'Critical',
         value: 'critical',
+        disabled: true,
         description: {
           color: 'danger',
-          text: 'Immediate attention required - highest priority',
+          text: 'Immediate attention required - highest priority (Requires approval)',
         },
       },
     ],
