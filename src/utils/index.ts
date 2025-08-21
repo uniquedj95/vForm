@@ -60,9 +60,7 @@ export function isEmpty(value: any): boolean {
  */
 export function canRenderField(field: FormField, data: FormData, computedData: ComputedData) {
   if (typeof field.condition === 'function') {
-    const show = field.condition(data, computedData);
-    if (!show) field.value = undefined;
-    return show;
+    return field.condition(data, computedData);
   }
   return true;
 }
