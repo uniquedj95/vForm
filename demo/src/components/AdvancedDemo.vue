@@ -20,7 +20,9 @@
         <ion-card>
           <ion-card-header>
             <ion-card-title>Advanced Form Features</ion-card-title>
-            <ion-card-subtitle>Masking, computed values, and dynamic options</ion-card-subtitle>
+            <ion-card-subtitle
+              >Masking, computed values, dynamic options, and option descriptions</ion-card-subtitle
+            >
           </ion-card-header>
 
           <ion-card-content>
@@ -137,7 +139,14 @@ const formSchema: FormSchema = {
       { label: 'Clothing', value: 'clothing' },
       { label: 'Books', value: 'books' },
       { label: 'Home & Garden', value: 'home_garden' },
-      { label: 'Sports', value: 'sports' },
+      {
+        label: 'Sports',
+        value: 'sports',
+        description: {
+          color: 'danger',
+          text: 'Athletic equipment, outdoor gear, and fitness accessories',
+        },
+      },
     ],
     required: true,
     grid: { xs: '12', md: '6' },
@@ -168,10 +177,38 @@ const formSchema: FormSchema = {
     label: 'Priority Level',
     value: { label: 'Normal', value: 'normal' },
     options: [
-      { label: 'Low', value: 'low' },
-      { label: 'Normal', value: 'normal' },
-      { label: 'High', value: 'high' },
-      { label: 'Critical', value: 'critical' },
+      {
+        label: 'Low',
+        value: 'low',
+        description: {
+          color: 'secondary',
+          text: 'Standard processing time, no rush needed',
+        },
+      },
+      {
+        label: 'Normal',
+        value: 'normal',
+        description: {
+          color: 'primary',
+          text: 'Regular priority with standard delivery timeframe',
+        },
+      },
+      {
+        label: 'High',
+        value: 'high',
+        description: {
+          color: 'warning',
+          text: 'Expedited processing with faster turnaround',
+        },
+      },
+      {
+        label: 'Critical',
+        value: 'critical',
+        description: {
+          color: 'danger',
+          text: 'Immediate attention required - highest priority',
+        },
+      },
     ],
     grid: { xs: '12' },
   },

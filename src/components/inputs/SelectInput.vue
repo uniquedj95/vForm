@@ -54,7 +54,16 @@
         :lines="model.showOptionsSeparator ? 'none' : 'full'"
       >
         <ion-checkbox slot="start" :checked="option.isChecked" v-if="model.multiple" />
-        <ion-label>{{ option.label }}</ion-label>
+        <div class="option-content">
+          <ion-label>{{ option.label }}</ion-label>
+          <ion-text
+            v-if="shouldShowDescription(option)"
+            :color="option.description?.color"
+            class="option-description"
+          >
+            {{ option.description?.text }}
+          </ion-text>
+        </div>
       </ion-item>
     </ion-list>
   </div>
@@ -73,6 +82,7 @@ import {
   uncheckAllOptions,
   findOption,
   isFormField,
+  shouldShowDescription,
 } from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
 import {
@@ -83,6 +93,7 @@ import {
   IonChip,
   IonIcon,
   IonCheckbox,
+  IonText,
   actionSheetController,
   alertController,
   AlertInput,
@@ -479,5 +490,17 @@ ion-item:hover {
 :deep(.selected-option) {
   font-weight: bold;
   color: var(--ion-color-primary);
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.option-description {
+  font-size: 0.875rem;
+  line-height: 1.2;
 }
 </style>
