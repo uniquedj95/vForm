@@ -426,14 +426,16 @@ watch(
   data,
   async () => {
     for (const [k, f] of Object.entries(activeSchema.value)) {
-      if (!canRenderField(f as any, data.value, computedData.value)) {
+      if (!canRenderField(f, data.value, computedData.value)) {
         // Reset the value of the field if it's not rendered
         const originalSchema =
           isMultiStep.value && currentStep.value && currentStep.value.schema
             ? currentStep.value.schema[k]
             : props.schema?.[k];
         if (originalSchema && isFormField(originalSchema) && 'value' in originalSchema) {
-          (f as any).value = originalSchema.value;
+          f.value = originalSchema.value;
+        } else {
+          f.value = undefined;
         }
       }
     }
