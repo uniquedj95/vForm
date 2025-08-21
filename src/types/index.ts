@@ -26,7 +26,7 @@ export type FormValidator = (
  *
  * @type ComputedValueHandler
  */
-export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => Promise<any> | any;
+export type ComputedValueHandler = (value: FormValue, schema: FormSchema) => any;
 
 /**
  * Represents the options for a form, which can be either an array of `Option` objects
