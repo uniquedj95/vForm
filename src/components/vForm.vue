@@ -68,26 +68,37 @@
           <!-- Multi-step buttons -->
           <IonRow v-if="!hideButtons">
             <IonCol size="12" style="display: flex" :style="{ justifyContent: buttonPlacement }">
-              <IonButton @click="handlePreviousStep" v-if="canGoPrevious">
-                {{ previousButtonText ?? 'Previous' }}
-              </IonButton>
-              <IonButton @click="handleCancelAction" v-if="showCancelButton">
-                {{ cancelButtonText ?? 'Cancel' }}
-              </IonButton>
-              <IonButton @click="handleClearCurrentStep" v-if="showClearButton">
-                {{ clearButtonText ?? 'Reset' }}
-              </IonButton>
-              <template v-for="button of customButtons" :key="button.label">
-                <IonButton @click="button.action" :color="button.color ?? 'primary'">
-                  {{ button.label }}
-                </IonButton>
-              </template>
-              <IonButton @click="handleNextStep" v-if="canGoNext">
-                {{ nextButtonText ?? 'Next' }}
-              </IonButton>
-              <IonButton @click="submitForm" v-if="isLastStep">
-                {{ submitButtonText ?? 'Submit' }}
-              </IonButton>
+              <ActionButton
+                type="previous"
+                :label="previousButtonText"
+                @click="handlePreviousStep"
+                v-if="canGoPrevious"
+              />
+              <ActionButton
+                type="cancel"
+                :label="cancelButtonText"
+                @click="handleCancelAction"
+                v-if="showCancelButton"
+              />
+              <ActionButton
+                type="clear"
+                :label="clearButtonText"
+                @click="handleClearCurrentStep"
+                v-if="showClearButton"
+              />
+              <CustomButton :button="btn" v-for="btn of customButtons" :key="btn.label" />
+              <ActionButton
+                type="next"
+                :label="nextButtonText"
+                @click="handleNextStep"
+                v-if="canGoNext"
+              />
+              <ActionButton
+                type="submit"
+                :label="submitButtonText"
+                @click="submitForm"
+                v-if="isLastStep"
+              />
             </IonCol>
           </IonRow>
 
@@ -162,20 +173,20 @@
       </IonRow>
       <IonRow v-if="!hideButtons">
         <IonCol size="12" style="display: flex" :style="{ justifyContent: buttonPlacement }">
-          <IonButton @click="handleCancelAction" v-if="showCancelButton">
-            {{ cancelButtonText ?? 'Cancel' }}
-          </IonButton>
-          <IonButton @click="handleClearAction" v-if="showClearButton">
-            {{ clearButtonText ?? 'Reset' }}
-          </IonButton>
-          <template v-for="button of customButtons" :key="button.label">
-            <IonButton @click="button.action" :color="button.color ?? 'primary'">
-              {{ button.label }}
-            </IonButton>
-          </template>
-          <IonButton @click="submitForm">
-            {{ submitButtonText ?? 'Submit' }}
-          </IonButton>
+          <ActionButton
+            type="cancel"
+            :label="cancelButtonText"
+            @click="handleCancelAction"
+            v-if="showCancelButton"
+          />
+          <ActionButton
+            type="clear"
+            :label="clearButtonText"
+            @click="handleClearAction"
+            v-if="showClearButton"
+          />
+          <CustomButton :button="btn" v-for="btn of customButtons" :key="btn.label" />
+          <ActionButton type="submit" :label="submitButtonText" @click="submitForm" />
         </IonCol>
       </IonRow>
     </IonGrid>
@@ -184,13 +195,15 @@
 
 <script lang="ts" setup>
 import { ref, watch, computed } from 'vue';
-import { IonGrid, IonRow, IonCol, IonButton } from '@ionic/vue';
+import { IonGrid, IonRow, IonCol } from '@ionic/vue';
 import type { FormData, ComputedData, MultiStepFormData, FormProps } from '@/types';
 import { canRenderField, isFormField } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
 import StepIndicator from '@/components/shared/StepIndicator.vue';
+import ActionButton from './buttons/ActionButton.vue';
+import CustomButton from './buttons/CustomButton.vue';
 
 interface FormEmits {
   (e: 'submit', formData: FormData, computedFormData: ComputedData): void;
@@ -206,9 +219,6 @@ const props = withDefaults(defineProps<FormProps>(), {
   showCancelButton: true,
   hideButtons: false,
   buttonPlacement: 'start',
-  submitButtonText: 'Submit',
-  clearButtonText: 'Reset',
-  cancelButtonText: 'Cancel',
 });
 
 const emit = defineEmits<FormEmits>();
