@@ -77,9 +77,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted } from 'vue';
+import { ref, computed, PropType, watch, ComponentPublicInstance, onMounted, inject } from 'vue';
 import { chevronDown, close } from 'ionicons/icons';
-import { FormSchema, BaseFieldTypes, FormField, Option } from '@/types';
+import { FormSchema, BaseFieldTypes, FormField, Option, GlobalConfig } from '@/types';
 import {
   isEmpty,
   checkOption,
@@ -119,6 +119,8 @@ const showOptions = ref(false);
 const options = ref<Option[]>([]);
 const filter = ref('');
 const page = ref(1);
+
+const config: GlobalConfig | undefined = inject('globalConfig');
 
 const interfaceType = computed(() => {
   return model.value.interface ?? 'popover';
@@ -241,7 +243,7 @@ async function openActionSheet() {
         };
       }),
       {
-        text: 'Cancel',
+        text: config?.buttons?.cancel?.label ?? 'Cancel',
         role: 'cancel',
       },
     ],
@@ -266,11 +268,11 @@ async function openAlert() {
     inputs,
     buttons: [
       {
-        text: 'Cancel',
+        text: config?.buttons?.cancel?.label ?? 'Cancel',
         role: 'cancel',
       },
       {
-        text: 'OK',
+        text: config?.buttons?.ok?.label ?? 'OK',
         handler: selectedOptions => {
           if (model.value.multiple) {
             // Reset all options first
@@ -299,7 +301,7 @@ async function openAlert() {
 async function customSelectValidation(): Promise<boolean | string> {
   // Check required validation
   if (model.value.required && isEmpty(tags.value)) {
-    return 'This field is required';
+    return config?.errorMessages?.required ?? 'This field is required';
   }
 
   // Run field-specific validation function if it exists
