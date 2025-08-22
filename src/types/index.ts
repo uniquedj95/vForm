@@ -623,6 +623,16 @@ export interface CustomButton {
   fill?: 'solid' | 'outline';
 
   /**
+   * The expand style of the button.
+   */
+  expand?: 'full' | 'block';
+
+  /**
+   * The size of the button.
+   */
+  size?: 'default' | 'small' | 'large';
+
+  /**
    * The color theme of the button.
    */
   color?: 'primary' | 'warning' | 'danger' | 'secondary' | 'light';
