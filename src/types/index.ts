@@ -745,3 +745,42 @@ export interface FormProps {
    */
   customButtons?: Array<CustomButton>;
 }
+
+/**
+ * Form validation error messages.
+ *
+ * @type ErrorMessage
+ */
+export type ErrorMessage =
+  | 'required'
+  | 'minLength'
+  | 'maxLength'
+  | 'InvalidEmail'
+  | 'invalidDate'
+  | 'InvalidPattern'
+  | 'customError';
+
+/**
+ * Type for action button variants.
+ *
+ * @type ActionButtonType
+ */
+export type ActionButtonType = 'submit' | 'next' | 'cancel' | 'clear' | 'previous' | 'ok';
+
+/**
+ * Interface for global form configuration options.
+ * These settings apply to all forms in the application unless overridden locally.
+ *
+ * @interface GlobalConfig
+ */
+export interface GlobalConfig {
+  /**
+   * Custom error messages to use across all forms.
+   */
+  errorMessages?: Partial<Record<ErrorMessage, string>>;
+
+  /**
+   * Action buttons configuration to use across all forms.
+   */
+  buttons?: Partial<Record<ActionButtonType, Omit<CustomButton, 'action'>>>;
+}

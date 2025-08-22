@@ -12,6 +12,7 @@ import CheckboxInput from './components/inputs/CheckboxInput.vue';
 import RadioInput from './components/inputs/RadioInput.vue';
 import FormSection from './components/shared/SectionTitle.vue';
 import { maskito } from '@maskito/vue';
+import { GlobalConfig } from './types';
 
 // Export composables
 export { useFormValidation } from './composables/useFormValidation';
@@ -24,7 +25,8 @@ export { useMultiStepForm } from './composables/useMultiStepForm';
 export * from './types';
 
 export const VForm: Plugin = {
-  install(app: App) {
+  install(app: App, opts?: GlobalConfig) {
+    if (opts) app.provide('globalConfig', opts);
     app.component('VForm', Form);
     app.component('TextInput', TextInput);
     app.component('DateInput', DateInput);

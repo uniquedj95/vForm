@@ -1,5 +1,5 @@
-import { Ref, ComponentPublicInstance } from 'vue';
-import { FormField, FormSchema } from '@/types';
+import { Ref, ComponentPublicInstance, inject } from 'vue';
+import { FormField, FormSchema, GlobalConfig } from '@/types';
 import { useValidationStyles } from './useValidationStyles';
 
 /**
@@ -15,13 +15,14 @@ export function useInputValidation(
 ) {
   const { applyValidationState, resetValidationState } = useValidationStyles(inputRef);
 
+  const globalConfig: GlobalConfig | undefined = inject('globalConfig');
   /**
    * Standard validation logic for form inputs
    */
   async function isValid(): Promise<boolean> {
     // Check required field validation
     if (model.value.required && !inputValue.value) {
-      model.value.error = 'This field is required';
+      model.value.error = globalConfig?.errorMessages?.required ?? 'This field is required';
       return false;
     }
 
