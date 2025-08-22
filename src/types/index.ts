@@ -494,7 +494,12 @@ export interface FormField {
    * @param schema - The schema of the form.
    * @returns {FormValue} The processed form value.
    */
-  onChange?: (value: FormValue, schema: FormSchema) => FormValue;
+  onChange?: (
+    value: FormValue,
+    schema: FormSchema
+  ) =>
+    | FormValue // This return type will be removed as the hook is mainly for handling side effects not transforming data. Use computedValue instead.
+    | void;
 
   /**
    * The custom function used for computing alternative values based on the current value of the form input field.
