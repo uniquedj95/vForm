@@ -27,8 +27,6 @@ const props = defineProps({
   },
 });
 
-console.log(props.label, config?.buttons?.[props.type]?.label);
-
 const finalLabel = computed(() => {
   return props.label ?? config?.buttons?.[props.type]?.label ?? props.type;
 });
