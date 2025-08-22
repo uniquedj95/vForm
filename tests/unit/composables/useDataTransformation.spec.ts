@@ -51,20 +51,6 @@ describe('useDataTransformation', () => {
     });
   });
 
-  it('should apply onChange functions when transforming to form data', () => {
-    const schema = ref<FormSchema>({
-      email: {
-        type: 'EmailInput',
-        label: 'Email',
-        value: 'USER@EXAMPLE.COM',
-        onChange: value => value?.toString().toLowerCase(),
-      },
-    });
-
-    const { formData } = useDataTransformation(schema);
-    expect(formData.value.email).toBe('user@example.com');
-  });
-
   it('should transform form data to computed data', async () => {
     const activeSchema = ref(createMockSchema());
     const { computedData } = useDataTransformation(activeSchema);

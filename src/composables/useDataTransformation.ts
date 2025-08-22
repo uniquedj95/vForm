@@ -14,11 +14,7 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
     Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
       // Only process FormField items, not FormSection items
       if (isFormField(form) && form.value !== undefined) {
-        if (typeof form.onChange === 'function') {
-          acc[key] = form.onChange(form.value, activeSchema.value);
-        } else {
-          acc[key] = form.value;
-        }
+        acc[key] = form.value;
       }
       return acc;
     }, {} as FormData)
@@ -124,6 +120,9 @@ export function useDataTransformation(activeSchema: Ref<FormSchema>) {
 
     // Only process if it's a FormField, not a FormSection
     if (isFormField(schema)) {
+      if (typeof schema.onChange === 'function') {
+        schema.onChange(value, activeSchema.value);
+      }
       if (schema.children !== undefined) {
         processChildren(key, value, oldData);
       }
