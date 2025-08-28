@@ -117,7 +117,7 @@ const formSchema: FormSchema = {
     min: 1,
     max: 1000,
     grid: { xs: '12', md: '4' },
-    computedValue: (_value, schema) => {
+    onChange: (_value, schema) => {
       const price = Number(schema.price?.value) || 0;
       const quantity = Number(schema.quantity?.value) || 1;
       schema.totalPrice.value = (price * quantity).toFixed(2);
