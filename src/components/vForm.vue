@@ -197,7 +197,7 @@
 import { ref, watch, computed } from 'vue';
 import { IonGrid, IonRow, IonCol } from '@ionic/vue';
 import type { FormData, ComputedData, MultiStepFormData, FormProps } from '@/types';
-import { canRenderField, isFormField } from '@/utils';
+import { canRenderField, isFormField, shouldPreserveFieldValue } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
@@ -231,9 +231,8 @@ const activeSchema = ref(props.schema || {});
 const multiStepForm = props.multiStepConfig ? useMultiStepForm(props.multiStepConfig) : null;
 
 // Single-step form logic
-const { dynamicRefs, isFormValid, resetForm } = useFormValidation();
+const { dynamicRefs, isFormValid } = useFormValidation();
 const { formData: data, computedData } = useDataTransformation(activeSchema);
-// Use any type for the custom component ref since we don't know its structure
 const customComponentRef = ref<any>(null);
 
 // Multi-step computed properties
@@ -315,11 +314,31 @@ async function submitForm() {
   }
 }
 
+function resetFormWithFieldCheck() {
+  // Reset form inputs while skipping disabled and hidden fields
+  dynamicRefs.value.forEach((inputRef: any) => {
+    if (typeof inputRef?.onReset === 'function' && inputRef?.$attrs?.['ref-key']) {
+      const formId = inputRef.$attrs['ref-key'];
+
+      if (formId && activeSchema.value[formId]) {
+        const field = activeSchema.value[formId];
+
+        // Skip reset if field should be preserved (disabled, hidden, or condition is false)
+        if (shouldPreserveFieldValue(field, data.value, computedData.value)) {
+          return;
+        }
+      }
+
+      inputRef.onReset();
+    }
+  });
+}
+
 function handleClearAction() {
   if (isMultiStep.value && multiStepForm) {
     multiStepForm.resetForm();
   } else {
-    resetForm();
+    resetFormWithFieldCheck();
   }
   emit('clear');
 }
@@ -327,6 +346,8 @@ function handleClearAction() {
 function handleClearCurrentStep() {
   if (isMultiStep.value && multiStepForm && currentStep.value) {
     multiStepForm.clearStepData(currentStep.value.id);
+    resetFormWithFieldCheck();
+    emit('clear');
   }
 }
 
@@ -334,7 +355,7 @@ function handleCancelAction() {
   if (isMultiStep.value && multiStepForm) {
     multiStepForm.resetForm();
   } else {
-    resetForm();
+    resetFormWithFieldCheck();
   }
   emit('cancel');
 }

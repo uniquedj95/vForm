@@ -139,6 +139,124 @@ describe('useMultiStepForm', () => {
     expect(stepData.value['step1'].field1).toBe('');
   });
 
+  it('should preserve disabled and hidden fields when resetting form', () => {
+    // Create config with disabled and hidden fields
+    const configWithDisabledFields: MultiStepConfig = {
+      steps: [
+        {
+          id: 'step1',
+          title: 'Step 1',
+          schema: {
+            normalField: { type: 'TextInput', label: 'Normal Field', value: 'default' },
+            disabledField: {
+              type: 'TextInput',
+              label: 'Disabled Field',
+              value: 'disabled_default',
+              disabled: true,
+            },
+            hiddenField: {
+              type: 'TextInput',
+              label: 'Hidden Field',
+              value: 'hidden_default',
+              hidden: true,
+            },
+          },
+        },
+      ],
+      stepPosition: 'top',
+    };
+
+    const { updateStepData, resetForm, stepData, clearStepData } =
+      useMultiStepForm(configWithDisabledFields);
+
+    // Update all fields with new values
+    updateStepData('step1', {
+      normalField: 'changed_normal',
+      disabledField: 'changed_disabled',
+      hiddenField: 'changed_hidden',
+    });
+
+    // Clear the step data (this should preserve disabled/hidden fields)
+    clearStepData('step1');
+
+    // Normal field should be reset to default
+    expect(stepData.value['step1'].normalField).toBe('default');
+    // Disabled field should preserve its current value
+    expect(stepData.value['step1'].disabledField).toBe('changed_disabled');
+    // Hidden field should preserve its current value
+    expect(stepData.value['step1'].hiddenField).toBe('changed_hidden');
+
+    // Test full form reset
+    updateStepData('step1', {
+      normalField: 'another_normal',
+      disabledField: 'another_disabled',
+      hiddenField: 'another_hidden',
+    });
+
+    resetForm();
+
+    // After full reset:
+    // Normal field should be reset to default
+    expect(stepData.value['step1'].normalField).toBe('default');
+    // Disabled field should preserve its value since clearStepData preserves it
+    expect(stepData.value['step1'].disabledField).toBe('another_disabled');
+    // Hidden field should preserve its value since clearStepData preserves it
+    expect(stepData.value['step1'].hiddenField).toBe('another_hidden');
+  });
+
+  it('should preserve conditionally hidden fields when resetting form', () => {
+    // Create config with conditionally hidden field
+    const configWithConditionalFields: MultiStepConfig = {
+      steps: [
+        {
+          id: 'step1',
+          title: 'Step 1',
+          schema: {
+            triggerField: { type: 'TextInput', label: 'Trigger Field', value: 'hide' },
+            conditionalField: {
+              type: 'TextInput',
+              label: 'Conditional Field',
+              value: 'conditional_default',
+              condition: data => data.triggerField === 'show',
+            },
+          },
+        },
+      ],
+      stepPosition: 'top',
+    };
+
+    const { updateStepData, clearStepData, stepData } = useMultiStepForm(
+      configWithConditionalFields
+    );
+
+    // Update fields with new values - conditional field should be hidden since triggerField !== 'show'
+    updateStepData('step1', {
+      triggerField: 'hide',
+      conditionalField: 'changed_conditional',
+    });
+
+    // Clear the step data
+    clearStepData('step1');
+
+    // Trigger field should be reset to default
+    expect(stepData.value['step1'].triggerField).toBe('hide');
+    // Conditional field should preserve its value since it's conditionally hidden
+    expect(stepData.value['step1'].conditionalField).toBe('changed_conditional');
+
+    // Now test when the field should be visible
+    updateStepData('step1', {
+      triggerField: 'show',
+      conditionalField: 'another_conditional',
+    });
+
+    clearStepData('step1');
+
+    // Trigger field should be reset to default
+    expect(stepData.value['step1'].triggerField).toBe('hide');
+    // Conditional field should be reset to default since it's now visible (condition would be false with reset triggerField)
+    expect(stepData.value['step1'].conditionalField).toBe('conditional_default');
+  });
+
   it('should prevent navigation beyond bounds', async () => {
     const { currentStepIndex, nextStep, previousStep } = useMultiStepForm(multiStepConfig);
 

@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue';
 import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData, FormStep } from '@/types';
-import { isFormField } from '@/utils';
+import { shouldPreserveFieldValue } from '@/utils';
 
 export function useMultiStepForm(config: MultiStepConfig) {
   const currentStepIndex = ref(0);
@@ -9,24 +9,41 @@ export function useMultiStepForm(config: MultiStepConfig) {
   const stepValidationErrors = ref<Record<string, string[]>>({});
 
   // Helper function to get default values from step schema
-  function getStepDefaults(step: FormStep): FormData {
-    const defaults: FormData = {};
-    // If using a custom component, return empty defaults
-    if (step.component || !step.schema) {
-      return defaults;
-    }
+  function getStepDefaults(stepId: string, currentData?: FormData): FormData {
+    const step = config.steps.find(s => s.id === stepId);
+    if (!step?.schema) return {};
 
-    Object.entries(step.schema).forEach(([fieldId, field]) => {
-      // Only process FormField items, not FormSection items
-      if (isFormField(field)) {
+    const defaults: FormData = {};
+
+    // Get current multi-step data for condition evaluation
+    const allStepData = Object.values(stepData.value).reduce(
+      (acc, data) => ({ ...acc, ...data }),
+      {}
+    );
+    const allStepComputedData = Object.values(stepComputedData.value).reduce(
+      (acc, data) => ({ ...acc, ...data }),
+      {}
+    );
+
+    for (const [fieldId, field] of Object.entries(step.schema)) {
+      if (shouldPreserveFieldValue(field, allStepData, allStepComputedData)) {
+        // Preserve current value for disabled/hidden fields
+        if (currentData && fieldId in currentData) {
+          defaults[fieldId] = currentData[fieldId];
+        } else if (field.value !== undefined) {
+          defaults[fieldId] = field.value;
+        }
+      } else {
+        // Reset to default value for visible, enabled fields
         defaults[fieldId] = field.value;
       }
-    });
+    }
+
     return defaults;
   }
   // Initialize step data with default values from schema
   config.steps.forEach(step => {
-    stepData.value[step.id] = getStepDefaults(step);
+    stepData.value[step.id] = getStepDefaults(step.id);
     stepComputedData.value[step.id] = {};
     stepValidationErrors.value[step.id] = [];
   });
@@ -95,10 +112,11 @@ export function useMultiStepForm(config: MultiStepConfig) {
   }
 
   function clearStepData(stepId: string) {
-    // Reset to initial values from step schema
+    // Reset to initial values from step schema while preserving disabled/hidden fields
     const step = config.steps.find(s => s.id === stepId);
     if (step) {
-      stepData.value[stepId] = getStepDefaults(step);
+      const currentData = stepData.value[stepId] || {};
+      stepData.value[stepId] = getStepDefaults(stepId, currentData);
       stepComputedData.value[stepId] = {};
     }
   }
