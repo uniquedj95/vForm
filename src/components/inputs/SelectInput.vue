@@ -64,7 +64,7 @@
         <div class="option-content">
           <ion-label>{{ option.label }}</ion-label>
           <ion-text
-            v-if="shouldShowDescription(option)"
+            v-if="shouldShowDescription(option, option.isChecked)"
             :color="option.description?.color"
             class="option-description"
           >
