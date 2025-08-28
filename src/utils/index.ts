@@ -51,6 +51,31 @@ export function isEmpty(value: any): boolean {
 }
 
 /**
+ * Determines if a field's value should be preserved during form reset operations.
+ *
+ * A field's value should be preserved if:
+ * - The field is disabled
+ * - The field is explicitly hidden
+ * - The field has a condition function that evaluates to false (making it conditionally hidden)
+ *
+ * @param field - The form field to check
+ * @param formData - Current form data for condition evaluation
+ * @param computedData - Current computed data for condition evaluation
+ * @returns `true` if the field value should be preserved, `false` if it should be reset
+ */
+export function shouldPreserveFieldValue(
+  field: FormField,
+  formData: FormData,
+  computedData: ComputedData
+): boolean {
+  return (
+    field.disabled ||
+    field.hidden ||
+    (typeof field.condition === 'function' && !field.condition(formData, computedData))
+  );
+}
+
+/**
  * Determines if a form field can be rendered based on a condition.
  *
  * @param field - The form field to check.

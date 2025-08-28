@@ -36,17 +36,6 @@ export function useFormValidation() {
   }
 
   /**
-   * Reset all form inputs
-   */
-  function resetForm(): void {
-    dynamicRefs.value.forEach((inputRef: any) => {
-      if (typeof inputRef?.onReset === 'function') {
-        inputRef.onReset();
-      }
-    });
-  }
-
-  /**
    * Get all validation errors from form inputs
    */
   function getFormErrors(): string[] {
@@ -82,7 +71,6 @@ export function useFormValidation() {
   return {
     dynamicRefs,
     isFormValid,
-    resetForm,
     getFormErrors,
     updateFormValues,
   };

@@ -124,6 +124,7 @@ const formSchema: FormSchema = {
     value: new Date().toISOString().substring(0, 16), // Format: YYYY-MM-DDTHH:MM
     enableTime: true,
     required: true,
+    disabled: true,
     grid: { xs: '12', md: '6' },
   },
   age: {
