@@ -6,7 +6,7 @@
 
 A dynamic form builder for Vue.js with Ionic components
 
-[![Version](https://img.shields.io/badge/version-3.7.0-blue.svg)](https://github.com/uniquedj95/vform/releases)
+[![Version](https://img.shields.io/badge/version-3.7.1-blue.svg)](https://github.com/uniquedj95/vform/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Vue Version](https://img.shields.io/badge/vue-3.5+-brightgreen.svg)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
