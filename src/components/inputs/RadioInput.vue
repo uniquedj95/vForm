@@ -28,7 +28,7 @@
           <div class="radio-content">
             <div class="radio-label">{{ option.label }}</div>
             <ion-text
-              v-if="shouldShowDescription(option)"
+              v-if="shouldShowDescription(option, isOptionSelected(option))"
               :color="option.description?.color"
               class="radio-description"
             >
@@ -74,6 +74,11 @@ function onReset() {
 // Custom compare function for radio group
 function compareWith(a: Option, b: Option): boolean {
   return a?.value === b?.value;
+}
+
+// Check if an option is currently selected
+function isOptionSelected(option: Option): boolean {
+  return input.value ? compareWith(input.value, option) : false;
 }
 
 async function initializeOptions() {

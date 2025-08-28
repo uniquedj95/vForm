@@ -150,9 +150,8 @@ const formSchema: FormSchema = {
       {
         label: 'Home & Garden',
         value: 'home_garden',
-        disabled: true,
         description: {
-          color: 'danger',
+          color: 'secondary',
           text: 'Furniture, decor, gardening tools, and household items (Currently unavailable)',
         },
       },
@@ -188,7 +187,6 @@ const formSchema: FormSchema = {
   priority: {
     type: 'RadioInput',
     label: 'Priority Level',
-    value: { label: 'Normal', value: 'normal' },
     options: [
       {
         label: 'Low',
@@ -196,6 +194,7 @@ const formSchema: FormSchema = {
         description: {
           color: 'secondary',
           text: 'Standard processing time, no rush needed',
+          show: 'onSelected',
         },
       },
       {
@@ -204,6 +203,7 @@ const formSchema: FormSchema = {
         description: {
           color: 'primary',
           text: 'Regular priority with standard delivery timeframe',
+          show: 'onSelected',
         },
       },
       {
@@ -212,15 +212,16 @@ const formSchema: FormSchema = {
         description: {
           color: 'warning',
           text: 'Expedited processing with faster turnaround',
+          show: 'onSelected',
         },
       },
       {
         label: 'Critical',
         value: 'critical',
-        disabled: true,
         description: {
           color: 'danger',
           text: 'Immediate attention required - highest priority (Requires approval)',
+          show: 'onSelected',
         },
       },
     ],

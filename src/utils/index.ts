@@ -184,13 +184,28 @@ export function uncheckAllOptions(options: Array<Option>) {
 }
 
 /**
- * Determines if an option's description should be shown.
+ * Determines if an option's description should be displayed based on its configuration.
  *
- * @param {Option} option - The option to check for description visibility.
+ * @param {Option} option - The option to check.
+ * @param {boolean} [isSelected] - Whether the option is currently selected.
  * @returns {boolean} `true` if the option has a description that should be displayed, `false` otherwise.
  */
-export function shouldShowDescription(option: Option): boolean {
-  return !!option.description;
+export function shouldShowDescription(option: Option, isSelected?: boolean): boolean {
+  if (!option.description) {
+    return false;
+  }
+
+  const showMode = option.description.show ?? 'always';
+
+  if (showMode === 'always') {
+    return true;
+  }
+
+  if (showMode === 'onSelected') {
+    return !!isSelected;
+  }
+
+  return false;
 }
 
 /**

@@ -531,6 +531,14 @@ export interface OptionDescription {
    * The description text to display.
    */
   text: string;
+
+  /**
+   * Determines when to show the description.
+   * - 'always': show the description always
+   * - 'onSelected': Show description only when the option is selected
+   * @default 'always'
+   */
+  show?: 'always' | 'onSelected';
 }
 /**
  * Represents a selectable option in inputs like Select, Checkbox, etc.
