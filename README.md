@@ -11,7 +11,7 @@ A dynamic form builder for Vue.js with Ionic components
 [![Vue Version](https://img.shields.io/badge/vue-3.5+-brightgreen.svg)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
 [![Downloads](https://img.shields.io/npm/dt/@uniquedj95/vform.svg)](https://www.npmjs.com/package/@uniquedj95/vform)
-[![Ionic Vue](https://img.shields.io/badge/Ionic-8.2-blue)](https://ionicframework.com/)
+[![Ionic Vue](https://img.shields.io/badge/Ionic-8.2+-blue)](https://ionicframework.com/)
 [![Bundle Size](https://img.shields.io/bundlephobia/min/@uniquedj95/vform)](https://bundlephobia.com/package/@uniquedj95/vform)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/uniquedj95/vform/pulls)
 
@@ -27,10 +27,12 @@ A dynamic form builder for Vue.js with Ionic components
 - [Schema Structure](#schema-structure)
   - [Example Schema](#example-schema)
   - [Field Configuration Options](#field-configuration-options)
+  - [Input Masking](#input-masking)
 - [Multi-Step Forms](#multi-step-forms)
   - [Basic Multi-Step Setup](#basic-multi-step-setup)
   - [Step Configuration](#step-configuration)
   - [Step Indicator Positioning](#step-indicator-positioning)
+  - [Conditional Steps](#conditional-steps)
   - [Custom Components in Steps](#custom-components-in-steps)
   - [Step Validation](#step-validation)
 - [Form Sections](#form-sections)
@@ -38,6 +40,7 @@ A dynamic form builder for Vue.js with Ionic components
   - [Section Configuration](#section-configuration)
 - [Form Events](#form-events)
 - [Form Methods](#form-methods)
+- [Composables](#composables)
 - [Input Dependencies](#input-dependencies)
   - [Dynamic Options](#dynamic-options)
   - [Resetting Dependent Fields](#resetting-dependent-fields)
@@ -46,6 +49,7 @@ A dynamic form builder for Vue.js with Ionic components
   - [Custom Buttons](#custom-buttons)
   - [RepeatInput](#repeatinput)
   - [Option Descriptions](#option-descriptions)
+- [Component Exports](#component-exports)
 - [Issue Reporting and Feedback](#issue-reporting-and-feedback)
 - [Contributors](#contributors)
 
@@ -95,6 +99,7 @@ npm run demo:update
 - **Custom Components**: Integrate custom Vue components directly into multi-step forms for advanced visualizations and workflows.
 - **Form Sections**: Organize forms into logical sections with titles and subtitles for better user experience.
 - **Dynamic Form Generation**: Create forms dynamically based on a schema definition.
+- **Input Masking**: Built-in support for input masking using Maskito for consistent data entry formatting.
 - **Conditional Field Rendering**: Fields can be shown or hidden based on other form values.
 - **Dependent Options**: Load options for select inputs based on the values of other fields.
 - **Responsive Grid Layout**: Utilizes Ionic Grid for a responsive design that works across different screen sizes.
@@ -113,31 +118,18 @@ npm run demo:update
 
 1. Install the package using your preferred package manager:
 
-   Using NPM:
-
-   ```sh
+   ```bash
    npm install @uniquedj95/vform
-   ```
-
-   Using Yarn:
-
-   ```sh
+   # or
    yarn add @uniquedj95/vform
+   # or
+   pnpm add @uniquedj95/vform
    ```
 
 2. Make sure you have the required peer dependencies:
 
-   - Vue 3.5+
-   - Ionic Vue (for UI components)
-
-   ```sh
-   npm install @ionic/vue ionicons
-   ```
-
-   or
-
-   ```sh
-   yarn add @ionic/vue ionicons
+   ```bash
+   npm install vue@^3.5.10 @ionic/vue@^8.2.5 ionicons@^8.0.9
    ```
 
 ## Usage
@@ -145,51 +137,31 @@ npm run demo:update
 1. Register `VForm` component in your Vue.js application:
 
    ```typescript
-   // src/main.ts
-   import { createApp, Plugin } from 'vue';
-   import App from './App.vue';
-   import router from './router';
-   import { IonicVue } from '@ionic/vue';
-   import { VForm } from '@uniquedj95/vform';
-
-   /* Import CSS styles and other components here */
+   import { createApp } from 'vue';
+   import VForm from '@uniquedj95/vform';
    import '@uniquedj95/vform/vform.css';
 
-   const app = createApp(App)
-     .use(IonicVue)
-     .use(VForm as Plugin)
-     .use(router);
-
-   router.isReady().then(() => {
-     app.mount('#app');
-   });
+   const app = createApp({});
+   app.use(VForm);
    ```
 
 2. Use the component in your template:
 
    ```vue
    <template>
-     <v-form :schema="formSchema" button-placement="end" @submit="onSubmit" />
+     <v-form :schema="formSchema" @submit="handleSubmit" />
    </template>
 
    <script setup lang="ts">
    import { reactive } from 'vue';
    import { FormSchema, FormData, ComputedData } from '@uniquedj95/vform';
 
-   const formSchema = reactive<FormSchema>({
-     // Define your form schema here
-     fieldId: {
-       type: 'TextInput', // or other InputType
-       label: 'Field Label',
-       placeholder: 'Enter a value',
-       required: true,
-       // additional field configuration options
-     },
-     // Additional fields
-   });
+   const formSchema: FormSchema = {
+     // Your form fields here
+   };
 
-   function onSubmit(data: FormData, computedData: ComputedData) {
-     console.log(data, computedData);
+   function handleSubmit(formData: FormData, computedData: ComputedData) {
+     console.log('Form submitted:', { formData, computedData });
    }
    </script>
    ```
@@ -268,6 +240,7 @@ The following input types are supported:
 | `TextAreaInput` | Multi-line text input                                           |
 | `SelectInput`   | Dropdown selection                                              |
 | `CheckboxInput` | Toggle on/off input                                             |
+| `RadioInput`    | Single selection from multiple radio options                    |
 | `RepeatInput`   | Repeatable group of fields                                      |
 | `FormSection`   | Section header with title and subtitle (unified with FormField) |
 
@@ -306,11 +279,11 @@ The following input types are supported:
 
 #### Text Input Properties
 
-| Property    | Type     | Description                               | Applies To        |
-| ----------- | -------- | ----------------------------------------- | ----------------- |
-| `minLength` | `number` | Minimum text length                       | Text-based inputs |
-| `maxLength` | `number` | Maximum text length                       | Text-based inputs |
-| `pattern`   | `string` | Regular expression pattern for validation | Text-based inputs |
+| Property    | Type     | Description                                                                | Applies To        |
+| ----------- | -------- | -------------------------------------------------------------------------- | ----------------- |
+| `minLength` | `number` | Minimum text length                                                        | Text-based inputs |
+| `maxLength` | `number` | Maximum text length                                                        | Text-based inputs |
+| `pattern`   | `string` | Regular expression pattern for validation and input masking (uses Maskito) | Text-based inputs |
 
 #### Number Input Properties
 
@@ -349,6 +322,21 @@ The following input types are supported:
 | Property   | Type         | Description                           |
 | ---------- | ------------ | ------------------------------------- |
 | `children` | `FormSchema` | Schema for the repeatable field group |
+
+#### RadioInput Properties
+
+| Property               | Type          | Description                                                      |
+| ---------------------- | ------------- | ---------------------------------------------------------------- |
+| `options`              | `FormOptions` | Array of options or function returning options                   |
+| `showOptionsSeparator` | `boolean`     | Whether to show lines between radio options                      |
+| `compareWith`          | `Function`    | Custom comparison function for option selection                  |
+| `allowEmptySelection`  | `boolean`     | Whether to allow deselecting all options (defaults to !required) |
+
+#### CheckboxInput Properties
+
+| Property  | Type      | Description                           |
+| --------- | --------- | ------------------------------------- |
+| `checked` | `boolean` | Initial checked state of the checkbox |
 
 ### Custom Styling with className
 
@@ -427,6 +415,61 @@ The `className` property is supported across all input components:
 - **RadioInput**: Applied to `ion-radio-group` element
 - **RepeatInput**: Applied to each repeat group wrapper
 - **FormSection**: Applied to the section container
+
+### Input Masking
+
+vForm includes built-in support for input masking using [Maskito](https://maskito.dev/), which provides consistent data entry formatting for various input types.
+
+#### Basic Usage
+
+Use the `pattern` property on text-based inputs to apply masking:
+
+```typescript
+const formSchema: FormSchema = {
+  phoneNumber: {
+    type: 'TextInput',
+    label: 'Phone Number',
+    pattern: '+1 (000) 000-0000',
+    placeholder: '+1 (555) 123-4567',
+  },
+  creditCard: {
+    type: 'TextInput',
+    label: 'Credit Card',
+    pattern: '0000 0000 0000 0000',
+    placeholder: '1234 5678 9012 3456',
+  },
+  socialSecurity: {
+    type: 'TextInput',
+    label: 'SSN',
+    pattern: '000-00-0000',
+    placeholder: '123-45-6789',
+  },
+};
+```
+
+#### Common Mask Patterns
+
+| Pattern                 | Description        | Example Output        |
+| ----------------------- | ------------------ | --------------------- |
+| `'000-00-0000'`         | US Social Security | `123-45-6789`         |
+| `'+1 (000) 000-0000'`   | US Phone Number    | `+1 (555) 123-4567`   |
+| `'0000 0000 0000 0000'` | Credit Card        | `1234 5678 9012 3456` |
+| `'00/00/0000'`          | Date (MM/DD/YYYY)  | `12/25/2023`          |
+| `'00:00'`               | Time (HH:MM)       | `14:30`               |
+
+#### Advanced Masking
+
+For more complex masking requirements, you can use regular expressions:
+
+```typescript
+const emailMask = {
+  type: 'EmailInput',
+  label: 'Email',
+  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+};
+```
+
+The masking is automatically applied when the user types, providing real-time formatting and validation feedback.
 
 ## Multi-Step Forms
 
@@ -698,165 +741,6 @@ When a step is hidden:
 > updateStepData('step-to-be-hidden', backupData);
 > ```
 
-### Custom Components in Steps
-
-vForm allows you to use custom Vue components in multi-step forms instead of schema-defined fields. This is useful for complex steps that require custom layouts, visualizations, or integration with other components.
-
-```vue
-<template>
-  <v-form
-    :multi-step-config="multiStepConfig"
-    @multi-step-submit="handleSubmit"
-    @step-change="handleStepChange"
-  />
-</template>
-
-<script setup lang="ts">
-import { defineComponent, ref } from 'vue';
-import { MultiStepConfig } from '@uniquedj95/vform';
-import PreviousResultsTable from './PreviousResultsTable.vue';
-
-// Define your custom component
-const PreviousResultsTable = defineComponent({
-  props: {
-    data: Object,
-  },
-  setup(props, { emit }) {
-    // Implement your component logic
-    const tableData = ref([
-      /* your data */
-    ]);
-
-    // Custom validation function - will be called when clicking "Next"
-    function validate() {
-      // Add your validation logic here
-      return true; // Return true if valid, false if not
-    }
-
-    // Function to update data in the parent form
-    function updateData() {
-      emit('update:data', {
-        /* your component data */
-      });
-    }
-
-    return { tableData, validate, updateData };
-  },
-});
-
-const multiStepConfig: MultiStepConfig = {
-  steps: [
-    {
-      id: 'patient-info',
-      title: 'Patient Information',
-      schema: {
-        // Standard form schema
-        patientId: {
-          type: 'TextInput',
-          label: 'Patient ID',
-          required: true,
-        },
-        // More fields...
-      },
-    },
-    {
-      id: 'previous-results',
-      title: 'Previous ANC Results',
-      // Use a custom component instead of a schema
-      component: PreviousResultsTable,
-      componentProps: {
-        // Props to pass to your component
-        clinicId: 123,
-        showDetails: true,
-      },
-    },
-    {
-      id: 'new-visit',
-      title: 'New ANC Visit',
-      schema: {
-        // Back to standard form schema
-        visitDate: {
-          type: 'DateInput',
-          label: 'Visit Date',
-          required: true,
-        },
-        // More fields...
-      },
-    },
-  ],
-  stepPosition: 'top',
-  showProgress: true,
-  allowStepNavigation: true,
-};
-</script>
-```
-
-#### Custom Component Requirements
-
-To work properly with the multi-step form, your custom component should:
-
-1. **Accept Props**: Receive data and configuration through props
-2. **Emit Data Updates**: Use `emit('update:data', yourData)` to send data back to the form
-3. **Implement Validation**: Expose a `validate()` method that returns a boolean or promise resolving to boolean
-
-#### Component Interface Example
-
-```vue
-<template>
-  <div class="custom-step-component">
-    <!-- Your custom UI here -->
-    <data-table :data="tableData" @row-click="selectRow" />
-
-    <!-- You can still use Ionic components -->
-    <ion-button @click="handleSave">Save Selection</ion-button>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-
-const props = defineProps({
-  // Your props here
-  initialData: Object,
-});
-
-const emits = defineEmits(['update:data']);
-
-const tableData = ref([]);
-const selectedRow = ref(null);
-
-function selectRow(row) {
-  selectedRow.value = row;
-  emitData();
-}
-
-function handleSave() {
-  // Your save logic
-  emitData();
-}
-
-function emitData() {
-  // Send data back to parent form
-  emits('update:data', {
-    selected: selectedRow.value,
-    // other data...
-  });
-}
-
-// This method will be called for validation
-function validate() {
-  // Return false if validation fails
-  if (!selectedRow.value) {
-    return false;
-  }
-  return true;
-}
-
-// Expose the validate method to the parent
-defineExpose({ validate });
-</script>
-```
-
 ### Step Validation
 
 Multi-step forms include built-in validation that prevents users from proceeding to the next step until the current step is valid:
@@ -894,12 +778,13 @@ const multiStepConfig: MultiStepConfig = {
 
 ### Multi-Step Configuration Options
 
-| Property              | Type                                     | Description                                   | Default  |
-| --------------------- | ---------------------------------------- | --------------------------------------------- | -------- |
-| `steps`               | `FormStep[]`                             | Array of step configurations                  | Required |
-| `stepPosition`        | `'top' \| 'bottom' \| 'left' \| 'right'` | Position of the step indicator                | `'top'`  |
-| `showProgress`        | `boolean`                                | Show progress bar and step counter            | `true`   |
-| `allowStepNavigation` | `boolean`                                | Allow clicking on step indicators to navigate | `false`  |
+| Property              | Type                                     | Description                                   | Default     |
+| --------------------- | ---------------------------------------- | --------------------------------------------- | ----------- |
+| `steps`               | `FormStep[]`                             | Array of step configurations                  | Required    |
+| `stepPosition`        | `'top' \| 'bottom' \| 'left' \| 'right'` | Position of the step indicator                | `'top'`     |
+| `stepDisplayMode`     | `'numbers' \| 'labels'`                  | Display mode for step indicators              | `'numbers'` |
+| `showProgress`        | `boolean`                                | Show progress bar and step counter            | `true`      |
+| `allowStepNavigation` | `boolean`                                | Allow clicking on step indicators to navigate | `false`     |
 
 ### Multi-Step Events
 
@@ -1079,21 +964,88 @@ You can customize section appearance using the `className` property and your own
 
 ## Form Events
 
+### Single-Step Form Events
+
 | Event    | Description                                                      | Signature                                                      |
 | -------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
 | `submit` | Emitted when the form is submitted successfully after validation | `(formData: FormData, computedFormData: ComputedData) => void` |
 | `clear`  | Emitted when the form fields are cleared to their initial state  | `() => void`                                                   |
 | `cancel` | Emitted when the form submission is canceled, resetting fields   | `() => void`                                                   |
 
+### Multi-Step Form Events
+
+| Event               | Description                               | Signature                                     |
+| ------------------- | ----------------------------------------- | --------------------------------------------- |
+| `multi-step-submit` | Emitted when multi-step form is submitted | `(data: multiStepData) => void`               |
+| `step-change`       | Emitted when user navigates between steps | `(stepIndex: number, stepId: string) => void` |
+
+The `multi-step-submit` event provides both the combined data from all steps and the per-step data structure:
+
+```typescript
+// multi-step data structure
+multiStepData: MultiStepFormData = {
+  formData: {
+    personal: { firstName: 'John', lastName: 'Doe' },
+    contact: { email: 'john@example.com' },
+    // ... other step data
+  },
+  computedData: {
+    personal: { fullName: 'John Doe' },
+    contact: { domain: 'example.com' },
+    // ... other computed step data
+  },
+};
+```
+
 ## Form Methods
 
 When accessing the VForm via a template ref, you can utilize these methods:
+
+### Single-Step Form Methods
 
 | Method          | Description                                            | Return Type                                          |
 | --------------- | ------------------------------------------------------ | ---------------------------------------------------- |
 | `resetForm()`   | Resets all form fields to their initial state          | `void`                                               |
 | `isFormValid()` | Validates all form fields and returns validation state | `Promise<boolean>`                                   |
 | `resolveData()` | Returns the current form data and computed data        | `{ formData: FormData, computedData: ComputedData }` |
+
+### Multi-Step Form Methods
+
+| Method                  | Description                              | Return Type             |
+| ----------------------- | ---------------------------------------- | ----------------------- |
+| `nextStep()`            | Moves to the next step (with validation) | `Promise<void>`         |
+| `previousStep()`        | Moves to the previous step               | `void`                  |
+| `goToStep(index)`       | Navigates to a specific step by index    | `Promise<void>`         |
+| `getCurrentStep()`      | Returns the current step configuration   | `FormStep \| undefined` |
+| `getCurrentStepIndex()` | Returns the current step index           | `number`                |
+
+## Composables
+
+vForm exports several composables that you can use to build custom form solutions or extend functionality:
+
+### Available Composables
+
+| Composable              | Description                                        | Use Case                                      |
+| ----------------------- | -------------------------------------------------- | --------------------------------------------- |
+| `useFormValidation`     | Core form validation logic and state management    | Building custom form wrappers                 |
+| `useInputValidation`    | Input-specific validation and error handling       | Creating custom input components              |
+| `useDataTransformation` | Data transformation and computed value handling    | Processing form data for display/submission   |
+| `useDependentOptions`   | Managing dependent field options and relationships | Dynamic option loading and field dependencies |
+| `useMultiStepForm`      | Multi-step form navigation and state management    | Custom multi-step form implementations        |
+
+### Example Usage
+
+```typescript
+import { useFormValidation, useInputValidation } from '@uniquedj95/vform';
+
+// In your custom form component
+const { isValid, validateForm, getErrors } = useFormValidation();
+
+// In your custom input component
+const { onValueUpdate, onFocus, getErrors } = useInputValidation(inputRef, model, input, schema);
+```
+
+For detailed usage examples of these composables, see the [source code](./src/composables/) or examine how they're used in the built-in components.
 
 ## Input Dependencies
 
@@ -1383,19 +1335,97 @@ When using SelectInput or CheckboxInput, you can add descriptions to options:
 
 ### Form Props
 
-| Property           | Type                           | Description                                                            | Default     |
-| ------------------ | ------------------------------ | ---------------------------------------------------------------------- | ----------- |
-| `schema`           | `FormSchema`                   | The schema object defining the form structure and field configurations | _Required_  |
-| `multiStepConfig`  | `MultiStepConfig`              | Configuration for multi-step forms (optional)                          | `undefined` |
-| `showLabels`       | `boolean`                      | Determines if labels are displayed for each field                      | `true`      |
-| `showClearButton`  | `boolean`                      | Controls the visibility of the clear/reset button                      | `true`      |
-| `showCancelButton` | `boolean`                      | Controls the visibility of the cancel button                           | `true`      |
-| `buttonPlacement`  | `'start' \| 'middle' \| 'end'` | Specifies the alignment of action buttons within the form              | `'start'`   |
-| `submitButtonText` | `string`                       | Custom text for the submit button                                      | `"Submit"`  |
-| `clearButtonText`  | `string`                       | Custom text for the clear/reset button                                 | `"Reset"`   |
-| `cancelButtonText` | `string`                       | Custom text for the cancel button                                      | `"Cancel"`  |
-| `hideButtons`      | `boolean`                      | When true, hides all action buttons                                    | `false`     |
-| `customButtons`    | `Array<CustomButton>`          | Array of custom buttons to add to the form                             | `[]`        |
+| Property             | Type                           | Description                                                            | Default      |
+| -------------------- | ------------------------------ | ---------------------------------------------------------------------- | ------------ |
+| `schema`             | `FormSchema`                   | The schema object defining the form structure and field configurations | _Required_   |
+| `multiStepConfig`    | `MultiStepConfig`              | Configuration for multi-step forms (optional)                          | `undefined`  |
+| `showLabels`         | `boolean`                      | Determines if labels are displayed for each field                      | `true`       |
+| `showClearButton`    | `boolean`                      | Controls the visibility of the clear/reset button                      | `true`       |
+| `showCancelButton`   | `boolean`                      | Controls the visibility of the cancel button                           | `true`       |
+| `buttonPlacement`    | `'start' \| 'middle' \| 'end'` | Specifies the alignment of action buttons within the form              | `'start'`    |
+| `submitButtonText`   | `string`                       | Custom text for the submit button                                      | `"Submit"`   |
+| `clearButtonText`    | `string`                       | Custom text for the clear/reset button                                 | `"Reset"`    |
+| `cancelButtonText`   | `string`                       | Custom text for the cancel button                                      | `"Cancel"`   |
+| `nextButtonText`     | `string`                       | Custom text for the next button (multi-step forms)                     | `"Next"`     |
+| `previousButtonText` | `string`                       | Custom text for the previous button (multi-step forms)                 | `"Previous"` |
+| `hideButtons`        | `boolean`                      | When true, hides all action buttons                                    | `false`      |
+| `customButtons`      | `Array<CustomButton>`          | Array of custom buttons to add to the form                             | `[]`         |
+
+## Component Exports
+
+vForm exports individual components that you can use directly in your applications for more granular control:
+
+### Available Components
+
+```typescript
+import {
+  VForm, // Main form component
+  FormBuilder, // Alias for VForm
+  TextInput,
+  DateInput,
+  NumberInput,
+  EmailInput,
+  PasswordInput,
+  SelectInput,
+  TextAreaInput,
+  RepeatInput,
+  CheckboxInput,
+  RadioInput,
+  FormSection,
+} from '@uniquedj95/vform';
+```
+
+### Usage Example
+
+```vue
+<template>
+  <div>
+    <!-- Use individual components directly -->
+    <TextInput v-model="textField" />
+    <SelectInput v-model="selectField" />
+    <CheckboxInput v-model="checkboxField" />
+
+    <!-- Or use within a custom form -->
+    <form @submit="handleSubmit">
+      <DateInput v-model="dateField" />
+      <NumberInput v-model="numberField" />
+      <ion-button type="submit">Submit</ion-button>
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { TextInput, SelectInput, CheckboxInput, DateInput, NumberInput } from '@uniquedj95/vform';
+import { FormField } from '@uniquedj95/vform';
+
+const textField = ref<FormField>({
+  type: 'TextInput',
+  label: 'Name',
+  placeholder: 'Enter your name',
+});
+
+const selectField = ref<FormField>({
+  type: 'SelectInput',
+  label: 'Country',
+  options: [
+    { label: 'USA', value: 'us' },
+    { label: 'Canada', value: 'ca' },
+  ],
+});
+
+// ... other field definitions
+</script>
+```
+
+### Component Props
+
+All individual components accept the following props:
+
+| Prop      | Type         | Description                                              | Required |
+| --------- | ------------ | -------------------------------------------------------- | -------- |
+| `v-model` | `FormField`  | The form field configuration object                      | ✓        |
+| `schema`  | `FormSchema` | Optional schema for validation and dependency resolution | No       |
 
 ## Issue Reporting and Feedback
 
