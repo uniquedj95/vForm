@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue';
 import type { MultiStepConfig, MultiStepFormData, FormData, ComputedData, FormStep } from '@/types';
-import { shouldPreserveFieldValue } from '@/utils';
+import { shouldPreserveFieldValue, isFormField } from '@/utils';
 
 export function useMultiStepForm(config: MultiStepConfig) {
   const currentStepIndex = ref(0);
@@ -26,16 +26,19 @@ export function useMultiStepForm(config: MultiStepConfig) {
     );
 
     for (const [fieldId, field] of Object.entries(step.schema)) {
-      if (shouldPreserveFieldValue(field, allStepData, allStepComputedData)) {
-        // Preserve current value for disabled/hidden fields
-        if (currentData && fieldId in currentData) {
-          defaults[fieldId] = currentData[fieldId];
-        } else if (field.value !== undefined) {
+      // Only process FormField items, not FormSection items
+      if (isFormField(field)) {
+        if (shouldPreserveFieldValue(field, allStepData, allStepComputedData)) {
+          // Preserve current value for disabled/hidden fields
+          if (currentData && fieldId in currentData) {
+            defaults[fieldId] = currentData[fieldId];
+          } else if (field.value !== undefined) {
+            defaults[fieldId] = field.value;
+          }
+        } else {
+          // Reset to default value for visible, enabled fields
           defaults[fieldId] = field.value;
         }
-      } else {
-        // Reset to default value for visible, enabled fields
-        defaults[fieldId] = field.value;
       }
     }
 
