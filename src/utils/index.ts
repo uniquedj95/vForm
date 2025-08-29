@@ -39,7 +39,7 @@ export async function resolveFormFieldValue(
 
   // If it's already a FormValue (not a function or Promise), return it directly
   if (typeof fieldValue !== 'function' && !(fieldValue instanceof Promise)) {
-    return fieldValue as FormValue;
+    return fieldValue;
   }
 
   // If it's a function, call it and check if the result is a Promise
@@ -55,8 +55,6 @@ export async function resolveFormFieldValue(
   if (fieldValue instanceof Promise) {
     return await fieldValue;
   }
-
-  return fieldValue;
 }
 
 /**
