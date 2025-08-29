@@ -12,8 +12,52 @@
  * @preferred
  * @author Daniel Justin.
  **/
-import { ComputedData, FormData, FormField, FormSchema, Option } from '@/types';
+import {
+  ComputedData,
+  FormData,
+  FormField,
+  FormFieldValue,
+  FormSchema,
+  FormValue,
+  Option,
+} from '@/types';
 export * from './maskito';
+
+/**
+ * Resolves a FormFieldValue to its actual FormValue.
+ * Handles direct values, functions that return values, and Promises that resolve to values.
+ *
+ * @param fieldValue - The form field value to resolve
+ * @returns A Promise that resolves to the actual FormValue
+ */
+export async function resolveFormFieldValue(
+  fieldValue: FormFieldValue | undefined
+): Promise<FormValue | undefined> {
+  if (fieldValue === undefined || fieldValue === null) {
+    return undefined;
+  }
+
+  // If it's already a FormValue (not a function or Promise), return it directly
+  if (typeof fieldValue !== 'function' && !(fieldValue instanceof Promise)) {
+    return fieldValue as FormValue;
+  }
+
+  // If it's a function, call it and check if the result is a Promise
+  if (typeof fieldValue === 'function') {
+    const result = fieldValue();
+    if (result instanceof Promise) {
+      return await result;
+    }
+    return result;
+  }
+
+  // If it's a Promise, await it
+  if (fieldValue instanceof Promise) {
+    return await fieldValue;
+  }
+
+  return fieldValue;
+}
 
 /**
  * Full month names.

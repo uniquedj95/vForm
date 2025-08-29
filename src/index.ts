@@ -20,9 +20,13 @@ export { useInputValidation } from './composables/useInputValidation';
 export { useDataTransformation } from './composables/useDataTransformation';
 export { useDependentOptions } from './composables/useDependentOptions';
 export { useMultiStepForm } from './composables/useMultiStepForm';
+export { useFormFieldValue } from './composables/useFormFieldValue';
 
 // Export types
 export * from './types';
+
+// Export utilities
+export { resolveFormFieldValue } from './utils';
 
 export const VForm: Plugin = {
   install(app: App, opts?: GlobalConfig) {

@@ -17,6 +17,7 @@ import CustomStylesDemo from './components/CustomStylesDemo.vue';
 import CustomComponentExample from './components/CustomComponentDemo.vue';
 import ConditionalStepsDemo from './components/ConditionalStepsDemo.vue';
 import RepeatInputDemo from './components/RepeatInputDemo.vue';
+import AsyncFieldValuesDemo from './components/AsyncFieldValuesDemo.vue';
 
 const routes = [
   { path: '/', redirect: '/basic' },
@@ -41,6 +42,11 @@ const routes = [
     path: '/repeat-input',
     component: RepeatInputDemo,
     meta: { title: 'Repeat Input Demo' },
+  },
+  {
+    path: '/async-field-values',
+    component: AsyncFieldValuesDemo,
+    meta: { title: 'Async Field Values Demo' },
   },
 ];
 
