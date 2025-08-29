@@ -1,60 +1,101 @@
 <template>
-  <input-label :model="model" /><br />
-  <ion-note color="danger" v-if="model.error">{{ model.error }}</ion-note>
-  <ion-item>
-    <ion-radio-group
-      v-model="input"
-      :class="model.className"
-      :required="model.required"
-      :disabled="model.disabled"
-      :compareWith="compareWith"
-      :allow-empty-selection="!model.required"
-      @ionFocus="onFocus"
-      @ionChange="onValueUpdate"
-      @ionBlur="onValueUpdate"
-      style="width: 100%"
-    >
-      <ion-item
-        v-for="option of options"
-        :key="option.value"
-        :lines="model.showOptionsSeparator ? 'none' : 'full'"
+  <div class="radio-container" :class="{ loading: isLoading }">
+    <input-label :model="model" />
+    <ion-spinner v-if="isLoading" name="crescent" class="loading-spinner" />
+    <br />
+    <ion-note color="danger" v-if="model.error">{{ model.error }}</ion-note>
+    <ion-item v-if="!isLoading">
+      <ion-radio-group
+        v-model="input"
+        :class="model.className"
+        :required="model.required"
+        :disabled="model.disabled"
+        :compareWith="compareWith"
+        :allow-empty-selection="!model.required"
+        @ionFocus="onFocus"
+        @ionChange="onValueUpdate"
+        @ionBlur="onValueUpdate"
+        style="width: 100%"
       >
-        <ion-radio
-          :value="option"
-          :disabled="model.disabled || option.disabled"
-          label-placement="end"
-          justify="start"
+        <ion-item
+          v-for="option of options"
+          :key="option.value"
+          :lines="model.showOptionsSeparator ? 'none' : 'full'"
         >
-          <div class="radio-content">
-            <div class="radio-label">{{ option.label }}</div>
-            <ion-text
-              v-if="shouldShowDescription(option, isOptionSelected(option))"
-              :color="option.description?.color"
-              class="radio-description"
-            >
-              {{ option.description?.text }}
-            </ion-text>
-          </div>
-        </ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-item>
+          <ion-radio
+            :value="option"
+            :disabled="model.disabled || option.disabled"
+            label-placement="end"
+            justify="start"
+          >
+            <div class="radio-content">
+              <div class="radio-label">{{ option.label }}</div>
+              <ion-text
+                v-if="shouldShowDescription(option, isOptionSelected(option))"
+                :color="option.description?.color"
+                class="radio-description"
+              >
+                {{ option.description?.text }}
+              </ion-text>
+            </div>
+          </ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-item>
+    <ion-item v-else>
+      <ion-label>Loading options...</ion-label>
+    </ion-item>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { IonRadioGroup, IonRadio, IonItem, IonNote, IonText } from '@ionic/vue';
+import {
+  IonRadioGroup,
+  IonRadio,
+  IonItem,
+  IonNote,
+  IonText,
+  IonLabel,
+  IonSpinner,
+} from '@ionic/vue';
 import { FormField, FormSchema, Option } from '@/types';
 import { ComponentPublicInstance, PropType, ref, watch, computed, onMounted } from 'vue';
 import { useInputValidation } from '@/composables/useInputValidation';
+import { useFormFieldValue } from '@/composables/useFormFieldValue';
 import { shouldShowDescription } from '@/utils';
 import InputLabel from '../shared/InputLabel.vue';
 
 const props = defineProps<{ schema?: FormSchema }>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const inputRef = ref<ComponentPublicInstance | null>(null);
-const input = ref(model.value.value as Option | undefined);
 const schema = computed(() => props.schema);
 const options = ref<Option[]>([]);
+
+// Use form field value resolution
+const { resolvedValue, isLoading, error: valueError } = useFormFieldValue(model);
+
+// Initialize input with resolved value
+const input = ref<Option | undefined>(undefined);
+
+// Watch for resolved value changes and update input
+watch(
+  resolvedValue,
+  newValue => {
+    if (newValue !== undefined && newValue !== null) {
+      // If newValue is an Option object, use it directly
+      if (typeof newValue === 'object' && 'value' in newValue && 'label' in newValue) {
+        input.value = newValue as Option;
+      } else {
+        // If it's a primitive value, find the corresponding option
+        const matchingOption = options.value.find(opt => opt.value === newValue);
+        input.value = matchingOption;
+      }
+    } else {
+      input.value = undefined;
+    }
+  },
+  { immediate: true }
+);
 
 // Use the input validation helpers
 const { onValueUpdate, onFocus, getErrors, isValid } = useInputValidation(
@@ -89,22 +130,47 @@ async function initializeOptions() {
   }
 }
 
-watch(
-  () => model.value.value,
-  v => (input.value = v as Option | undefined)
-);
+// Enhanced getErrors to include value resolution errors
+const getErrorsWithValueErrors = () => {
+  const validationErrors = getErrors();
+  if (valueError.value) {
+    return [...validationErrors, valueError.value];
+  }
+  return validationErrors;
+};
 
 defineExpose({
   onValueUpdate,
   onReset,
-  getErrors,
+  getErrors: getErrorsWithValueErrors,
   isValid,
+  isLoading,
+  valueError,
 });
 
 onMounted(initializeOptions);
 </script>
 
 <style scoped>
+.radio-container {
+  position: relative;
+  width: 100%;
+}
+
+.radio-container.loading {
+  opacity: 0.8;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+}
+
+.loading-spinner::part(native) {
+  color: var(--ion-color-primary, #3880ff);
+}
+
 .radio-content {
   display: flex;
   flex-direction: column;

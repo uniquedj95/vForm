@@ -71,6 +71,30 @@
               </ion-item>
             </ion-list>
 
+            <h4>Supported Field Types</h4>
+            <ion-list>
+              <ion-item>
+                <ion-label>
+                  <h3>Text Inputs</h3>
+                  <p>TextInput, EmailInput, PasswordInput, NumberInput</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>
+                  <h3>Selection Inputs</h3>
+                  <p>SelectInput, RadioInput, CheckboxInput</p>
+                </ion-label>
+              </ion-item>
+
+              <ion-item>
+                <ion-label>
+                  <h3>Specialized Inputs</h3>
+                  <p>TextAreaInput, DateInput</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
             <h4>Examples</h4>
 
             <h5>1. Direct Value</h5>
@@ -105,9 +129,54 @@
   value: fetch('/api/data').then(r => r.json()).then(d => d.value),
 }</code></pre>
 
+            <h5>5. Checkbox with Async Boolean</h5>
+            <pre><code>asyncCheckbox: {
+  type: 'CheckboxInput',
+  label: 'User Preference',
+  value: async () => {
+    const prefs = await fetch('/api/preferences');
+    return prefs.emailNotifications;
+  },
+}</code></pre>
+
+            <h5>6. Radio with Async Selection</h5>
+            <pre><code>asyncRadio: {
+  type: 'RadioInput',
+  label: 'Default Option',
+  value: async () => {
+    return await getDefaultOption();
+  },
+  options: [...],
+}</code></pre>
+
+            <h5>7. TextArea with Async Content</h5>
+            <pre><code>asyncTextArea: {
+  type: 'TextAreaInput',
+  label: 'User Bio',
+  value: async () => {
+    const profile = await fetchUserProfile();
+    return profile.bio;
+  },
+}</code></pre>
+
             <p>
-              <strong>Note:</strong> All async values are resolved when the form initializes, and
-              the resolved values are used throughout the form lifecycle.
+              <strong>Loading States:</strong> All fields show loading spinners when resolving async
+              values. Fields are disabled during value resolution to prevent user interaction.
+            </p>
+
+            <p>
+              <strong>Error Handling:</strong> If value resolution fails, error messages are
+              displayed and included in form validation.
+            </p>
+
+            <p>
+              <strong>Performance:</strong> Function values are evaluated once during form
+              initialization. For dynamic updates, use computed values or reactive dependencies.
+            </p>
+
+            <p>
+              <strong>Type Safety:</strong> All FormFieldValue types are fully typed in TypeScript,
+              ensuring compile-time validation and excellent developer experience.
             </p>
           </ion-card-content>
         </ion-card>
@@ -244,6 +313,91 @@ const formSchema: FormSchema = {
 
   // Section header
   section4: {
+    type: 'FormSection',
+    title: 'Checkbox and Radio Fields',
+    subtitle: 'Boolean and option selection with async values',
+  },
+
+  // Checkbox with async boolean value
+  asyncCheckbox: {
+    type: 'CheckboxInput',
+    label: 'Terms Accepted (from user preferences)',
+    value: async () => {
+      // Simulate fetching user preference
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      return true; // User has previously accepted terms
+    },
+    grid: { xs: '12', md: '6' },
+  },
+
+  // Radio field with async default selection
+  asyncRadio: {
+    type: 'RadioInput',
+    label: 'Preferred Contact Method',
+    value: async () => {
+      // Simulate fetching user's preferred contact method
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { label: 'Email', value: 'email' };
+    },
+    options: [
+      { label: 'Email', value: 'email' },
+      { label: 'Phone', value: 'phone' },
+      { label: 'SMS', value: 'sms' },
+    ],
+    grid: { xs: '12', md: '6' },
+  },
+
+  // Section header
+  section5: {
+    type: 'FormSection',
+    title: 'TextArea and Other Fields',
+    subtitle: 'Multi-line text and specialized inputs',
+  },
+
+  // TextArea with async content
+  asyncTextArea: {
+    type: 'TextAreaInput',
+    label: 'User Bio',
+    value: async () => {
+      // Simulate fetching user bio from profile
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return 'Experienced developer with expertise in Vue.js, TypeScript, and modern web technologies. Passionate about creating intuitive user interfaces and scalable applications.';
+    },
+    rows: 4,
+    placeholder: 'Loading user bio...',
+    grid: { xs: '12' },
+  },
+
+  // Date field with function value
+  computedDate: {
+    type: 'DateInput',
+    label: 'Next Business Day',
+    value: () => {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      // Skip weekends
+      if (tomorrow.getDay() === 6) tomorrow.setDate(tomorrow.getDate() + 2); // Saturday -> Monday
+      if (tomorrow.getDay() === 0) tomorrow.setDate(tomorrow.getDate() + 1); // Sunday -> Monday
+      return tomorrow.toISOString().split('T')[0];
+    },
+    grid: { xs: '12', md: '6' },
+  },
+
+  // Password field with async validation
+  generatedPassword: {
+    type: 'PasswordInput',
+    label: 'Generated Secure Password',
+    value: async () => {
+      // Simulate password generation
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return 'SecurePass123!@#';
+    },
+    placeholder: 'Generating secure password...',
+    grid: { xs: '12', md: '6' },
+  },
+
+  // Section header
+  section6: {
     type: 'FormSection',
     title: 'Mixed Values',
     subtitle: 'Combination of different value types',
