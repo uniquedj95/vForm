@@ -1,6 +1,6 @@
 {
   "name": "@uniquedj95/vform",
-  "version": "3.7.1",
+  "version": "3.7.2",
   "description": "A simplified ionic vue form builder",
   "type": "module",
   "main": "./dist/index.umd.js",
