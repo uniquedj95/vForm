@@ -12,7 +12,7 @@
  * @preferred
  * @author Daniel Justin.
  **/
-import { ComputedData, FormData, FormField, Option } from '@/types';
+import { ComputedData, FormData, FormField, FormSchema, Option } from '@/types';
 export * from './maskito';
 
 /**
@@ -51,12 +51,8 @@ export function isEmpty(value: any): boolean {
 }
 
 /**
- * Determines if a field's value should be preserved during form reset operations.
- *
- * A field's value should be preserved if:
- * - The field is disabled
- * - The field is explicitly hidden
- * - The field has a condition function that evaluates to false (making it conditionally hidden)
+ * Determines if a field value should be preserved during form reset.
+ * A field should be preserved if it's disabled, hidden, or its condition evaluates to false.
  *
  * @param field - The form field to check
  * @param formData - Current form data for condition evaluation
@@ -73,6 +69,70 @@ export function shouldPreserveFieldValue(
     field.hidden ||
     (typeof field.condition === 'function' && !field.condition(formData, computedData))
   );
+}
+
+/**
+ * Resets form inputs while respecting disabled, hidden, and conditional fields.
+ * This function will skip resetting fields that should be preserved based on their state.
+ *
+ * @param dynamicRefs - Array of input component references
+ * @param activeSchema - The current form schema
+ * @param formData - Current form data for condition evaluation
+ * @param computedData - Current computed data for condition evaluation
+ */
+export function resetFormInputsWithFieldCheck(
+  dynamicRefs: any[],
+  activeSchema: FormSchema,
+  formData: FormData,
+  computedData: ComputedData
+): void {
+  dynamicRefs.forEach((inputRef: any) => {
+    if (typeof inputRef?.onReset === 'function' && inputRef?.$attrs?.['ref-key']) {
+      const formId = inputRef.$attrs['ref-key'];
+
+      if (formId && activeSchema[formId]) {
+        const field = activeSchema[formId];
+
+        // Skip reset if field should be preserved (disabled, hidden, or condition is false)
+        if (shouldPreserveFieldValue(field, formData, computedData)) {
+          return;
+        }
+      }
+
+      inputRef.onReset();
+    }
+  });
+}
+
+/**
+ * Reset form inputs with field condition checking using a custom schema resolver
+ *
+ * @param dynamicRefs - Array of form input references
+ * @param formData - Current form data for condition evaluation
+ * @param computedData - Current computed data for condition evaluation
+ * @param getFieldFromRefKey - Function to resolve field from ref-key
+ */
+export function resetFormInputsWithCustomResolver(
+  dynamicRefs: any[],
+  formData: FormData,
+  computedData: ComputedData,
+  getFieldFromRefKey: (refKey: string) => FormField | null
+): void {
+  dynamicRefs.forEach((inputRef: any) => {
+    if (typeof inputRef?.onReset === 'function' && inputRef?.$attrs?.['ref-key']) {
+      const refKey = inputRef.$attrs['ref-key'];
+      const field = getFieldFromRefKey(refKey);
+
+      if (field) {
+        // Skip reset if field should be preserved (disabled, hidden, or condition is false)
+        if (shouldPreserveFieldValue(field, formData, computedData)) {
+          return;
+        }
+      }
+
+      inputRef.onReset();
+    }
+  });
 }
 
 /**

@@ -1,6 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { uncheckAllOptions, deepEqual } from '../../../src/utils';
-import { Option } from '../../../src/types';
+import { describe, it, expect, vi } from 'vitest';
+import {
+  uncheckAllOptions,
+  deepEqual,
+  shouldPreserveFieldValue,
+  resetFormInputsWithCustomResolver,
+} from '../../../src/utils';
+import { Option, FormField, FormData, ComputedData } from '../../../src/types';
 
 describe('utils', () => {
   describe('uncheckAllOptions', () => {
@@ -108,6 +113,112 @@ describe('utils', () => {
       const arr1 = [1, 2, 3];
       const arr2 = [1, 2];
       expect(deepEqual(arr1, arr2)).toBe(false);
+    });
+  });
+
+  describe('shouldPreserveFieldValue', () => {
+    it('should return true for disabled fields', () => {
+      const field: FormField = {
+        type: 'TextInput',
+        disabled: true,
+        value: 'test',
+      };
+      const formData: FormData = {};
+      const computedData: ComputedData = {};
+
+      expect(shouldPreserveFieldValue(field, formData, computedData)).toBe(true);
+    });
+
+    it('should return true for hidden fields', () => {
+      const field: FormField = {
+        type: 'TextInput',
+        hidden: true,
+        value: 'test',
+      };
+      const formData: FormData = {};
+      const computedData: ComputedData = {};
+
+      expect(shouldPreserveFieldValue(field, formData, computedData)).toBe(true);
+    });
+
+    it('should return true when condition evaluates to false', () => {
+      const field: FormField = {
+        type: 'TextInput',
+        value: 'test',
+        condition: () => false, // Field should be hidden
+      };
+      const formData: FormData = {};
+      const computedData: ComputedData = {};
+
+      expect(shouldPreserveFieldValue(field, formData, computedData)).toBe(true);
+    });
+
+    it('should return false for normal visible fields', () => {
+      const field: FormField = {
+        type: 'TextInput',
+        value: 'test',
+      };
+      const formData: FormData = {};
+      const computedData: ComputedData = {};
+
+      expect(shouldPreserveFieldValue(field, formData, computedData)).toBe(false);
+    });
+
+    it('should return false when condition evaluates to true', () => {
+      const field: FormField = {
+        type: 'TextInput',
+        value: 'test',
+        condition: () => true, // Field should be visible
+      };
+      const formData: FormData = {};
+      const computedData: ComputedData = {};
+
+      expect(shouldPreserveFieldValue(field, formData, computedData)).toBe(false);
+    });
+  });
+
+  describe('resetFormInputsWithCustomResolver', () => {
+    it('should reset form inputs while preserving disabled and hidden fields using custom resolver', () => {
+      const mockInputRefs = [
+        {
+          onReset: vi.fn(),
+          $attrs: { 'ref-key': '0-normalField' },
+        },
+        {
+          onReset: vi.fn(),
+          $attrs: { 'ref-key': '0-disabledField' },
+        },
+        {
+          onReset: vi.fn(),
+          $attrs: { 'ref-key': '1-hiddenField' },
+        },
+      ];
+
+      // Mock nested schema structure like RepeatInput
+      const nestedSchemas = [
+        {
+          normalField: { type: 'TextInput', disabled: false, hidden: false },
+          disabledField: { type: 'TextInput', disabled: true },
+        },
+        {
+          hiddenField: { type: 'TextInput', hidden: true },
+        },
+      ];
+
+      const getFieldFromRefKey = (refKey: string) => {
+        const [indexStr, formId] = refKey.split('-');
+        const index = parseInt(indexStr, 10);
+        return nestedSchemas[index]?.[formId] || null;
+      };
+
+      resetFormInputsWithCustomResolver(mockInputRefs, {}, {}, getFieldFromRefKey);
+
+      // Normal field should be reset
+      expect(mockInputRefs[0].onReset).toHaveBeenCalled();
+      // Disabled field should not be reset
+      expect(mockInputRefs[1].onReset).not.toHaveBeenCalled();
+      // Hidden field should not be reset
+      expect(mockInputRefs[2].onReset).not.toHaveBeenCalled();
     });
   });
 });

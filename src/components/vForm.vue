@@ -197,7 +197,7 @@
 import { ref, watch, computed } from 'vue';
 import { IonGrid, IonRow, IonCol } from '@ionic/vue';
 import type { FormData, ComputedData, MultiStepFormData, FormProps } from '@/types';
-import { canRenderField, isFormField, shouldPreserveFieldValue } from '@/utils';
+import { canRenderField, isFormField, resetFormInputsWithFieldCheck } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { useDataTransformation } from '@/composables/useDataTransformation';
 import { useMultiStepForm } from '@/composables/useMultiStepForm';
@@ -315,23 +315,13 @@ async function submitForm() {
 }
 
 function resetFormWithFieldCheck() {
-  // Reset form inputs while skipping disabled and hidden fields
-  dynamicRefs.value.forEach((inputRef: any) => {
-    if (typeof inputRef?.onReset === 'function' && inputRef?.$attrs?.['ref-key']) {
-      const formId = inputRef.$attrs['ref-key'];
-
-      if (formId && activeSchema.value[formId]) {
-        const field = activeSchema.value[formId];
-
-        // Skip reset if field should be preserved (disabled, hidden, or condition is false)
-        if (shouldPreserveFieldValue(field, data.value, computedData.value)) {
-          return;
-        }
-      }
-
-      inputRef.onReset();
-    }
-  });
+  // Use the utility function to reset form inputs while respecting field states
+  resetFormInputsWithFieldCheck(
+    dynamicRefs.value,
+    activeSchema.value,
+    data.value,
+    computedData.value
+  );
 }
 
 function handleClearAction() {

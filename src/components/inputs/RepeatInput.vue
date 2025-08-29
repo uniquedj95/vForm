@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { ComputedData, FormData, FormField, FormSchema, Option } from '@/types';
 import { IonRow, IonCol, IonButton, IonIcon } from '@ionic/vue';
-import { canRenderField, deepClone, isFormField } from '@/utils';
+import { canRenderField, deepClone, isFormField, resetFormInputsWithCustomResolver } from '@/utils';
 import { useFormValidation } from '@/composables/useFormValidation';
 import { computed, onMounted, PropType, ref, watch } from 'vue';
 import { add, remove } from 'ionicons/icons';
@@ -69,12 +69,12 @@ interface PropsI {
   computedData: ComputedData;
 }
 
-defineProps<PropsI>();
+const props = defineProps<PropsI>();
 const model = defineModel({ type: Object as PropType<FormField>, default: {} });
 const childrens = ref<FormSchema[]>([]);
 
 // Use form validation composable
-const { dynamicRefs, resetForm, getFormErrors, updateFormValues } = useFormValidation();
+const { dynamicRefs, getFormErrors, updateFormValues } = useFormValidation();
 
 const inputValue = computed<Array<Option>>(() => {
   return childrens.value.map((child, index) => ({
@@ -114,7 +114,26 @@ function removeSet(index: number) {
 }
 
 function onReset() {
-  resetForm();
+  // Create a resolver function for the RepeatInput's nested schema structure
+  const getFieldFromRefKey = (refKey: string) => {
+    // Parse the ref-key format: "${index}-${formId}"
+    const [indexStr, formId] = refKey.split('-');
+    const index = parseInt(indexStr, 10);
+
+    if (!isNaN(index) && formId && childrens.value[index] && childrens.value[index][formId]) {
+      return childrens.value[index][formId];
+    }
+
+    return null;
+  };
+
+  // Use the utility function with our custom resolver
+  resetFormInputsWithCustomResolver(
+    dynamicRefs.value,
+    props.data,
+    props.computedData,
+    getFieldFromRefKey
+  );
 }
 
 function getErrors() {
