@@ -6,6 +6,17 @@ import VForm from '../../../src/components/vForm.vue';
 // Mock Ionic components
 createIonicMocks();
 
+// Mock the useFormValidation composable
+const mockIsFormValid = vi.fn();
+vi.mock('../../../src/composables/useFormValidation', () => ({
+  useFormValidation: () => ({
+    dynamicRefs: { value: [] },
+    isFormValid: mockIsFormValid,
+    getFormErrors: vi.fn().mockReturnValue([]),
+    updateFormValues: vi.fn(),
+  }),
+}));
+
 describe('VForm', () => {
   let wrapper;
   const defaultProps = {
@@ -25,6 +36,9 @@ describe('VForm', () => {
   };
 
   beforeEach(() => {
+    // Reset all mocks before each test
+    vi.clearAllMocks();
+
     wrapper = mount(VForm, {
       props: defaultProps,
       global: {
@@ -54,8 +68,7 @@ describe('VForm', () => {
 
   it('emits submit event when form is submitted', async () => {
     // Mock isFormValid to return true
-    const isFormValidMock = vi.fn().mockResolvedValue(true);
-    wrapper.vm.isFormValid = isFormValidMock;
+    mockIsFormValid.mockResolvedValue(true);
 
     // Submit the form
     await wrapper.vm.submitForm();
@@ -65,35 +78,16 @@ describe('VForm', () => {
   });
 
   it('does not emit submit event if form is invalid', async () => {
-    // Create a new wrapper with a fresh component instance
-    const localWrapper = mount(VForm, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          'ion-button': true,
-          'ion-grid': true,
-          'ion-row': true,
-          'ion-col': true,
-          'ion-icon': true,
-          'text-input': true,
-          'email-input': true,
-        },
-      },
-    });
+    // Mock isFormValid to return false
+    mockIsFormValid.mockResolvedValue(false);
 
-    // Replace the submitForm method entirely
-    const originalSubmitForm = localWrapper.vm.submitForm;
-    localWrapper.vm.submitForm = async () => {
-      // Mock isFormValid to always return false
-      const isValid = false;
-      if (!isValid) return;
-      originalSubmitForm.call(localWrapper.vm);
-    };
+    // Submit the form
+    await wrapper.vm.submitForm();
 
-    // Submit the form with our mocked method
-    await localWrapper.vm.submitForm();
+    // Verify that isFormValid was called
+    expect(mockIsFormValid).toHaveBeenCalled();
 
-    // Check that submit event was not emitted
-    expect(localWrapper.emitted().submit).toBeFalsy();
+    // Check that submit event was not emitted because form is invalid
+    expect(wrapper.emitted().submit).toBeFalsy();
   });
 });

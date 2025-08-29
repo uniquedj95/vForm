@@ -447,6 +447,7 @@ defineExpose({
   computedData,
   formData: data,
   resetForm: handleClearAction,
+  submitForm,
   isFormValid,
   resolveData: () => {
     if (isMultiStep.value && multiStepForm) {
