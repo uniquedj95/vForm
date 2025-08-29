@@ -8,6 +8,18 @@ import { Component } from 'vue';
 export type FormValue = string | number | boolean | Option | Array<Option>;
 
 /**
+ * Represents a flexible value type that can be a direct value, a function returning a value,
+ * or a Promise that resolves to a value.
+ *
+ * @type FormFieldValue
+ */
+export type FormFieldValue =
+  | FormValue
+  | (() => FormValue)
+  | (() => Promise<FormValue>)
+  | Promise<FormValue>;
+
+/**
  * A function type for validating form field values.
  *
  * The function takes a `value` of type `FormValue` and an optional `schema` of type `FormSchema`.
@@ -237,10 +249,11 @@ export interface FormField {
 
   /**
    * The current value of the form input field.
+   * Can be a direct value, a function returning a value, or a Promise resolving to a value.
    *
-   * @type FormValue
+   * @type FormFieldValue
    */
-  value?: FormValue;
+  value?: FormFieldValue;
 
   /**
    * The label for the form input field.

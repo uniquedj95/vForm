@@ -33,11 +33,22 @@ export function useMultiStepForm(config: MultiStepConfig) {
           if (currentData && fieldId in currentData) {
             defaults[fieldId] = currentData[fieldId];
           } else if (field.value !== undefined) {
+            // For FormFieldValue types, use the resolved value if available
+            // Component should have resolved async values and updated the field.value
+            if (typeof field.value === 'function' || field.value instanceof Promise) {
+              // Value is not yet resolved, skip for now
+            } else {
+              defaults[fieldId] = field.value;
+            }
+          }
+        } else if (field.value !== undefined) {
+          // Reset to default value for visible, enabled fields
+          // For FormFieldValue types, use the resolved value if available
+          if (typeof field.value === 'function' || field.value instanceof Promise) {
+            // Value is not yet resolved, skip for now
+          } else {
             defaults[fieldId] = field.value;
           }
-        } else {
-          // Reset to default value for visible, enabled fields
-          defaults[fieldId] = field.value;
         }
       }
     }

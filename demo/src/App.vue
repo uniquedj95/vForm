@@ -123,6 +123,11 @@ const pages = [
     url: '/repeat-input',
     icon: copyOutline,
   },
+  {
+    title: 'Async Field Values',
+    url: '/async-field-values',
+    icon: documentTextOutline,
+  },
 ];
 
 watch(

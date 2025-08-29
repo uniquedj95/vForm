@@ -9,11 +9,20 @@ import { deepEqual, isFormField } from '@/utils';
 export function useDataTransformation(activeSchema: Ref<FormSchema>) {
   /**
    * Transform form schema to form data
+   * Note: This computed property provides the current resolved values.
+   * For async values, the resolved values will be used once they're available.
    */
   const formData = computed(() =>
     Object.entries(activeSchema.value).reduce((acc, [key, form]) => {
       // Only process FormField items, not FormSection items
       if (isFormField(form) && form.value !== undefined) {
+        // For FormFieldValue types (functions/Promises), we expect the form component
+        // to have already resolved the value and updated form.value to be the resolved FormValue
+        // If it's still unresolved, we'll use undefined for now
+        if (typeof form.value === 'function' || form.value instanceof Promise) {
+          // Value is not yet resolved, skip for now
+          return acc;
+        }
         acc[key] = form.value;
       }
       return acc;

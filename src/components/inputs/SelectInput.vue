@@ -14,8 +14,8 @@
       :required="model.required"
       :error-text="model.error"
       :autofocus="model.autoFocus"
-      :placeholder="placeholder"
-      :disabled="model.disabled"
+      :placeholder="isValueLoading ? 'Loading...' : placeholder"
+      :disabled="model.disabled || isValueLoading"
       :counter="model.counter"
       :debounce="300"
       @ion-focus="onFocus"
@@ -31,11 +31,12 @@
       <ion-label slot="start" v-else class="ion-no-wrap">
         {{ tags[0]?.label ?? '' }}
       </ion-label>
-      <ion-icon slot="end" :icon="chevronDown" />
+      <ion-spinner v-if="isValueLoading" slot="end" name="crescent" class="loading-spinner" />
+      <ion-icon slot="end" :icon="chevronDown" v-else />
       <ion-icon
         slot="end"
         :icon="close"
-        v-if="tags.length > 0 || filter"
+        v-if="(tags.length > 0 || filter) && !isValueLoading"
         @click="onReset"
         style="z-index: 999999"
       />
@@ -92,6 +93,7 @@ import {
   shouldShowDescription,
 } from '@/utils';
 import { useInputValidation } from '@/composables/useInputValidation';
+import { useFormFieldValue } from '@/composables/useFormFieldValue';
 import {
   IonInput,
   IonList,
@@ -101,6 +103,7 @@ import {
   IonIcon,
   IonCheckbox,
   IonText,
+  IonSpinner,
   actionSheetController,
   alertController,
   AlertInput,
@@ -121,6 +124,9 @@ const filter = ref('');
 const page = ref(1);
 
 const config: GlobalConfig | undefined = inject('globalConfig');
+
+// Use form field value resolution for async values
+const { isLoading: isValueLoading } = useFormFieldValue(model);
 
 const interfaceType = computed(() => {
   return model.value.interface ?? 'popover';
@@ -406,33 +412,46 @@ async function filterOptions() {
 }
 
 async function initialize() {
-  const defaultValue = model.value.value;
-  if (defaultValue) {
+  // Resolve the field value if it's a function or Promise
+  let resolvedValue = model.value.value;
+
+  // Handle function and Promise values
+  if (typeof resolvedValue === 'function') {
+    const result = resolvedValue();
+    resolvedValue = result instanceof Promise ? await result : result;
+  } else if (resolvedValue instanceof Promise) {
+    resolvedValue = await resolvedValue;
+  }
+
+  if (resolvedValue) {
     // Make sure options are loaded before initializing selection
     if (options.value.length === 0) {
       await filterOptions();
     }
 
-    if (Array.isArray(defaultValue)) {
-      defaultValue.forEach(opt => checkOption(opt, options.value));
-    } else if (typeof defaultValue === 'object') {
-      checkOption(defaultValue, options.value);
+    if (Array.isArray(resolvedValue)) {
+      resolvedValue.forEach(opt => checkOption(opt, options.value));
+    } else if (typeof resolvedValue === 'object') {
+      checkOption(resolvedValue, options.value);
     } else {
       // Find the matching option for this value to get the correct label
-      const matchingOption = options.value.find(opt => opt.value === defaultValue);
+      const matchingOption = options.value.find(opt => opt.value === resolvedValue);
 
       if (matchingOption) {
         checkOption(matchingOption, options.value);
       } else {
         checkOption(
           {
-            value: defaultValue as any,
-            label: defaultValue as string,
+            value: resolvedValue as any,
+            label: resolvedValue as string,
           },
           options.value
         );
       }
     }
+
+    // Update the model value with the resolved value
+    model.value.value = resolvedValue;
 
     // Make sure the model value is updated
     onValueUpdate();
@@ -533,5 +552,15 @@ ion-item:hover {
 .option-description {
   font-size: 0.875rem;
   line-height: 1.2;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.loading-spinner::part(native) {
+  color: var(--ion-color-primary, #3880ff);
 }
 </style>
