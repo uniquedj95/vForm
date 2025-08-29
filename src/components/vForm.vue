@@ -83,7 +83,7 @@
               <ActionButton
                 type="clear"
                 :label="clearButtonText"
-                @click="handleClearCurrentStep"
+                @click="handleClearAction"
                 v-if="showClearButton"
               />
               <CustomButton :button="btn" v-for="btn of customButtons" :key="btn.label" />
@@ -325,20 +325,13 @@ function resetFormWithFieldCheck() {
 }
 
 function handleClearAction() {
-  if (isMultiStep.value && multiStepForm) {
-    multiStepForm.resetForm();
+  if (isMultiStep.value && multiStepForm && currentStep.value) {
+    multiStepForm.clearStepData(currentStep.value.id);
+    resetFormWithFieldCheck();
   } else {
     resetFormWithFieldCheck();
   }
   emit('clear');
-}
-
-function handleClearCurrentStep() {
-  if (isMultiStep.value && multiStepForm && currentStep.value) {
-    multiStepForm.clearStepData(currentStep.value.id);
-    resetFormWithFieldCheck();
-    emit('clear');
-  }
 }
 
 function handleCancelAction() {
@@ -448,6 +441,11 @@ function handleCustomComponentDataUpdate(data: any) {
 }
 
 defineExpose({
+  isLastStep,
+  canGoNext,
+  canGoPrevious,
+  computedData,
+  formData: data,
   resetForm: handleClearAction,
   isFormValid,
   resolveData: () => {
